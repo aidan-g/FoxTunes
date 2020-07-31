@@ -1,5 +1,6 @@
 ﻿using FoxTunes.Interfaces;
 using System;
+using System.Windows.Controls;
 
 namespace FoxTunes
 {
@@ -13,14 +14,19 @@ namespace FoxTunes
             }
         }
 
-        public static WaveFormGeneratorData Create(IOutputStream stream, int resolution)
+        public static readonly IntegerConfigurationElement Resolution = ComponentRegistry.Instance.GetComponent<IConfiguration>().GetElement<IntegerConfigurationElement>(
+            WaveBarBehaviourConfiguration.SECTION,
+            WaveBarBehaviourConfiguration.RESOLUTION_ELEMENT
+        );
+
+        public static WaveFormGeneratorData Create(IOutputStream stream)
         {
             var length = Convert.ToInt32(Math.Ceiling(
-                stream.GetDuration(stream.Length).TotalMilliseconds / resolution
+                stream.GetDuration(stream.Length).TotalMilliseconds / Resolution.Value
             ));
             return new WaveFormGeneratorData()
             {
-                Resolution = resolution,
+                Resolution = Resolution.Value,
                 Data = new WaveFormDataElement[length, stream.Channels],
                 Position = 0,
                 Capacity = length,
@@ -46,8 +52,11 @@ namespace FoxTunes
 
             if (data.CancellationToken.IsCancellationRequested)
             {
+                Logger.Write(typeof(WaveFormGenerator), LogLevel.Debug, "Wave form generation for file \"{0}\" was cancelled.", stream.FileName);
                 return;
             }
+
+            Logger.Write(typeof(WaveFormGenerator), LogLevel.Debug, "Wave form generated for file \"{0}\" with {1} elements: Peak = {2:0.00}", stream.FileName, data.Capacity, data.Peak);
 
             try
             {
@@ -64,6 +73,9 @@ namespace FoxTunes
             var duration = TimeSpan.FromMilliseconds(data.Resolution);
             var buffer = stream.GetBuffer<short>(duration);
             var interval = data.Capacity / 10;
+
+            Logger.Write(typeof(WaveFormGenerator), LogLevel.Debug, "Creating 16 bit wave form for file \"{0}\" with resolution of {1}ms", stream.FileName, duration.TotalMilliseconds);
+
             do
             {
 #if DEBUG
@@ -123,6 +135,9 @@ namespace FoxTunes
             var duration = TimeSpan.FromMilliseconds(data.Resolution);
             var buffer = stream.GetBuffer<float>(duration);
             var interval = data.Capacity / 10;
+
+            Logger.Write(typeof(WaveFormGenerator), LogLevel.Debug, "Creating 32 bit wave form for file \"{0}\" with resolution of {1}ms", stream.FileName, duration.TotalMilliseconds);
+
             do
             {
 #if DEBUG

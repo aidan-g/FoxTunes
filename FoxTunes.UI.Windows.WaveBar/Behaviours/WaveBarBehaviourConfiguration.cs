@@ -14,13 +14,19 @@ namespace FoxTunes
 
         public const string MODE_SEPERATE_OPTION = "CCCC3286-5097-4977-A4CC-5CEDA5E2E099";
 
-        public const string CACHE_ELEMENT = "AAAAAD4B-8BB4-47C9-9D18-2121C48115CE";
+        public const string RESOLUTION_ELEMENT = "AAAACCC0-596C-489C-BD39-E74C0AE3697C";
+
+        public const string AMPLITUDE_ELEMENT = "AABB7D69-3C36-44EB-8960-4147A148F31A";
+
+        public const string CACHE_ELEMENT = "BBBBAD4B-8BB4-47C9-9D18-2121C48115CE";
 
         public static IEnumerable<ConfigurationSection> GetConfigurationSections()
         {
             yield return new ConfigurationSection(SECTION, "Wave Form")
                 .WithElement(new SelectionConfigurationElement(MODE_ELEMENT, "Mode").WithOptions(GetModeOptions()))
-                .WithElement(new BooleanConfigurationElement(CACHE_ELEMENT, "Cache").WithValue(false)
+                .WithElement(new IntegerConfigurationElement(RESOLUTION_ELEMENT, "Resolution", path: "Advanced").WithValue(10).WithValidationRule(new IntegerValidationRule(1, 100)))
+                .WithElement(new IntegerConfigurationElement(AMPLITUDE_ELEMENT, "Amplitude", path: "Advanced").WithValue(8).WithValidationRule(new IntegerValidationRule(1, 10)))
+                .WithElement(new BooleanConfigurationElement(CACHE_ELEMENT, "Cache", path: "Advanced").WithValue(false)
             );
         }
 

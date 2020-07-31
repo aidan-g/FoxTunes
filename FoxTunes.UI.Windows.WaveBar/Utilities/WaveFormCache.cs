@@ -13,7 +13,7 @@ namespace FoxTunes
             WaveBarBehaviourConfiguration.CACHE_ELEMENT
         );
 
-        public static bool TryLoad(IOutputStream stream, int resolution, out WaveFormGenerator.WaveFormGeneratorData data)
+        public static bool TryLoad(IOutputStream stream, out WaveFormGenerator.WaveFormGeneratorData data)
         {
             if (!Enabled.Value)
             {
@@ -21,7 +21,7 @@ namespace FoxTunes
                 return false;
             }
 
-            var id = GetId(stream, resolution);
+            var id = GetId(stream, WaveFormGenerator.Resolution.Value);
             var fileName = default(string);
             if (FileMetaDataStore.Exists(PREFIX, id, out fileName))
             {

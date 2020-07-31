@@ -10,15 +10,18 @@
              xmlns:Interactivity="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance Core:Core, IsDesignTimeCreatable=False}"
-             Background="Transparent" 
              Foreground="{DynamicResource TextBrush}"
-             Loaded="OnLoaded"
-             Unloaded="OnUnloaded"                 
-             SizeChanged="OnSizeChanged"
              SnapsToDevicePixels="True"
              MinWidth="80">
     <UserControl.Resources>
         <ViewModel:StreamPosition x:Key="ViewModel" Core="{Binding}"></ViewModel:StreamPosition>
+        <ViewModel:BrushConverter x:Key="BrushConverter"></ViewModel:BrushConverter>
+        <LocalWindows:WaveFormRenderer x:Key="Renderer" 
+            Core="{Binding}" 
+            Width="{Binding ActualWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type LocalWindows:WaveFormStreamPosition}}}" 
+            Height="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type LocalWindows:WaveFormStreamPosition}}}" 
+            Color1="{Binding Foreground, Converter={StaticResource BrushConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type LocalWindows:WaveFormStreamPosition}}}" 
+            Color2="Transparent"></LocalWindows:WaveFormRenderer>
     </UserControl.Resources>
     <UserControl.ContextMenu>
         <Windows:Menu Category="{Binding Source={x:Static LocalWindows:WaveBarBehaviour.CATEGORY}}"></Windows:Menu>
@@ -31,6 +34,9 @@
             <ViewModel:InvokeParameterizedCommandAction Command="{Binding Source={StaticResource ViewModel}, Path=EndSeekCommand}"></ViewModel:InvokeParameterizedCommandAction>
         </Interactivity:EventTrigger>
     </Interactivity:Interaction.Triggers>
+    <UserControl.Background>
+        <ImageBrush ImageSource="{Binding Bitmap, Source={StaticResource Renderer}}"></ImageBrush>
+    </UserControl.Background>
     <Windows:DraggableSlider Value="{Binding CurrentStream.Position, Source={StaticResource ViewModel}}" Maximum="{Binding CurrentStream.Length, Mode=OneWay, Source={StaticResource ViewModel}}" ToolTip="{Binding CurrentStream.Description, Mode=OneWay, Source={StaticResource ViewModel}}">
         <Slider.Style>
             <Style TargetType="{x:Type Slider}">

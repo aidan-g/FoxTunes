@@ -8,7 +8,7 @@ using System.Windows.Media.Imaging;
 
 namespace FoxTunes
 {
-    public class SpectrumRenderer : BaseComponent, IDisposable
+    public class SpectrumRenderer : RendererBase
     {
         const int SCALE_FACTOR = 4;
 
@@ -240,25 +240,12 @@ namespace FoxTunes
             }
         }
 
-        public bool IsDisposed { get; private set; }
-
-        public void Dispose()
+        protected override Freezable CreateInstanceCore()
         {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
+            return new SpectrumRenderer();
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (this.IsDisposed || !disposing)
-            {
-                return;
-            }
-            this.OnDisposing();
-            this.IsDisposed = true;
-        }
-
-        protected virtual void OnDisposing()
+        protected override void OnDisposing()
         {
             PlaybackStateNotifier.Notify -= this.OnNotify;
             lock (this.SyncRoot)
@@ -269,19 +256,6 @@ namespace FoxTunes
                     this.Timer.Dispose();
                     this.Timer = null;
                 }
-            }
-        }
-
-        ~SpectrumRenderer()
-        {
-            Logger.Write(typeof(SpectrumRenderer), LogLevel.Error, "Component was not disposed: {0}", this.GetType().Name);
-            try
-            {
-                this.Dispose(true);
-            }
-            catch
-            {
-                //Nothing can be done, never throw on GC thread.
             }
         }
 

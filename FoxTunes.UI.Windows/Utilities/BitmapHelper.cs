@@ -17,7 +17,7 @@ namespace FoxTunes
 #if DEBUG
             //Check arguments are valid.
 
-            if (x < 0 || y < 0)
+            if (x < 0 || y < 0 || width < 0 || height < 0)
             {
                 throw new ArgumentOutOfRangeException();
             }
