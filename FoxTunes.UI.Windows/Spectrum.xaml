@@ -5,14 +5,23 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:Core="clr-namespace:FoxTunes;assembly=FoxTunes.Core" 
              xmlns:Windows="clr-namespace:FoxTunes" 
+             xmlns:ViewModel="clr-namespace:FoxTunes.ViewModel"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance {x:Type Core:Core}, IsDesignTimeCreatable=False}" 
-             Background="Transparent" 
              Foreground="{DynamicResource TextBrush}"
-             Loaded="OnLoaded"
-             Unloaded="OnUnloaded"                 
-             SizeChanged="OnSizeChanged"
-             SnapsToDevicePixels="True">
+             SnapsToDevicePixels="True"
+             MinWidth="80">
+    <UserControl.Resources>
+        <ViewModel:BrushConverter x:Key="BrushConverter"></ViewModel:BrushConverter>
+        <Windows:SpectrumRenderer x:Key="Renderer"
+            Core="{Binding}"                                  
+            Width="{Binding ActualWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Windows:Spectrum}}}" 
+            Height="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Windows:Spectrum}}}" 
+            Color="{Binding Foreground, Converter={StaticResource BrushConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Windows:Spectrum}}}"></Windows:SpectrumRenderer>
+    </UserControl.Resources>
+    <UserControl.Background>
+        <ImageBrush ImageSource="{Binding Bitmap, Source={StaticResource Renderer}}"></ImageBrush>
+    </UserControl.Background>
     <UserControl.ContextMenu>
         <Windows:Menu Category="{Binding Source={x:Static Windows:SpectrumBehaviour.CATEGORY}}"></Windows:Menu>
     </UserControl.ContextMenu>

@@ -164,112 +164,11 @@ namespace FoxTunes
 
         public IConfiguration Configuration { get; private set; }
 
-        private double _ScalingFactor { get; set; }
+        public DoubleConfigurationElement ScalingFactor { get; private set; }
 
-        public double ScalingFactor
-        {
-            get
-            {
-                return this._ScalingFactor;
-            }
-            set
-            {
-                this._ScalingFactor = value;
-                this.OnScalingFactorChanged();
-            }
-        }
+        public SelectionConfigurationElement Mode { get; private set; }
 
-        protected virtual void OnScalingFactorChanged()
-        {
-            var task = this.CreateBitmap();
-            if (this.ScalingFactorChanged != null)
-            {
-                this.ScalingFactorChanged(this, EventArgs.Empty);
-            }
-            this.OnPropertyChanged("ScalingFactor");
-        }
-
-        public event EventHandler ScalingFactorChanged;
-
-        private WaveFormRendererMode _Mode { get; set; }
-
-        public WaveFormRendererMode Mode
-        {
-            get
-            {
-                return this._Mode;
-            }
-            set
-            {
-                this._Mode = value;
-                this.OnModeChanged();
-            }
-        }
-
-        protected virtual void OnModeChanged()
-        {
-            var task = this.RefreshBitmap();
-            if (this.ModeChanged != null)
-            {
-                this.ModeChanged(this, EventArgs.Empty);
-            }
-            this.OnPropertyChanged("Mode");
-        }
-
-        public event EventHandler ModeChanged;
-
-        private int _Resolution { get; set; }
-
-        public int Resolution
-        {
-            get
-            {
-                return this._Resolution;
-            }
-            set
-            {
-                this._Resolution = value;
-                this.OnResolutionChanged();
-            }
-        }
-
-        protected virtual void OnResolutionChanged()
-        {
-            if (this.ResolutionChanged != null)
-            {
-                this.ResolutionChanged(this, EventArgs.Empty);
-            }
-            this.OnPropertyChanged("Resolution");
-        }
-
-        public event EventHandler ResolutionChanged;
-
-        private int _Amplitude { get; set; }
-
-        public int Amplitude
-        {
-            get
-            {
-                return this._Amplitude;
-            }
-            set
-            {
-                this._Amplitude = value;
-                this.OnAmplitudeChanged();
-            }
-        }
-
-        protected virtual void OnAmplitudeChanged()
-        {
-            var task = this.RefreshBitmap();
-            if (this.AmplitudeChanged != null)
-            {
-                this.AmplitudeChanged(this, EventArgs.Empty);
-            }
-            this.OnPropertyChanged("Amplitude");
-        }
-
-        public event EventHandler AmplitudeChanged;
+        public IntegerConfigurationElement Amplitude { get; private set; }
 
         public WriteableBitmap Bitmap
         {
@@ -308,7 +207,10 @@ namespace FoxTunes
 
         protected virtual void OnWidthChanged()
         {
-            var task = this.CreateBitmap();
+            if (this.IsInitialized)
+            {
+                var task = this.CreateBitmap();
+            }
             if (this.WidthChanged != null)
             {
                 this.WidthChanged(this, EventArgs.Empty);
@@ -332,7 +234,10 @@ namespace FoxTunes
 
         protected virtual void OnHeightChanged()
         {
-            var task = this.CreateBitmap();
+            if (this.IsInitialized)
+            {
+                var task = this.CreateBitmap();
+            }
             if (this.HeightChanged != null)
             {
                 this.HeightChanged(this, EventArgs.Empty);
@@ -356,7 +261,6 @@ namespace FoxTunes
 
         protected virtual void OnColor1Changed()
         {
-            var task = this.RefreshBitmap();
             if (this.Color1Changed != null)
             {
                 this.Color1Changed(this, EventArgs.Empty);
@@ -380,7 +284,6 @@ namespace FoxTunes
 
         protected virtual void OnColor2Changed()
         {
-            var task = this.RefreshBitmap();
             if (this.Color2Changed != null)
             {
                 this.Color2Changed(this, EventArgs.Empty);
@@ -396,32 +299,44 @@ namespace FoxTunes
             this.PlaybackManager = core.Managers.Playback;
             this.PlaybackManager.CurrentStreamChanged += this.OnCurrentStreamChanged;
             this.Configuration = core.Components.Configuration;
-            this.Configuration.GetElement<DoubleConfigurationElement>(
+            this.ScalingFactor = this.Configuration.GetElement<DoubleConfigurationElement>(
                WindowsUserInterfaceConfiguration.SECTION,
                WindowsUserInterfaceConfiguration.UI_SCALING_ELEMENT
-           ).ConnectValue(value => this.ScalingFactor = value);
-            this.Configuration.GetElement<SelectionConfigurationElement>(
+            );
+            this.Mode = this.Configuration.GetElement<SelectionConfigurationElement>(
                 WaveBarBehaviourConfiguration.SECTION,
                 WaveBarBehaviourConfiguration.MODE_ELEMENT
-            ).ConnectValue(option => this.Mode = WaveBarBehaviourConfiguration.GetMode(option));
-            this.Configuration.GetElement<IntegerConfigurationElement>(
-                WaveBarBehaviourConfiguration.SECTION,
-                WaveBarBehaviourConfiguration.RESOLUTION_ELEMENT
-            ).ConnectValue(value => this.Resolution = value);
-            this.Configuration.GetElement<IntegerConfigurationElement>(
+            );
+            this.Amplitude = this.Configuration.GetElement<IntegerConfigurationElement>(
                 WaveBarBehaviourConfiguration.SECTION,
                 WaveBarBehaviourConfiguration.AMPLITUDE_ELEMENT
-            ).ConnectValue(value => this.Amplitude = value);
-            if (this.PlaybackManager.CurrentStream != null)
+            );
+            this.ScalingFactor.ValueChanged += this.OnValueChanged;
+            this.Mode.ValueChanged += this.OnValueChanged;
+            this.Amplitude.ValueChanged += this.OnValueChanged;
+#if NET40
+            var task = TaskEx.Run(async () =>
+#else
+            var task = Task.Run(async () =>
+#endif
             {
-                this.Dispatch(() => this.Update(this.PlaybackManager.CurrentStream));
-            }
+                await this.CreateBitmap().ConfigureAwait(false);
+                if (this.PlaybackManager.CurrentStream != null)
+                {
+                    await this.Update(this.PlaybackManager.CurrentStream).ConfigureAwait(false);
+                }
+            });
             base.InitializeComponent(core);
         }
 
         protected virtual void OnCurrentStreamChanged(object sender, EventArgs e)
         {
             this.Dispatch(() => this.Update(this.PlaybackManager.CurrentStream));
+        }
+
+        protected virtual void OnValueChanged(object sender, EventArgs e)
+        {
+            this.RefreshBitmap();
         }
 
         protected virtual async Task Update(IOutputStream stream)
@@ -522,15 +437,9 @@ namespace FoxTunes
                     return;
                 }
 
-                if (this.ScalingFactor == 0)
-                {
-                    //We need scaling factor.
-                    return;
-                }
-
                 var size = Windows.ActiveWindow.GetElementPixelSize(
-                    width * this.ScalingFactor,
-                    height * this.ScalingFactor
+                    width * this.ScalingFactor.Value,
+                    height * this.ScalingFactor.Value
                 );
 
                 this.Semaphore.Wait();
@@ -560,18 +469,9 @@ namespace FoxTunes
             var task = this.Update();
         }
 
-#if NET40
-        protected virtual Task RefreshBitmap()
-#else
-        protected virtual async Task RefreshBitmap()
-#endif
+        protected virtual void RefreshBitmap()
         {
-#if NET40
             this.Semaphore.Wait();
-#else
-            await this.Semaphore.WaitAsync().ConfigureAwait(false);
-#endif
-
             try
             {
                 if (this.RendererData != null)
@@ -586,10 +486,6 @@ namespace FoxTunes
             }
 
             var task = this.Update();
-
-#if NET40
-            return TaskEx.FromResult(false);
-#endif
         }
 
         public async Task Render()
@@ -614,10 +510,6 @@ namespace FoxTunes
                 await Windows.Invoke(() =>
                 {
                     bitmap = this.Bitmap;
-                    if (bitmap == null)
-                    {
-                        return;
-                    }
                     success = bitmap.TryLock(LockTimeout);
                     if (!success)
                     {
@@ -632,7 +524,11 @@ namespace FoxTunes
                     return;
                 }
 
-                Render(this.RendererData, info, this.Mode);
+                Render(
+                    this.RendererData,
+                    info,
+                    WaveBarBehaviourConfiguration.GetMode(this.Mode.Value)
+                );
 
                 await Windows.Invoke(() =>
                 {
@@ -661,7 +557,12 @@ namespace FoxTunes
             {
                 if (this.GeneratorData != null && this.RendererData != null)
                 {
-                    Update(this.GeneratorData, this.RendererData, this.Amplitude, this.Mode);
+                    Update(
+                        this.GeneratorData,
+                        this.RendererData,
+                        this.Amplitude.Value,
+                        WaveBarBehaviourConfiguration.GetMode(this.Mode.Value)
+                    );
                 }
             }
             finally
@@ -683,6 +584,10 @@ namespace FoxTunes
 
         protected override void OnDisposing()
         {
+            if (this.Semaphore != null)
+            {
+                this.Semaphore.Dispose();
+            }
             if (this.PlaybackManager != null)
             {
                 this.PlaybackManager.CurrentStreamChanged -= this.OnCurrentStreamChanged;
@@ -690,6 +595,18 @@ namespace FoxTunes
             if (this.GeneratorData != null)
             {
                 this.GeneratorData.Updated -= this.OnUpdated;
+            }
+            if (this.ScalingFactor != null)
+            {
+                this.ScalingFactor.ValueChanged -= this.OnValueChanged;
+            }
+            if (this.Mode != null)
+            {
+                this.Mode.ValueChanged -= this.OnValueChanged;
+            }
+            if (this.Amplitude != null)
+            {
+                this.Amplitude.ValueChanged -= this.OnValueChanged;
             }
         }
 
@@ -723,6 +640,9 @@ namespace FoxTunes
             var center = rendererData.Height / 2.0f;
             var factor = (rendererData.Peak / 2.0f) * (10.0f - amplitude);
 
+            var data = generatorData.Data;
+            var elements = rendererData.Elements;
+
             while (rendererData.Available < rendererData.Capacity)
             {
                 var valuePosition = rendererData.Available * rendererData.ValuesPerElement;
@@ -742,8 +662,8 @@ namespace FoxTunes
                 {
                     for (var b = 0; b < generatorData.Channels; b++)
                     {
-                        topValue += Math.Abs(generatorData.Data[valuePosition + a, b].Min);
-                        bottomValue += Math.Abs(generatorData.Data[valuePosition + a, b].Max);
+                        topValue += Math.Abs(data[valuePosition + a, b].Min);
+                        bottomValue += Math.Abs(data[valuePosition + a, b].Max);
                     }
                 }
                 topValue /= (rendererData.ValuesPerElement * generatorData.Channels);
@@ -758,10 +678,10 @@ namespace FoxTunes
                 y = Convert.ToInt32(center - (topValue * center));
                 height = Convert.ToInt32((center - y) + (bottomValue * center));
 
-                rendererData.Elements[rendererData.Available, 0].X = x;
-                rendererData.Elements[rendererData.Available, 0].Y = y;
-                rendererData.Elements[rendererData.Available, 0].Width = width;
-                rendererData.Elements[rendererData.Available, 0].Height = height;
+                elements[rendererData.Available, 0].X = x;
+                elements[rendererData.Available, 0].Y = y;
+                elements[rendererData.Available, 0].Width = width;
+                elements[rendererData.Available, 0].Height = height;
 
                 rendererData.Available++;
             }
@@ -770,6 +690,9 @@ namespace FoxTunes
         private static void UpdateSeperate(WaveFormGenerator.WaveFormGeneratorData generatorData, WaveFormRendererData rendererData, int amplitude)
         {
             var factor = rendererData.Peak / (generatorData.Channels * 2) * (10.0f - amplitude);
+
+            var data = generatorData.Data;
+            var elements = rendererData.Elements;
 
             while (rendererData.Available < rendererData.Capacity)
             {
@@ -794,8 +717,8 @@ namespace FoxTunes
                     var bottomValue = default(float);
                     for (var a = 0; a < rendererData.ValuesPerElement; a++)
                     {
-                        topValue += Math.Abs(generatorData.Data[valuePosition + a, channel].Min);
-                        bottomValue += Math.Abs(generatorData.Data[valuePosition + a, channel].Max);
+                        topValue += Math.Abs(data[valuePosition + a, channel].Min);
+                        bottomValue += Math.Abs(data[valuePosition + a, channel].Max);
                     }
                     topValue /= (rendererData.ValuesPerElement * generatorData.Channels);
                     bottomValue /= (rendererData.ValuesPerElement * generatorData.Channels);
@@ -809,10 +732,10 @@ namespace FoxTunes
                     y = Convert.ToInt32(waveCenter - (topValue * (waveHeight / 2)));
                     height = Convert.ToInt32((waveCenter - y) + (bottomValue * (waveHeight / 2)));
 
-                    rendererData.Elements[rendererData.Available, channel].X = x;
-                    rendererData.Elements[rendererData.Available, channel].Y = y;
-                    rendererData.Elements[rendererData.Available, channel].Width = width;
-                    rendererData.Elements[rendererData.Available, channel].Height = height;
+                    elements[rendererData.Available, channel].X = x;
+                    elements[rendererData.Available, channel].Y = y;
+                    elements[rendererData.Available, channel].Width = width;
+                    elements[rendererData.Available, channel].Height = height;
                 }
 
                 rendererData.Available++;
@@ -821,6 +744,8 @@ namespace FoxTunes
 
         public static void Render(WaveFormRendererData rendererData, BitmapHelper.RenderInfo renderInfo, WaveFormRendererMode mode)
         {
+            var elements = rendererData.Elements;
+
             if (rendererData.Position == 0 || rendererData.Available < rendererData.Position)
             {
                 rendererData.Position = 0;
@@ -846,10 +771,10 @@ namespace FoxTunes
                 {
                     BitmapHelper.DrawRectangle(
                         renderInfo,
-                        rendererData.Elements[rendererData.Position, channel].X,
-                        rendererData.Elements[rendererData.Position, channel].Y,
-                        rendererData.Elements[rendererData.Position, channel].Width,
-                        rendererData.Elements[rendererData.Position, channel].Height
+                        elements[rendererData.Position, channel].X,
+                        elements[rendererData.Position, channel].Y,
+                        elements[rendererData.Position, channel].Width,
+                        elements[rendererData.Position, channel].Height
                     );
                 }
             }
