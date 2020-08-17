@@ -6,7 +6,11 @@
              xmlns:Core="clr-namespace:FoxTunes;assembly=FoxTunes.Core" 
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance Core:Core, IsDesignTimeCreatable=False}">
-    <Grid>
+    <StackPanel>
+        <TextBlock>
+            <Run Text="{x:Static Core:Publication.Product}"></Run>
+            <Run Text="{x:Static Core:Publication.Version}"></Run>
+        </TextBlock>
         <TextBlock Text="{Binding Components.Output.Description, Mode=OneWay, FallbackValue=FoxTunes}"></TextBlock>
-    </Grid>
+    </StackPanel>
 </UserControl>
