@@ -18,6 +18,7 @@ namespace FoxTunes
         public override void InitializeComponent(ICore core)
         {
             this.Context.Run(Resources.utils);
+            this.Context.SetParameter("Publication", new Publication());
             this.Context.SetParameter("DateHelper", new DateHelper());
             base.InitializeComponent(core);
         }
@@ -49,6 +50,33 @@ namespace FoxTunes
         {
             this.Context.Dispose();
             base.OnDisposing();
+        }
+
+        private class Publication
+        {
+            public string Company
+            {
+                get
+                {
+                    return global::FoxTunes.Publication.Company;
+                }
+            }
+
+            public string Product
+            {
+                get
+                {
+                    return global::FoxTunes.Publication.Product;
+                }
+            }
+
+            public string Version
+            {
+                get
+                {
+                    return global::FoxTunes.Publication.Version;
+                }
+            }
         }
     }
 }

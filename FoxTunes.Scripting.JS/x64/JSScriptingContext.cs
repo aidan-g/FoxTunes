@@ -31,6 +31,8 @@ namespace FoxTunes
         public override void InitializeComponent(ICore core)
         {
             this.Engine.Execute(Resources.utils, throwExceptionOnError: true);
+            this.Engine.RegisterType(typeof(Publication), memberSecurity: ScriptMemberSecurity.Locked);
+            this.Engine.GlobalObject.SetProperty(typeof(Publication));
             this.Engine.RegisterType<DateHelper>(memberSecurity: ScriptMemberSecurity.Locked);
             this.Engine.GlobalObject.SetProperty(typeof(DateHelper));
             base.InitializeComponent(core);

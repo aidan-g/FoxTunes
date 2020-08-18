@@ -1,5 +1,6 @@
 ﻿using FoxTunes.Interfaces;
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -164,6 +165,8 @@ namespace FoxTunes
 
         public IntegerConfigurationElement Amplitude { get; private set; }
 
+        public BooleanConfigurationElement Rms { get; private set; }
+
         public WriteableBitmap Bitmap
         {
             get
@@ -313,10 +316,15 @@ namespace FoxTunes
                 WaveBarBehaviourConfiguration.SECTION,
                 WaveBarBehaviourConfiguration.AMPLITUDE_ELEMENT
             );
+            this.Rms = this.Configuration.GetElement<BooleanConfigurationElement>(
+                WaveBarBehaviourConfiguration.SECTION,
+                WaveBarBehaviourConfiguration.RMS_ELEMENT
+            );
             this.ScalingFactor.ValueChanged += this.OnValueChanged;
             this.Mode.ValueChanged += this.OnValueChanged;
             this.Resolution.ValueChanged += this.OnValueChanged;
             this.Amplitude.ValueChanged += this.OnValueChanged;
+            this.Rms.ValueChanged += this.OnValueChanged;
 #if NET40
             var task = TaskEx.Run(async () =>
 #else
@@ -435,9 +443,12 @@ namespace FoxTunes
 
         public async Task Render()
         {
+            const byte SHADE = 30;
+
             var bitmap = default(WriteableBitmap);
             var success = default(bool);
-            var info = default(BitmapHelper.RenderInfo);
+            var waveRenderInfo = default(BitmapHelper.RenderInfo);
+            var powerRenderInfo = default(BitmapHelper.RenderInfo);
 
             if (this.RendererData == null)
             {
@@ -452,7 +463,16 @@ namespace FoxTunes
                 {
                     return;
                 }
-                info = BitmapHelper.CreateRenderInfo(bitmap, this.Color);
+                if (this.Rms.Value)
+                {
+                    var colors = this.Color.ToPair(SHADE);
+                    waveRenderInfo = BitmapHelper.CreateRenderInfo(bitmap, colors[0]);
+                    powerRenderInfo = BitmapHelper.CreateRenderInfo(bitmap, colors[1]);
+                }
+                else
+                {
+                    waveRenderInfo = BitmapHelper.CreateRenderInfo(bitmap, this.Color);
+                }
             }).ConfigureAwait(false);
 
             if (!success)
@@ -463,7 +483,9 @@ namespace FoxTunes
 
             Render(
                 this.RendererData,
-                info,
+                waveRenderInfo,
+                powerRenderInfo,
+                this.Rms.Value,
                 WaveBarBehaviourConfiguration.GetMode(this.Mode.Value)
             );
 
@@ -488,7 +510,7 @@ namespace FoxTunes
                 {
                     return;
                 }
-                info = BitmapHelper.CreateRenderInfo(bitmap, this.Color);
+                info = BitmapHelper.CreateRenderInfo(bitmap, Colors.Transparent);
             }).ConfigureAwait(false);
 
             BitmapHelper.Clear(info);
@@ -508,6 +530,7 @@ namespace FoxTunes
                     this.GeneratorData,
                     this.RendererData,
                     this.Amplitude.Value,
+                    this.Rms.Value,
                     WaveBarBehaviourConfiguration.GetMode(this.Mode.Value)
                 );
             }
@@ -565,7 +588,7 @@ namespace FoxTunes
             }
         }
 
-        private static void Update(WaveFormGenerator.WaveFormGeneratorData generatorData, WaveFormRendererData rendererData, int amplitude, WaveFormRendererMode mode)
+        private static void Update(WaveFormGenerator.WaveFormGeneratorData generatorData, WaveFormRendererData rendererData, int amplitude, bool rms, WaveFormRendererMode mode)
         {
             if (generatorData.Peak == 0)
             {
@@ -580,23 +603,24 @@ namespace FoxTunes
             switch (mode)
             {
                 case WaveFormRendererMode.Mono:
-                    UpdateMono(generatorData, rendererData, amplitude);
+                    UpdateMono(generatorData, rendererData, amplitude, rms);
                     break;
                 case WaveFormRendererMode.Seperate:
-                    UpdateSeperate(generatorData, rendererData, amplitude);
+                    UpdateSeperate(generatorData, rendererData, amplitude, rms);
                     break;
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        private static void UpdateMono(WaveFormGenerator.WaveFormGeneratorData generatorData, WaveFormRendererData rendererData, int amplitude)
+        private static void UpdateMono(WaveFormGenerator.WaveFormGeneratorData generatorData, WaveFormRendererData rendererData, int amplitude, bool rms)
         {
             var center = rendererData.Height / 2.0f;
             var factor = (rendererData.Peak / 2.0f) * (10.0f - amplitude);
 
             var data = generatorData.Data;
-            var elements = rendererData.Elements;
+            var waveElements = rendererData.WaveElements;
+            var powerElements = rendererData.PowerElements;
             var valuesPerElement = rendererData.ValuesPerElement;
 
             while (rendererData.Position < rendererData.Capacity)
@@ -615,47 +639,82 @@ namespace FoxTunes
                 }
 
                 var x = rendererData.Position;
-                var y = default(int);
-                var width = 1;
-                var height = default(int);
 
-                var topValue = default(float);
-                var bottomValue = default(float);
-                for (var a = 0; a < valuesPerElement; a++)
                 {
-                    for (var b = 0; b < generatorData.Channels; b++)
+
+                    var y = default(int);
+                    var width = 1;
+                    var height = default(int);
+
+                    var topValue = default(float);
+                    var bottomValue = default(float);
+                    for (var a = 0; a < valuesPerElement; a++)
                     {
-                        topValue += Math.Abs(data[valuePosition + a, b].Min);
-                        bottomValue += Math.Abs(data[valuePosition + a, b].Max);
+                        for (var b = 0; b < generatorData.Channels; b++)
+                        {
+                            topValue += Math.Abs(data[valuePosition + a, b].Min);
+                            bottomValue += Math.Abs(data[valuePosition + a, b].Max);
+                        }
                     }
+                    topValue /= (valuesPerElement * generatorData.Channels);
+                    bottomValue /= (valuesPerElement * generatorData.Channels);
+
+                    topValue /= factor;
+                    bottomValue /= factor;
+
+                    topValue = Math.Min(topValue, 1);
+                    bottomValue = Math.Min(bottomValue, 1);
+
+                    y = Convert.ToInt32(center - (topValue * center));
+                    height = Convert.ToInt32((center - y) + (bottomValue * center));
+
+                    waveElements[rendererData.Position, 0].X = x;
+                    waveElements[rendererData.Position, 0].Y = y;
+                    waveElements[rendererData.Position, 0].Width = width;
+                    waveElements[rendererData.Position, 0].Height = height;
+
                 }
-                topValue /= (valuesPerElement * generatorData.Channels);
-                bottomValue /= (valuesPerElement * generatorData.Channels);
 
-                topValue /= factor;
-                bottomValue /= factor;
+                if (rms)
+                {
 
-                topValue = Math.Min(topValue, 1);
-                bottomValue = Math.Min(bottomValue, 1);
+                    var y = default(int);
+                    var width = 1;
+                    var height = default(int);
 
-                y = Convert.ToInt32(center - (topValue * center));
-                height = Convert.ToInt32((center - y) + (bottomValue * center));
+                    var value = default(float);
+                    for (var a = 0; a < valuesPerElement; a++)
+                    {
+                        for (var b = 0; b < generatorData.Channels; b++)
+                        {
+                            value += Math.Abs(data[valuePosition + a, b].Rms);
+                        }
+                    }
+                    value /= (valuesPerElement * generatorData.Channels);
 
-                elements[rendererData.Position, 0].X = x;
-                elements[rendererData.Position, 0].Y = y;
-                elements[rendererData.Position, 0].Width = width;
-                elements[rendererData.Position, 0].Height = height;
+                    value /= factor;
+
+                    y = Convert.ToInt32(center - (value * center));
+                    height = Convert.ToInt32((center - y) + (value * center));
+
+                    powerElements[rendererData.Position, 0].X = x;
+                    powerElements[rendererData.Position, 0].Y = y;
+                    powerElements[rendererData.Position, 0].Width = width;
+                    powerElements[rendererData.Position, 0].Height = height;
+
+                }
 
                 rendererData.Position++;
             }
         }
 
-        private static void UpdateSeperate(WaveFormGenerator.WaveFormGeneratorData generatorData, WaveFormRendererData rendererData, int amplitude)
+        private static void UpdateSeperate(WaveFormGenerator.WaveFormGeneratorData generatorData, WaveFormRendererData rendererData, int amplitude, bool rms)
         {
             var factor = rendererData.Peak / (generatorData.Channels * 2) * (10.0f - amplitude);
 
             var data = generatorData.Data;
-            var elements = rendererData.Elements;
+            var waveElements = rendererData.WaveElements;
+            var powerElements = rendererData.PowerElements;
             var valuesPerElement = rendererData.ValuesPerElement;
 
             while (rendererData.Position < rendererData.Capacity)
@@ -680,86 +739,173 @@ namespace FoxTunes
                 {
                     var waveCenter = (waveHeight * channel) + (waveHeight / 2);
 
-                    var y = default(int);
-                    var width = 1;
-                    var height = default(int);
-
-                    var topValue = default(float);
-                    var bottomValue = default(float);
-                    for (var a = 0; a < valuesPerElement; a++)
                     {
-                        topValue += Math.Abs(data[valuePosition + a, channel].Min);
-                        bottomValue += Math.Abs(data[valuePosition + a, channel].Max);
+
+                        var y = default(int);
+                        var width = 1;
+                        var height = default(int);
+
+                        var topValue = default(float);
+                        var bottomValue = default(float);
+                        for (var a = 0; a < valuesPerElement; a++)
+                        {
+                            topValue += Math.Abs(data[valuePosition + a, channel].Min);
+                            bottomValue += Math.Abs(data[valuePosition + a, channel].Max);
+                        }
+                        topValue /= (valuesPerElement * generatorData.Channels);
+                        bottomValue /= (valuesPerElement * generatorData.Channels);
+
+                        topValue /= factor;
+                        bottomValue /= factor;
+
+                        topValue = Math.Min(topValue, 1);
+                        bottomValue = Math.Min(bottomValue, 1);
+
+                        y = Convert.ToInt32(waveCenter - (topValue * (waveHeight / 2)));
+                        height = Convert.ToInt32((waveCenter - y) + (bottomValue * (waveHeight / 2)));
+
+                        waveElements[rendererData.Position, channel].X = x;
+                        waveElements[rendererData.Position, channel].Y = y;
+                        waveElements[rendererData.Position, channel].Width = width;
+                        waveElements[rendererData.Position, channel].Height = height;
+
                     }
-                    topValue /= (valuesPerElement * generatorData.Channels);
-                    bottomValue /= (valuesPerElement * generatorData.Channels);
 
-                    topValue /= factor;
-                    bottomValue /= factor;
+                    if (rms)
+                    {
 
-                    topValue = Math.Min(topValue, 1);
-                    bottomValue = Math.Min(bottomValue, 1);
+                        var y = default(int);
+                        var width = 1;
+                        var height = default(int);
 
-                    y = Convert.ToInt32(waveCenter - (topValue * (waveHeight / 2)));
-                    height = Convert.ToInt32((waveCenter - y) + (bottomValue * (waveHeight / 2)));
+                        var value = default(float);
+                        for (var a = 0; a < valuesPerElement; a++)
+                        {
+                            value += Math.Abs(data[valuePosition + a, channel].Rms);
+                        }
+                        value /= (valuesPerElement * generatorData.Channels);
 
-                    elements[rendererData.Position, channel].X = x;
-                    elements[rendererData.Position, channel].Y = y;
-                    elements[rendererData.Position, channel].Width = width;
-                    elements[rendererData.Position, channel].Height = height;
+                        value /= factor;
+
+                        y = Convert.ToInt32(waveCenter - (value * (waveHeight / 2)));
+                        height = Convert.ToInt32((waveCenter - y) + (value * (waveHeight / 2)));
+
+                        powerElements[rendererData.Position, channel].X = x;
+                        powerElements[rendererData.Position, channel].Y = y;
+                        powerElements[rendererData.Position, channel].Width = width;
+                        powerElements[rendererData.Position, channel].Height = height;
+
+                    }
                 }
 
                 rendererData.Position++;
             }
         }
 
-        public static void Render(WaveFormRendererData rendererData, BitmapHelper.RenderInfo renderInfo, WaveFormRendererMode mode)
+        public static void Render(WaveFormRendererData rendererData, BitmapHelper.RenderInfo waveRenderInfo, BitmapHelper.RenderInfo powerRenderInfo, bool rms, WaveFormRendererMode mode)
         {
-            BitmapHelper.Clear(renderInfo);
+            BitmapHelper.Clear(waveRenderInfo);
             switch (mode)
             {
                 case WaveFormRendererMode.Mono:
-                    RenderMono(rendererData, renderInfo);
+                    RenderMono(rendererData, waveRenderInfo, powerRenderInfo, rms);
                     break;
                 case WaveFormRendererMode.Seperate:
-                    RenderSeperate(rendererData, renderInfo);
+                    RenderSeperate(rendererData, waveRenderInfo, powerRenderInfo, rms);
                     break;
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        public static void RenderMono(WaveFormRendererData rendererData, BitmapHelper.RenderInfo renderInfo)
+        public static void RenderMono(WaveFormRendererData rendererData, BitmapHelper.RenderInfo waveRenderInfo, BitmapHelper.RenderInfo powerRenderInfo, bool rms)
         {
-            var elements = rendererData.Elements;
-            for (var position = 0; position < rendererData.Position; position++)
+            if (rms)
             {
-                var element = elements[position, 0];
-                BitmapHelper.DrawRectangle(
-                    renderInfo,
-                    element.X,
-                    element.Y,
-                    element.Width,
-                    element.Height
-                );
-            }
-        }
-
-        public static void RenderSeperate(WaveFormRendererData rendererData, BitmapHelper.RenderInfo renderInfo)
-        {
-            var elements = rendererData.Elements;
-            for (var position = 0; position < rendererData.Position; position++)
-            {
-                for (var channel = 0; channel < rendererData.Channels; channel++)
+                var waveElements = rendererData.WaveElements;
+                var powerElements = rendererData.PowerElements;
+                for (var position = 0; position < rendererData.Position; position++)
                 {
-                    var element = elements[position, channel];
+                    var waveElement = waveElements[position, 0];
+                    var powerElement = powerElements[position, 0];
                     BitmapHelper.DrawRectangle(
-                        renderInfo,
+                        waveRenderInfo,
+                        waveElement.X,
+                        waveElement.Y,
+                        waveElement.Width,
+                        waveElement.Height
+                    );
+                    BitmapHelper.DrawRectangle(
+                        powerRenderInfo,
+                        powerElement.X,
+                        powerElement.Y,
+                        powerElement.Width,
+                        powerElement.Height
+                    );
+                }
+            }
+            else
+            {
+                var elements = rendererData.WaveElements;
+                for (var position = 0; position < rendererData.Position; position++)
+                {
+                    var element = elements[position, 0];
+                    BitmapHelper.DrawRectangle(
+                        waveRenderInfo,
                         element.X,
                         element.Y,
                         element.Width,
                         element.Height
                     );
+                }
+            }
+        }
+
+        public static void RenderSeperate(WaveFormRendererData rendererData, BitmapHelper.RenderInfo waveRenderInfo, BitmapHelper.RenderInfo powerRenderInfo, bool rms)
+        {
+            if (rms)
+            {
+                var waveElements = rendererData.WaveElements;
+                var powerElements = rendererData.PowerElements;
+                for (var position = 0; position < rendererData.Position; position++)
+                {
+                    for (var channel = 0; channel < rendererData.Channels; channel++)
+                    {
+                        var waveElement = waveElements[position, channel];
+                        var powerElement = powerElements[position, channel];
+                        BitmapHelper.DrawRectangle(
+                            waveRenderInfo,
+                            waveElement.X,
+                            waveElement.Y,
+                            waveElement.Width,
+                            waveElement.Height
+                        );
+                        BitmapHelper.DrawRectangle(
+                            powerRenderInfo,
+                            powerElement.X,
+                            powerElement.Y,
+                            powerElement.Width,
+                            powerElement.Height
+                        );
+                    }
+                }
+            }
+            else
+            {
+                var elements = rendererData.WaveElements;
+                for (var position = 0; position < rendererData.Position; position++)
+                {
+                    for (var channel = 0; channel < rendererData.Channels; channel++)
+                    {
+                        var element = elements[position, channel];
+                        BitmapHelper.DrawRectangle(
+                            waveRenderInfo,
+                            element.X,
+                            element.Y,
+                            element.Width,
+                            element.Height
+                        );
+                    }
                 }
             }
         }
@@ -779,7 +925,8 @@ namespace FoxTunes
                 Width = width,
                 Height = height,
                 ValuesPerElement = valuesPerElement,
-                Elements = new Int32Rect[width, generatorData.Channels],
+                WaveElements = new Int32Rect[width, generatorData.Channels],
+                PowerElements = new Int32Rect[width, generatorData.Channels],
                 Channels = generatorData.Channels,
                 Position = 0,
                 Capacity = width,
@@ -795,7 +942,9 @@ namespace FoxTunes
 
             public int ValuesPerElement;
 
-            public Int32Rect[,] Elements;
+            public Int32Rect[,] WaveElements;
+
+            public Int32Rect[,] PowerElements;
 
             public int Channels;
 

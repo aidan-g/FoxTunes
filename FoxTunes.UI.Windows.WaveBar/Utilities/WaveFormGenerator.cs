@@ -1,6 +1,4 @@
-﻿//#define WAVE_FORM_RMS
-
-using FoxTunes.Interfaces;
+﻿using FoxTunes.Interfaces;
 using System;
 using System.Threading.Tasks;
 
@@ -122,19 +120,15 @@ namespace FoxTunes
                         var value = (float)buffer[a + b] / short.MaxValue;
                         data.Data[data.Position, b].Min = Math.Min(data.Data[data.Position, b].Min, value);
                         data.Data[data.Position, b].Max = Math.Max(data.Data[data.Position, b].Max, value);
-#if WAVE_FORM_RMS
                         data.Data[data.Position, b].Rms += value * value;
-#endif
                     }
                 }
 
                 for (var a = 0; a < data.Channels; a++)
                 {
-#if WAVE_FORM_RMS
                     data.Data[data.Position, a].Rms = Convert.ToSingle(
                         Math.Sqrt(data.Data[data.Position, a].Rms / (length / data.Channels))
                     );
-#endif
 
                     data.Peak = Math.Max(
                         data.Peak,
@@ -183,20 +177,15 @@ namespace FoxTunes
                         var value = buffer[a + b];
                         data.Data[data.Position, b].Min = Math.Min(data.Data[data.Position, b].Min, value);
                         data.Data[data.Position, b].Max = Math.Max(data.Data[data.Position, b].Max, value);
-
-#if WAVE_FORM_RMS
                         data.Data[data.Position, b].Rms += value * value;
-#endif
                     }
                 }
 
                 for (var a = 0; a < data.Channels; a++)
                 {
-#if WAVE_FORM_RMS
                     data.Data[data.Position, a].Rms = Convert.ToSingle(
                         Math.Sqrt(data.Data[data.Position, a].Rms / (length / data.Channels))
                     );
-#endif
 
                     data.Peak = Math.Max(
                         data.Peak,
@@ -255,9 +244,7 @@ namespace FoxTunes
 
             public float Max;
 
-#if WAVE_FORM_RMS
             public float Rms;
-#endif
         }
     }
 }

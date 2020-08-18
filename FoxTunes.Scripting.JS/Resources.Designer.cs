@@ -313,7 +313,8 @@ namespace FoxTunes {
         
         /// <summary>
         ///   Looks up a localized string similar to function version() {
-        ///    //TODO: Make this return the actual version somehow.
+        ///    //The actual version could be returned.
+        ///    //return Publication.Product + &quot; &quot; + Publication.Version;
         ///    return &quot;Fox Tunes&quot;;
         ///}
         ///
@@ -333,11 +334,7 @@ namespace FoxTunes {
         ///        if (h &lt; 10) {
         ///            h = &quot;0&quot; + h;
         ///        }
-        ///        parts.push(h);
-        ///    }
-        ///
-        ///    if (m &lt; 10) {
-        ///        m = &quot;0 [rest of string was truncated]&quot;;.
+        ///        parts.pu [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string utils {
             get {

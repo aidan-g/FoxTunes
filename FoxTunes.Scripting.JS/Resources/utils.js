@@ -1,5 +1,6 @@
 ﻿function version() {
-    //TODO: Make this return the actual version somehow.
+    //The actual version could be returned.
+    //return Publication.Product + " " + Publication.Version;
     return "Fox Tunes";
 }
 
