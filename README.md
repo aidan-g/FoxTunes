@@ -60,6 +60,7 @@ Various optional plugins are available;
   * Can up/down sample rate/depth with the Resampler plugin.
 * GAPLESS - A "true" gapless input transport: https://github.com/aidan-g/BASS_GAPLESS
 * Javascript - Use JS for scriptable elements.
+* Layout - A flexible layout system with various panel types: 
 * LibraryBrowser - An album art grid interface for the library. It can use lots of memory.
 * Logging - Use Log4Net logging back-end. Can be configured and disabled.
 * MetaDataEditor - A simple batch mode tag editor. Can embed artwork.
@@ -67,12 +68,16 @@ Various optional plugins are available;
 * ParametricEqualizer - A ten band parametric equalizer.
 * ReplayGain - Canculate and utilize replay gain meta data for tracks and albums: https://github.com/aidan-g/BASS_REPLAY_GAIN
   * Can calculate on demand (per track) if you don't mind waiting a moment for playback.
+* Ratings - 1-5 based star rating system with several controls for viewing and editing.
 * Resampler - SOXR based high quality configurable resampler. Can perform up/down sampling: https://github.com/aidan-g/BASS_SOX
 * SQLite - Use SQLite for database functions.
 * SimpleMetaData - A meta data provider using the file path and regular expressions. Recommended for older systems.
+* Spectrum - A simple spectrum visualization.
 * SqlServer - Use Microsoft SQL Server for database functions.
+* Statistics - Playback statistics like play count and last played date/time.
 * TagLib - Use TagLib for meta data functions.
 * WASAPI - Windows Audio Session API output.
+* WaveBar - A wave form seek bar with mono and multi channel modes.
 * Windows - Global key bindings (Multi media keys), system tray icon, system media transport controls, taskbar controls.
 
 I'm saving up for a signing certificate and associated costs but it is very expensive;

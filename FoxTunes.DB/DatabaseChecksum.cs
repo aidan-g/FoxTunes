@@ -8,7 +8,16 @@ namespace FoxTunes
     {
         public string Calculate(string setup)
         {
-            return Convert.ToString(Math.Abs(setup.GetHashCode()));
+            var hashCode = setup.GetHashCode();
+            var components = ComponentRegistry.Instance.GetComponents<IDatabaseInitializer>();
+            unchecked
+            {
+                foreach (var component in components)
+                {
+                    hashCode += component.Checksum.GetHashCode();
+                }
+            }
+            return Convert.ToString(Math.Abs(hashCode));
         }
 
         public string Get(IDatabase database)

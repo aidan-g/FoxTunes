@@ -1,6 +1,5 @@
 ﻿using FoxTunes.Interfaces;
 using System;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -10,143 +9,6 @@ namespace FoxTunes
 {
     public class WaveFormRenderer : RendererBase
     {
-        public static readonly Duration LockTimeout = new Duration(TimeSpan.FromMilliseconds(1));
-
-        public static readonly DependencyProperty BitmapProperty = DependencyProperty.Register(
-            "Bitmap",
-            typeof(WriteableBitmap),
-            typeof(WaveFormRenderer),
-            new FrameworkPropertyMetadata(new PropertyChangedCallback(OnBitmapChanged))
-        );
-
-        public static WriteableBitmap GetBitmap(WaveFormRenderer source)
-        {
-            return (WriteableBitmap)source.GetValue(BitmapProperty);
-        }
-
-        public static void SetBitmap(WaveFormRenderer source, WriteableBitmap value)
-        {
-            source.SetValue(BitmapProperty, value);
-        }
-
-        public static void OnBitmapChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            var renderer = sender as WaveFormRenderer;
-            if (renderer == null)
-            {
-                return;
-            }
-            renderer.OnBitmapChanged();
-        }
-
-        public static readonly DependencyProperty WidthProperty = DependencyProperty.Register(
-            "Width",
-            typeof(double),
-            typeof(WaveFormRenderer),
-            new FrameworkPropertyMetadata(double.NaN, new PropertyChangedCallback(OnWidthChanged))
-        );
-
-        public static double GetWidth(WaveFormRenderer source)
-        {
-            return (double)source.GetValue(WidthProperty);
-        }
-
-        public static void SetWidth(WaveFormRenderer source, double value)
-        {
-            source.SetValue(WidthProperty, value);
-        }
-
-        public static void OnWidthChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            var renderer = sender as WaveFormRenderer;
-            if (renderer == null)
-            {
-                return;
-            }
-            renderer.OnWidthChanged();
-        }
-
-        public static readonly DependencyProperty HeightProperty = DependencyProperty.Register(
-           "Height",
-           typeof(double),
-           typeof(WaveFormRenderer),
-           new FrameworkPropertyMetadata(double.NaN, new PropertyChangedCallback(OnHeightChanged))
-       );
-
-        public static double GetHeight(WaveFormRenderer source)
-        {
-            return (double)source.GetValue(HeightProperty);
-        }
-
-        public static void SetHeight(WaveFormRenderer source, double value)
-        {
-            source.SetValue(HeightProperty, value);
-        }
-
-        public static void OnHeightChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            var renderer = sender as WaveFormRenderer;
-            if (renderer == null)
-            {
-                return;
-            }
-            renderer.OnHeightChanged();
-        }
-
-        public static readonly DependencyProperty ViewboxProperty = DependencyProperty.Register(
-           "Viewbox",
-           typeof(Rect),
-           typeof(WaveFormRenderer),
-           new FrameworkPropertyMetadata(new Rect(0, 0, 1, 1), new PropertyChangedCallback(OnViewboxChanged))
-       );
-
-        public static Rect GetViewbox(WaveFormRenderer source)
-        {
-            return (Rect)source.GetValue(ViewboxProperty);
-        }
-
-        protected static void SetViewbox(WaveFormRenderer source, Rect value)
-        {
-            source.SetValue(ViewboxProperty, value);
-        }
-
-        public static void OnViewboxChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            var renderer = sender as WaveFormRenderer;
-            if (renderer == null)
-            {
-                return;
-            }
-            renderer.OnViewboxChanged();
-        }
-
-        public static readonly DependencyProperty ColorProperty = DependencyProperty.Register(
-            "Color",
-            typeof(Color),
-            typeof(WaveFormRenderer),
-            new FrameworkPropertyMetadata(Colors.Transparent, new PropertyChangedCallback(OnColorChanged))
-        );
-
-        public static Color GetColor(WaveFormRenderer source)
-        {
-            return (Color)source.GetValue(ColorProperty);
-        }
-
-        public static void SetColor(WaveFormRenderer source, Color value)
-        {
-            source.SetValue(ColorProperty, value);
-        }
-
-        public static void OnColorChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            var renderer = sender as WaveFormRenderer;
-            if (renderer == null)
-            {
-                return;
-            }
-            renderer.OnColorChanged();
-        }
-
         public WaveFormGenerator.WaveFormGeneratorData GeneratorData { get; private set; }
 
         public WaveFormRendererData RendererData { get; private set; }
@@ -155,155 +17,18 @@ namespace FoxTunes
 
         public IPlaybackManager PlaybackManager { get; private set; }
 
-        public IConfiguration Configuration { get; private set; }
-
-        public DoubleConfigurationElement ScalingFactor { get; private set; }
-
         public SelectionConfigurationElement Mode { get; private set; }
 
         public IntegerConfigurationElement Resolution { get; private set; }
 
-        public IntegerConfigurationElement Amplitude { get; private set; }
-
         public BooleanConfigurationElement Rms { get; private set; }
-
-        public WriteableBitmap Bitmap
-        {
-            get
-            {
-                return (WriteableBitmap)this.GetValue(BitmapProperty);
-            }
-            set
-            {
-                this.SetValue(BitmapProperty, value);
-            }
-        }
-
-        protected virtual void OnBitmapChanged()
-        {
-            if (this.BitmapChanged != null)
-            {
-                this.BitmapChanged(this, EventArgs.Empty);
-            }
-            this.OnPropertyChanged("Bitmap");
-        }
-
-        public event EventHandler BitmapChanged;
-
-        public double Width
-        {
-            get
-            {
-                return (double)this.GetValue(WidthProperty);
-            }
-            set
-            {
-                this.SetValue(WidthProperty, value);
-            }
-        }
-
-        protected virtual void OnWidthChanged()
-        {
-            if (this.IsInitialized)
-            {
-                var task = this.CreateBitmap();
-            }
-            if (this.WidthChanged != null)
-            {
-                this.WidthChanged(this, EventArgs.Empty);
-            }
-            this.OnPropertyChanged("Width");
-        }
-
-        public event EventHandler WidthChanged;
-
-        public double Height
-        {
-            get
-            {
-                return (double)this.GetValue(HeightProperty);
-            }
-            set
-            {
-                this.SetValue(HeightProperty, value);
-            }
-        }
-
-        protected virtual void OnHeightChanged()
-        {
-            if (this.IsInitialized)
-            {
-                var task = this.CreateBitmap();
-            }
-            if (this.HeightChanged != null)
-            {
-                this.HeightChanged(this, EventArgs.Empty);
-            }
-            this.OnPropertyChanged("Height");
-        }
-
-        public event EventHandler HeightChanged;
-
-        public Rect Viewbox
-        {
-            get
-            {
-                return (Rect)this.GetValue(ViewboxProperty);
-            }
-            protected set
-            {
-                this.SetValue(ViewboxProperty, value);
-            }
-        }
-
-        protected virtual void OnViewboxChanged()
-        {
-            if (this.ViewboxChanged != null)
-            {
-                this.ViewboxChanged(this, EventArgs.Empty);
-            }
-            this.OnPropertyChanged("Viewbox");
-        }
-
-        public event EventHandler ViewboxChanged;
-
-        public Color Color
-        {
-            get
-            {
-                return (Color)this.GetValue(ColorProperty);
-            }
-            set
-            {
-                this.SetValue(ColorProperty, value);
-            }
-        }
-
-        protected virtual void OnColorChanged()
-        {
-            if (this.IsInitialized)
-            {
-                var task = this.CreateBitmap();
-            }
-            if (this.ColorChanged != null)
-            {
-                this.ColorChanged(this, EventArgs.Empty);
-            }
-            this.OnPropertyChanged("Color");
-        }
-
-        public event EventHandler ColorChanged;
 
         public override void InitializeComponent(ICore core)
         {
+            base.InitializeComponent(core);
             this.Generator = ComponentRegistry.Instance.GetComponent<WaveFormGenerator>();
             this.PlaybackManager = core.Managers.Playback;
             this.PlaybackManager.CurrentStreamChanged += this.OnCurrentStreamChanged;
-            this.Configuration = core.Components.Configuration;
-            this.ScalingFactor = this.Configuration.GetElement<DoubleConfigurationElement>(
-               WindowsUserInterfaceConfiguration.SECTION,
-               WindowsUserInterfaceConfiguration.UI_SCALING_ELEMENT
-            );
             this.Mode = this.Configuration.GetElement<SelectionConfigurationElement>(
                 WaveBarBehaviourConfiguration.SECTION,
                 WaveBarBehaviourConfiguration.MODE_ELEMENT
@@ -312,10 +37,6 @@ namespace FoxTunes
                 WaveBarBehaviourConfiguration.SECTION,
                 WaveBarBehaviourConfiguration.RESOLUTION_ELEMENT
             );
-            this.Amplitude = this.Configuration.GetElement<IntegerConfigurationElement>(
-                WaveBarBehaviourConfiguration.SECTION,
-                WaveBarBehaviourConfiguration.AMPLITUDE_ELEMENT
-            );
             this.Rms = this.Configuration.GetElement<BooleanConfigurationElement>(
                 WaveBarBehaviourConfiguration.SECTION,
                 WaveBarBehaviourConfiguration.RMS_ELEMENT
@@ -323,7 +44,6 @@ namespace FoxTunes
             this.ScalingFactor.ValueChanged += this.OnValueChanged;
             this.Mode.ValueChanged += this.OnValueChanged;
             this.Resolution.ValueChanged += this.OnValueChanged;
-            this.Amplitude.ValueChanged += this.OnValueChanged;
             this.Rms.ValueChanged += this.OnValueChanged;
 #if NET40
             var task = TaskEx.Run(async () =>
@@ -337,7 +57,6 @@ namespace FoxTunes
                     await this.Update(this.PlaybackManager.CurrentStream).ConfigureAwait(false);
                 }
             });
-            base.InitializeComponent(core);
         }
 
         protected virtual void OnCurrentStreamChanged(object sender, EventArgs e)
@@ -384,7 +103,7 @@ namespace FoxTunes
             await Windows.Invoke(() =>
             {
                 this.RendererData = Create(this.GeneratorData, this.Bitmap.PixelWidth, this.Bitmap.PixelHeight);
-                this.Viewbox = new Rect(0, 0, this.GetActualWidth(), this.GetActualHeight());
+                this.Viewbox = new Rect(0, 0, this.GetPixelWidth(), this.Bitmap.PixelHeight);
             }).ConfigureAwait(false);
 
             this.Update();
@@ -395,40 +114,23 @@ namespace FoxTunes
             this.Update();
         }
 
-        protected virtual async Task CreateBitmap()
+        protected override async Task CreateBitmap()
         {
-            await Windows.Invoke(() =>
-            {
-                var width = this.Width;
-                var height = this.Height;
-                if (width == 0 || double.IsNaN(width) || height == 0 || double.IsNaN(height))
-                {
-                    //We need proper dimentions.
-                    return;
-                }
-
-                var size = Windows.ActiveWindow.GetElementPixelSize(
-                    width * this.ScalingFactor.Value,
-                    height * this.ScalingFactor.Value
-                );
-
-                this.Bitmap = new WriteableBitmap(
-                    Convert.ToInt32(size.Width),
-                    Convert.ToInt32(size.Height),
-                    96,
-                    96,
-                    PixelFormats.Pbgra32,
-                    null
-                );
-
-                if (this.GeneratorData != null)
-                {
-                    this.RendererData = Create(this.GeneratorData, this.Bitmap.PixelWidth, this.Bitmap.PixelHeight);
-                    this.Viewbox = new Rect(0, 0, this.GetActualWidth(), this.GetActualHeight());
-                }
-            }).ConfigureAwait(false);
-
+            await base.CreateBitmap().ConfigureAwait(false);
             this.Update();
+        }
+
+        protected override void CreateViewBox()
+        {
+            if (this.GeneratorData == null)
+            {
+                this.Viewbox = new Rect(0, 0, 1, 1);
+            }
+            else
+            {
+                this.RendererData = Create(this.GeneratorData, this.Bitmap.PixelWidth, this.Bitmap.PixelHeight);
+                this.Viewbox = new Rect(0, 0, this.GetPixelWidth(), this.Bitmap.PixelHeight);
+            }
         }
 
         protected virtual void RefreshBitmap()
@@ -529,7 +231,6 @@ namespace FoxTunes
                 Update(
                     this.GeneratorData,
                     this.RendererData,
-                    this.Amplitude.Value,
                     this.Rms.Value,
                     WaveBarBehaviourConfiguration.GetMode(this.Mode.Value)
                 );
@@ -537,22 +238,13 @@ namespace FoxTunes
             var task = this.Render();
         }
 
-        protected virtual double GetActualWidth()
+        protected virtual double GetPixelWidth()
         {
             if (this.GeneratorData == null || this.RendererData == null)
             {
                 return 1;
             }
             return this.GeneratorData.Capacity / this.RendererData.ValuesPerElement;
-        }
-
-        protected virtual double GetActualHeight()
-        {
-            if (this.RendererData == null)
-            {
-                return 1;
-            }
-            return this.Height;
         }
 
         protected override Freezable CreateInstanceCore()
@@ -582,13 +274,9 @@ namespace FoxTunes
             {
                 this.Resolution.ValueChanged += this.OnValueChanged;
             }
-            if (this.Amplitude != null)
-            {
-                this.Amplitude.ValueChanged -= this.OnValueChanged;
-            }
         }
 
-        private static void Update(WaveFormGenerator.WaveFormGeneratorData generatorData, WaveFormRendererData rendererData, int amplitude, bool rms, WaveFormRendererMode mode)
+        private static void Update(WaveFormGenerator.WaveFormGeneratorData generatorData, WaveFormRendererData rendererData, bool rms, WaveFormRendererMode mode)
         {
             if (generatorData.Peak == 0)
             {
@@ -598,25 +286,26 @@ namespace FoxTunes
             {
                 rendererData.Position = 0;
                 rendererData.Peak = generatorData.Peak;
+                rendererData.NormalizedPeak = GetPeak(generatorData, rendererData);
             }
 
             switch (mode)
             {
                 case WaveFormRendererMode.Mono:
-                    UpdateMono(generatorData, rendererData, amplitude, rms);
+                    UpdateMono(generatorData, rendererData, rms);
                     break;
                 case WaveFormRendererMode.Seperate:
-                    UpdateSeperate(generatorData, rendererData, amplitude, rms);
+                    UpdateSeperate(generatorData, rendererData, rms);
                     break;
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        private static void UpdateMono(WaveFormGenerator.WaveFormGeneratorData generatorData, WaveFormRendererData rendererData, int amplitude, bool rms)
+        private static void UpdateMono(WaveFormGenerator.WaveFormGeneratorData generatorData, WaveFormRendererData rendererData, bool rms)
         {
             var center = rendererData.Height / 2.0f;
-            var factor = (rendererData.Peak / 2.0f) * (10.0f - amplitude);
+            var factor = rendererData.NormalizedPeak;
 
             var data = generatorData.Data;
             var waveElements = rendererData.WaveElements;
@@ -638,12 +327,9 @@ namespace FoxTunes
                     }
                 }
 
-                var x = rendererData.Position;
-
                 {
 
                     var y = default(int);
-                    var width = 1;
                     var height = default(int);
 
                     var topValue = default(float);
@@ -668,9 +354,7 @@ namespace FoxTunes
                     y = Convert.ToInt32(center - (topValue * center));
                     height = Convert.ToInt32((center - y) + (bottomValue * center));
 
-                    waveElements[rendererData.Position, 0].X = x;
                     waveElements[rendererData.Position, 0].Y = y;
-                    waveElements[rendererData.Position, 0].Width = width;
                     waveElements[rendererData.Position, 0].Height = height;
 
                 }
@@ -679,7 +363,6 @@ namespace FoxTunes
                 {
 
                     var y = default(int);
-                    var width = 1;
                     var height = default(int);
 
                     var value = default(float);
@@ -697,9 +380,7 @@ namespace FoxTunes
                     y = Convert.ToInt32(center - (value * center));
                     height = Convert.ToInt32((center - y) + (value * center));
 
-                    powerElements[rendererData.Position, 0].X = x;
                     powerElements[rendererData.Position, 0].Y = y;
-                    powerElements[rendererData.Position, 0].Width = width;
                     powerElements[rendererData.Position, 0].Height = height;
 
                 }
@@ -708,9 +389,9 @@ namespace FoxTunes
             }
         }
 
-        private static void UpdateSeperate(WaveFormGenerator.WaveFormGeneratorData generatorData, WaveFormRendererData rendererData, int amplitude, bool rms)
+        private static void UpdateSeperate(WaveFormGenerator.WaveFormGeneratorData generatorData, WaveFormRendererData rendererData, bool rms)
         {
-            var factor = rendererData.Peak / (generatorData.Channels * 2) * (10.0f - amplitude);
+            var factor = rendererData.NormalizedPeak / generatorData.Channels;
 
             var data = generatorData.Data;
             var waveElements = rendererData.WaveElements;
@@ -732,7 +413,6 @@ namespace FoxTunes
                     }
                 }
 
-                var x = rendererData.Position;
                 var waveHeight = rendererData.Height / generatorData.Channels;
 
                 for (var channel = 0; channel < generatorData.Channels; channel++)
@@ -742,7 +422,6 @@ namespace FoxTunes
                     {
 
                         var y = default(int);
-                        var width = 1;
                         var height = default(int);
 
                         var topValue = default(float);
@@ -764,9 +443,7 @@ namespace FoxTunes
                         y = Convert.ToInt32(waveCenter - (topValue * (waveHeight / 2)));
                         height = Convert.ToInt32((waveCenter - y) + (bottomValue * (waveHeight / 2)));
 
-                        waveElements[rendererData.Position, channel].X = x;
                         waveElements[rendererData.Position, channel].Y = y;
-                        waveElements[rendererData.Position, channel].Width = width;
                         waveElements[rendererData.Position, channel].Height = height;
 
                     }
@@ -775,7 +452,6 @@ namespace FoxTunes
                     {
 
                         var y = default(int);
-                        var width = 1;
                         var height = default(int);
 
                         var value = default(float);
@@ -790,9 +466,7 @@ namespace FoxTunes
                         y = Convert.ToInt32(waveCenter - (value * (waveHeight / 2)));
                         height = Convert.ToInt32((waveCenter - y) + (value * (waveHeight / 2)));
 
-                        powerElements[rendererData.Position, channel].X = x;
                         powerElements[rendererData.Position, channel].Y = y;
-                        powerElements[rendererData.Position, channel].Width = width;
                         powerElements[rendererData.Position, channel].Height = height;
 
                     }
@@ -800,6 +474,54 @@ namespace FoxTunes
 
                 rendererData.Position++;
             }
+        }
+
+        public static float GetPeak(WaveFormGenerator.WaveFormGeneratorData generatorData, WaveFormRendererData rendererData)
+        {
+            var data = generatorData.Data;
+            var valuesPerElement = rendererData.ValuesPerElement;
+            var peak = rendererData.NormalizedPeak;
+
+            var position = rendererData.Position;
+            while (position < rendererData.Capacity)
+            {
+                var valuePosition = position * rendererData.ValuesPerElement;
+                if ((valuePosition + rendererData.ValuesPerElement) > generatorData.Position)
+                {
+                    if (generatorData.Position <= generatorData.Capacity)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        valuesPerElement = generatorData.Capacity - valuePosition;
+                    }
+                }
+
+                var value = default(float);
+                for (var a = 0; a < valuesPerElement; a++)
+                {
+                    for (var b = 0; b < generatorData.Channels; b++)
+                    {
+                        value += Math.Max(
+                            Math.Abs(data[valuePosition + a, b].Min),
+                            Math.Abs(data[valuePosition + a, b].Max)
+                        );
+                    }
+                }
+                value /= (valuesPerElement * generatorData.Channels);
+
+                peak = Math.Max(peak, value);
+
+                if (peak >= 1)
+                {
+                    return 1;
+                }
+
+                position++;
+            }
+
+            return peak;
         }
 
         public static void Render(WaveFormRendererData rendererData, BitmapHelper.RenderInfo waveRenderInfo, BitmapHelper.RenderInfo powerRenderInfo, bool rms, WaveFormRendererMode mode)
@@ -830,16 +552,16 @@ namespace FoxTunes
                     var powerElement = powerElements[position, 0];
                     BitmapHelper.DrawRectangle(
                         waveRenderInfo,
-                        waveElement.X,
+                        position,
                         waveElement.Y,
-                        waveElement.Width,
+                        1,
                         waveElement.Height
                     );
                     BitmapHelper.DrawRectangle(
                         powerRenderInfo,
-                        powerElement.X,
+                        position,
                         powerElement.Y,
-                        powerElement.Width,
+                        1,
                         powerElement.Height
                     );
                 }
@@ -852,9 +574,9 @@ namespace FoxTunes
                     var element = elements[position, 0];
                     BitmapHelper.DrawRectangle(
                         waveRenderInfo,
-                        element.X,
+                        position,
                         element.Y,
-                        element.Width,
+                        1,
                         element.Height
                     );
                 }
@@ -875,16 +597,16 @@ namespace FoxTunes
                         var powerElement = powerElements[position, channel];
                         BitmapHelper.DrawRectangle(
                             waveRenderInfo,
-                            waveElement.X,
+                            position,
                             waveElement.Y,
-                            waveElement.Width,
+                            1,
                             waveElement.Height
                         );
                         BitmapHelper.DrawRectangle(
                             powerRenderInfo,
-                            powerElement.X,
+                            position,
                             powerElement.Y,
-                            powerElement.Width,
+                            1,
                             powerElement.Height
                         );
                     }
@@ -900,9 +622,9 @@ namespace FoxTunes
                         var element = elements[position, channel];
                         BitmapHelper.DrawRectangle(
                             waveRenderInfo,
-                            element.X,
+                            position,
                             element.Y,
-                            element.Width,
+                            1,
                             element.Height
                         );
                     }
@@ -925,8 +647,8 @@ namespace FoxTunes
                 Width = width,
                 Height = height,
                 ValuesPerElement = valuesPerElement,
-                WaveElements = new Int32Rect[width, generatorData.Channels],
-                PowerElements = new Int32Rect[width, generatorData.Channels],
+                WaveElements = new Int32Pair[width, generatorData.Channels],
+                PowerElements = new Int32Pair[width, generatorData.Channels],
                 Channels = generatorData.Channels,
                 Position = 0,
                 Capacity = width,
@@ -942,9 +664,9 @@ namespace FoxTunes
 
             public int ValuesPerElement;
 
-            public Int32Rect[,] WaveElements;
+            public Int32Pair[,] WaveElements;
 
-            public Int32Rect[,] PowerElements;
+            public Int32Pair[,] PowerElements;
 
             public int Channels;
 
@@ -953,6 +675,21 @@ namespace FoxTunes
             public int Capacity;
 
             public float Peak;
+
+            public float NormalizedPeak;
+        }
+
+        public struct Int32Pair
+        {
+            public Int32Pair(int y, int height)
+            {
+                this.Y = y;
+                this.Height = height;
+            }
+
+            public int Y;
+
+            public int Height;
         }
     }
 

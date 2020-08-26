@@ -84,8 +84,17 @@ namespace FoxTunes
 
         public event BackgroundTaskEventHandler BackgroundTask;
 
+        public string Checksum
+        {
+            get
+            {
+                return "C1399216-D828-4EB8-9249-70DEA89EADFA";
+            }
+        }
+
         public void InitializeDatabase(IDatabaseComponent database, DatabaseInitializeType type)
         {
+            //IMPORTANT: When editing this function remember to change the checksum.
             if (!type.HasFlag(DatabaseInitializeType.Library))
             {
                 return;

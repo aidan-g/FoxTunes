@@ -6,7 +6,8 @@ namespace FoxTunes
     /// <summary>
     /// Interaction logic for MiniPlaylist.xaml
     /// </summary>
-    public partial class MiniPlaylist : UserControl
+    [UIComponent("19AB38D6-AFBB-48D8-9E76-EF6B2BFD75DA", "Simple Playlist")]
+    public partial class MiniPlaylist : UIComponentBase
     {
         public MiniPlaylist()
         {

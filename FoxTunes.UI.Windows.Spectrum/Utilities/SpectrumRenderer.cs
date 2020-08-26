@@ -1,10 +1,8 @@
 ﻿using FoxTunes.Interfaces;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace FoxTunes
@@ -17,116 +15,6 @@ namespace FoxTunes
 
         public readonly object SyncRoot = new object();
 
-        public readonly Duration LockTimeout = new Duration(TimeSpan.FromMilliseconds(1));
-
-        public static readonly DependencyProperty BitmapProperty = DependencyProperty.Register(
-            "Bitmap",
-            typeof(WriteableBitmap),
-            typeof(SpectrumRenderer),
-            new FrameworkPropertyMetadata(new PropertyChangedCallback(OnBitmapChanged))
-        );
-
-        public static WriteableBitmap GetBitmap(SpectrumRenderer source)
-        {
-            return (WriteableBitmap)source.GetValue(BitmapProperty);
-        }
-
-        public static void SetBitmap(SpectrumRenderer source, WriteableBitmap value)
-        {
-            source.SetValue(BitmapProperty, value);
-        }
-
-        public static void OnBitmapChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            var renderer = sender as SpectrumRenderer;
-            if (renderer == null)
-            {
-                return;
-            }
-            renderer.OnBitmapChanged();
-        }
-
-        public static readonly DependencyProperty WidthProperty = DependencyProperty.Register(
-            "Width",
-            typeof(double),
-            typeof(SpectrumRenderer),
-            new FrameworkPropertyMetadata(double.NaN, new PropertyChangedCallback(OnWidthChanged))
-        );
-
-        public static double GetWidth(SpectrumRenderer source)
-        {
-            return (double)source.GetValue(WidthProperty);
-        }
-
-        public static void SetWidth(SpectrumRenderer source, double value)
-        {
-            source.SetValue(WidthProperty, value);
-        }
-
-        public static void OnWidthChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            var renderer = sender as SpectrumRenderer;
-            if (renderer == null)
-            {
-                return;
-            }
-            renderer.OnWidthChanged();
-        }
-
-        public static readonly DependencyProperty HeightProperty = DependencyProperty.Register(
-           "Height",
-           typeof(double),
-           typeof(SpectrumRenderer),
-           new FrameworkPropertyMetadata(double.NaN, new PropertyChangedCallback(OnHeightChanged))
-       );
-
-        public static double GetHeight(SpectrumRenderer source)
-        {
-            return (double)source.GetValue(HeightProperty);
-        }
-
-        public static void SetHeight(SpectrumRenderer source, double value)
-        {
-            source.SetValue(HeightProperty, value);
-        }
-
-        public static void OnHeightChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            var renderer = sender as SpectrumRenderer;
-            if (renderer == null)
-            {
-                return;
-            }
-            renderer.OnHeightChanged();
-        }
-
-        public static readonly DependencyProperty ColorProperty = DependencyProperty.Register(
-            "Color",
-            typeof(Color),
-            typeof(SpectrumRenderer),
-            new FrameworkPropertyMetadata(Colors.Transparent, new PropertyChangedCallback(OnColorChanged))
-        );
-
-        public static Color GetColor(SpectrumRenderer source)
-        {
-            return (Color)source.GetValue(ColorProperty);
-        }
-
-        public static void SetColor(SpectrumRenderer source, Color value)
-        {
-            source.SetValue(ColorProperty, value);
-        }
-
-        public static void OnColorChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            var renderer = sender as SpectrumRenderer;
-            if (renderer == null)
-            {
-                return;
-            }
-            renderer.OnColorChanged();
-        }
-
         public SpectrumRendererData RendererData { get; private set; }
 
         public bool IsStarted;
@@ -134,10 +22,6 @@ namespace FoxTunes
         public global::System.Timers.Timer Timer;
 
         public IOutput Output { get; private set; }
-
-        public IConfiguration Configuration { get; private set; }
-
-        public DoubleConfigurationElement ScalingFactor { get; private set; }
 
         public SelectionConfigurationElement Bars { get; private set; }
 
@@ -164,115 +48,11 @@ namespace FoxTunes
             this.Timer.Elapsed += this.OnElapsed;
         }
 
-        public WriteableBitmap Bitmap
-        {
-            get
-            {
-                return (WriteableBitmap)this.GetValue(BitmapProperty);
-            }
-            set
-            {
-                this.SetValue(BitmapProperty, value);
-            }
-        }
-
-        protected virtual void OnBitmapChanged()
-        {
-            if (this.BitmapChanged != null)
-            {
-                this.BitmapChanged(this, EventArgs.Empty);
-            }
-            this.OnPropertyChanged("Bitmap");
-        }
-
-        public event EventHandler BitmapChanged;
-
-        public double Width
-        {
-            get
-            {
-                return (double)this.GetValue(WidthProperty);
-            }
-            set
-            {
-                this.SetValue(WidthProperty, value);
-            }
-        }
-
-        protected virtual void OnWidthChanged()
-        {
-            if (this.IsInitialized)
-            {
-                var task = this.CreateBitmap();
-            }
-            if (this.WidthChanged != null)
-            {
-                this.WidthChanged(this, EventArgs.Empty);
-            }
-            this.OnPropertyChanged("Width");
-        }
-
-        public event EventHandler WidthChanged;
-
-        public double Height
-        {
-            get
-            {
-                return (double)this.GetValue(HeightProperty);
-            }
-            set
-            {
-                this.SetValue(HeightProperty, value);
-            }
-        }
-
-        protected virtual void OnHeightChanged()
-        {
-            if (this.IsInitialized)
-            {
-                var task = this.CreateBitmap();
-            }
-            if (this.HeightChanged != null)
-            {
-                this.HeightChanged(this, EventArgs.Empty);
-            }
-            this.OnPropertyChanged("Height");
-        }
-
-        public event EventHandler HeightChanged;
-
-        public Color Color
-        {
-            get
-            {
-                return (Color)this.GetValue(ColorProperty);
-            }
-            set
-            {
-                this.SetValue(ColorProperty, value);
-            }
-        }
-
-        protected virtual void OnColorChanged()
-        {
-            if (this.ColorChanged != null)
-            {
-                this.ColorChanged(this, EventArgs.Empty);
-            }
-            this.OnPropertyChanged("Color");
-        }
-
-        public event EventHandler ColorChanged;
-
         public override void InitializeComponent(ICore core)
         {
+            base.InitializeComponent(core);
             PlaybackStateNotifier.Notify += this.OnNotify;
             this.Output = core.Components.Output;
-            this.Configuration = core.Components.Configuration;
-            this.ScalingFactor = this.Configuration.GetElement<DoubleConfigurationElement>(
-               WindowsUserInterfaceConfiguration.SECTION,
-               WindowsUserInterfaceConfiguration.UI_SCALING_ELEMENT
-            );
             this.Bars = this.Configuration.GetElement<SelectionConfigurationElement>(
                SpectrumBehaviourConfiguration.SECTION,
                SpectrumBehaviourConfiguration.BARS_ELEMENT
@@ -331,7 +111,6 @@ namespace FoxTunes
                     this.Start();
                 }
             });
-            base.InitializeComponent(core);
         }
 
         protected virtual void OnNotify(object sender, EventArgs e)
@@ -357,54 +136,33 @@ namespace FoxTunes
                     this.Timer.Interval = UpdateInterval.Value;
                 }
             }
-            var task = this.RefreshBitmap();
+            if (object.ReferenceEquals(sender, this.Bars))
+            {
+                //Changing bars requires full refresh.
+                var task = this.CreateBitmap();
+            }
+            else
+            {
+                var task = this.RefreshBitmap();
+            }
         }
 
-        protected virtual Task CreateBitmap()
+        protected override void CreateViewBox()
         {
-            return Windows.Invoke(() =>
-            {
-                var width = this.Width;
-                var height = this.Height;
-                if (width == 0 || double.IsNaN(width) || height == 0 || double.IsNaN(height))
-                {
-                    //We need proper dimentions.
-                    return;
-                }
-
-                var size = Windows.ActiveWindow.GetElementPixelSize(
-                    width * this.ScalingFactor.Value,
-                    height * this.ScalingFactor.Value
-                );
-
-                if (this.Bitmap != null && this.Bitmap.PixelWidth == Convert.ToInt32(size.Width) && this.Bitmap.PixelHeight == Convert.ToInt32(size.Height))
-                {
-                    //We already have the correct size.
-                    return;
-                }
-
-                this.Bitmap = new WriteableBitmap(
-                    Convert.ToInt32(size.Width),
-                    Convert.ToInt32(size.Height),
-                    96,
-                    96,
-                    PixelFormats.Pbgra32,
-                    null
-                );
-                this.RendererData = Create(
-                    this.Output,
-                    this.Bitmap.PixelWidth,
-                    this.Bitmap.PixelHeight,
-                    SpectrumBehaviourConfiguration.GetBars(this.Bars.Value),
-                    SpectrumBehaviourConfiguration.GetFFTSize(this.FFTSize.Value),
-                    this.HoldInterval.Value,
-                    this.UpdateInterval.Value,
-                    this.SmoothingFactor.Value,
-                    this.Amplitude.Value,
-                    this.ShowPeaks.Value,
-                    this.HighCut.Value
-                );
-            });
+            this.RendererData = Create(
+                this.Output,
+                this.Bitmap.PixelWidth,
+                this.Bitmap.PixelHeight,
+                SpectrumBehaviourConfiguration.GetBars(this.Bars.Value),
+                SpectrumBehaviourConfiguration.GetFFTSize(this.FFTSize.Value),
+                this.HoldInterval.Value,
+                this.UpdateInterval.Value,
+                this.SmoothingFactor.Value,
+                this.Amplitude.Value,
+                this.ShowPeaks.Value,
+                this.HighCut.Value
+            );
+            this.Viewbox = new Rect(0, 0, this.GetPixelWidth(), this.Bitmap.PixelHeight);
         }
 
         protected virtual Task RefreshBitmap()
@@ -538,6 +296,15 @@ namespace FoxTunes
             {
                 Logger.Write(this.GetType(), LogLevel.Warn, "Failed to update spectrum data, disabling: {0}", exception.Message);
             }
+        }
+
+        protected virtual double GetPixelWidth()
+        {
+            if (this.RendererData == null)
+            {
+                return 1;
+            }
+            return this.RendererData.Count * this.RendererData.Step;
         }
 
         protected override Freezable CreateInstanceCore()

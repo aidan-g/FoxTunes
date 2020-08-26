@@ -230,11 +230,15 @@ FoxTunes.UI.Windows.WaveBar.dll
 "
 
 RATINGS="
-FoxTunes.UI.Windows.Ratings
+FoxTunes.UI.Windows.Ratings.dll
 "
 
 STATISTICS="
-FoxTunes.Statistics
+FoxTunes.Statistics.dll
+"
+
+LAYOUT="
+FoxTunes.UI.Windows.Layout.dll
 "
 
 MINIMAL="
@@ -255,6 +259,7 @@ dsd
 dts
 encoder
 eq
+layout
 librarybrowser
 logger
 metadataeditor
@@ -308,6 +313,7 @@ do
 		mkdir -p "./release/$platform/$target/Plugins/encoder/encoders"
 		mkdir -p "./release/$platform/$target/Plugins/eq"
 		mkdir -p "./release/$platform/$target/Plugins/js"
+		mkdir -p "./release/$platform/$target/Plugins/layout"
 		mkdir -p "./release/$platform/$target/Plugins/librarybrowser"
 		mkdir -p "./release/$platform/$target/Plugins/logger"
 		mkdir -p "./release/$platform/$target/Plugins/metadataeditor"
@@ -603,6 +609,14 @@ do
 		do
 				echo $file
 				cp "./distribution/$platform/$target/$file" "./release/$platform/$target/Plugins/statistics"
+		done
+		echo
+
+		echo "Creating plugin: layout"
+		for file in $LAYOUT
+		do
+				echo $file
+				cp "./distribution/$platform/$target/$file" "./release/$platform/$target/Plugins/layout"
 		done
 		echo
 

@@ -18,16 +18,6 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></BooleanToVisibilityConverter>
         <SolidColorBrush x:Key="Transparent" Color="Transparent"></SolidColorBrush>
     </UserControl.Resources>
-    <UserControl.Style>
-        <Style TargetType="{x:Type UserControl}">
-            <Setter Property="Windows:UIComponentBase.IsComponentEnabled" Value="True"></Setter>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding Count, Source={StaticResource ViewModel}}" Value="0">
-                    <Setter Property="Windows:UIComponentBase.IsComponentEnabled" Value="False"></Setter>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-    </UserControl.Style>
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <Grid Grid.IsSharedSizeScope="True">
             <Grid.RowDefinitions>

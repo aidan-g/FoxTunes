@@ -4,6 +4,8 @@ namespace FoxTunes.Interfaces
 {
     public interface IDatabaseInitializer
     {
+        string Checksum { get; }
+
         void InitializeDatabase(IDatabaseComponent database, DatabaseInitializeType type);
     }
 

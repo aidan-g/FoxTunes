@@ -137,9 +137,18 @@ namespace FoxTunes
             {
                 if (this.OnDemand)
                 {
-                    if (!this.TryCalculateReplayGain(stream, out gain, out peak, out mode))
+                    //TODO: Bad .Result
+                    using (var duplicated = this.Output.Duplicate(stream).Result as BassOutputStream)
                     {
-                        return;
+                        if (duplicated == null)
+                        {
+                            Logger.Write(this, LogLevel.Warn, "Failed to duplicate stream for file \"{0}\", cannot calculate.", stream.FileName);
+                            return;
+                        }
+                        if (!this.TryCalculateReplayGain(duplicated, out gain, out peak, out mode))
+                        {
+                            return;
+                        }
                     }
                     this.Dispatch(() => this.UpdateMetaData(stream, gain, peak, mode));
                 }
@@ -237,22 +246,6 @@ namespace FoxTunes
 
         protected virtual bool TryCalculateReplayGain(BassOutputStream stream, out float gain, out float peak, out ReplayGainMode mode)
         {
-            if (stream.Provider.Flags.HasFlag(BassStreamProviderFlags.Serial))
-            {
-                Logger.Write(this, LogLevel.Debug, "Cannot calculate track replay gain for file \"{0}\": The provider does not support this action.", stream.FileName);
-                gain = 0;
-                peak = 0;
-                mode = ReplayGainMode.None;
-                return false;
-            }
-            if (!stream.CanReset)
-            {
-                Logger.Write(this, LogLevel.Debug, "Cannot calculate track replay gain for file \"{0}\": The stream cannot be reset.", stream.FileName);
-                gain = 0;
-                peak = 0;
-                mode = ReplayGainMode.None;
-                return false;
-            }
             Logger.Write(this, LogLevel.Debug, "Attempting to calculate track replay gain for file \"{0}\".", stream.FileName);
             try
             {
@@ -273,17 +266,6 @@ namespace FoxTunes
             catch (Exception e)
             {
                 Logger.Write(this, LogLevel.Warn, "Failed to calculate track replay gain for file \"{0}\": {1}", stream.FileName, e.Message);
-            }
-            finally
-            {
-                try
-                {
-                    stream.Reset();
-                }
-                catch
-                {
-                    //Nothing can be done, output was likely shut down.
-                }
             }
             gain = 0;
             peak = 0;

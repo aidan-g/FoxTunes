@@ -2,8 +2,6 @@
 using FoxDb;
 using FoxDb.Interfaces;
 using FoxTunes.Interfaces;
-using System;
-using System.Drawing.Design;
 
 namespace FoxTunes
 {

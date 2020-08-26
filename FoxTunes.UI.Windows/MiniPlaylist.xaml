@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="FoxTunes.MiniPlaylist"
+﻿<Windows:UIComponentBase x:Class="FoxTunes.MiniPlaylist"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -34,7 +34,7 @@
                 </Interactivity:Interaction.Triggers>
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type Core:PlaylistItem}">
-                        <Windows:GlassLabel Text="{Binding Converter={StaticResource ViewModel}}" TextTrimming="CharacterEllipsis"></Windows:GlassLabel>
+                        <Windows:GlassLabel Content="{Binding Converter={StaticResource ViewModel}}"></Windows:GlassLabel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
@@ -52,4 +52,4 @@
             </TextBlock.Style>
         </TextBlock>
     </Grid>
-</UserControl>
+</Windows:UIComponentBase>

@@ -21,7 +21,7 @@
             Color="{Binding Foreground, Converter={StaticResource BrushConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type LocalWindows:Spectrum}}}"></LocalWindows:SpectrumRenderer>
     </UserControl.Resources>
     <UserControl.Background>
-        <ImageBrush ImageSource="{Binding Bitmap, Source={StaticResource Renderer}}"></ImageBrush>
+        <ImageBrush ImageSource="{Binding Bitmap, Source={StaticResource Renderer}}" Viewbox="{Binding Viewbox, Source={StaticResource Renderer}}" ViewboxUnits="Absolute"></ImageBrush>
     </UserControl.Background>
     <UserControl.ContextMenu>
         <Windows:Menu Category="{Binding Source={x:Static LocalWindows:SpectrumBehaviour.CATEGORY}}"></Windows:Menu>

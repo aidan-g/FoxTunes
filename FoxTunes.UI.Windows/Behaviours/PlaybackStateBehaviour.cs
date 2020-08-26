@@ -56,8 +56,17 @@ namespace FoxTunes
             }
         }
 
+        public string Checksum
+        {
+            get
+            {
+                return "5815AE1E-A96C-4DAF-BB78-9461B00C94A2";
+            }
+        }
+
         public void InitializeDatabase(IDatabaseComponent database, DatabaseInitializeType type)
         {
+            //IMPORTANT: When editing this function remember to change the checksum.
             if (!type.HasFlag(DatabaseInitializeType.Playlist))
             {
                 return;

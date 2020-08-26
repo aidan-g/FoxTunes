@@ -404,6 +404,12 @@ namespace FoxTunes
 
         public override Task<IOutputStream> Duplicate(IOutputStream stream)
         {
+            var outputStream = stream as BassOutputStream;
+            if (outputStream.Provider.Flags.HasFlag(BassStreamProviderFlags.Serial))
+            {
+                Logger.Write(this, LogLevel.Warn, "Cannot duplicate stream for file \"{0}\" with serial provider.", stream.FileName);
+                return null;
+            }
             var flags = BassFlags.Default;
             if (this.Float)
             {
@@ -414,7 +420,7 @@ namespace FoxTunes
             {
                 return null;
             }
-            var outputStream = new BassOutputStream(this, this.PipelineManager, result, stream.PlaylistItem);
+            outputStream = new BassOutputStream(this, this.PipelineManager, result, stream.PlaylistItem);
             outputStream.InitializeComponent(this.Core);
 #if NET40
             return TaskEx.FromResult<IOutputStream>(outputStream);

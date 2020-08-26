@@ -53,7 +53,7 @@ namespace FoxTunes
             }
             set
             {
-                if (object.Equals(this._SelectedHierarchy, value))
+                if (object.ReferenceEquals(this._SelectedHierarchy, value))
                 {
                     return;
                 }
@@ -89,7 +89,7 @@ namespace FoxTunes
             }
             set
             {
-                if (this.SelectedHierarchy == null || object.Equals(this.SelectedItem, value))
+                if (this.SelectedHierarchy == null || object.ReferenceEquals(this.SelectedItem, value))
                 {
                     return;
                 }

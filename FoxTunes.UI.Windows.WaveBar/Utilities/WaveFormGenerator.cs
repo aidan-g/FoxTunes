@@ -59,6 +59,11 @@ namespace FoxTunes
         {
             using (var duplicated = await this.Output.Duplicate(stream).ConfigureAwait(false))
             {
+                if (duplicated == null)
+                {
+                    Logger.Write(this, LogLevel.Warn, "Failed to duplicate stream for file \"{0}\", cannot generate.", stream.FileName);
+                    return;
+                }
                 switch (duplicated.Format)
                 {
                     case OutputStreamFormat.Short:

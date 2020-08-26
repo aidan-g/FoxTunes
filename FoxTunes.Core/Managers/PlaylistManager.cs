@@ -601,7 +601,7 @@ namespace FoxTunes
             }
             set
             {
-                if (this.SelectedPlaylist == null || object.Equals(this.SelectedPlaylist, value))
+                if (this.SelectedPlaylist == null || object.ReferenceEquals(this.SelectedItems, value))
                 {
                     return;
                 }
@@ -680,8 +680,17 @@ namespace FoxTunes
             return this.Add(this.SelectedPlaylist, paths, false);
         }
 
+        public string Checksum
+        {
+            get
+            {
+                return "BB66B4BA-7236-4A48-8D95-191134DA5F05";
+            }
+        }
+
         public void InitializeDatabase(IDatabaseComponent database, DatabaseInitializeType type)
         {
+            //IMPORTANT: When editing this function remember to change the checksum.
             if (!type.HasFlag(DatabaseInitializeType.Playlist))
             {
                 return;
