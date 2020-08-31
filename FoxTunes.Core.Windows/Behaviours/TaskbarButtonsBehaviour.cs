@@ -51,9 +51,9 @@ namespace FoxTunes
 
         public HwndSourceHook Callback { get; private set; }
 
-        public Dictionary<IntPtr, TaskbarButtonsWindowFlags> Windows { get; private set; }
+        public IDictionary<IntPtr, TaskbarButtonsWindowFlags> Windows { get; private set; }
 
-        public Dictionary<IntPtr, IntPtr> ImageLists { get; private set; }
+        public IDictionary<IntPtr, IntPtr> ImageLists { get; private set; }
 
         public IPlaylistManager PlaylistManager { get; private set; }
 
@@ -73,6 +73,7 @@ namespace FoxTunes
                 this.PlaybackManager = core.Managers.Playback;
                 this.UserInterface = core.Components.UserInterface;
                 this.UserInterface.WindowCreated += this.OnWindowCreated;
+                this.UserInterface.WindowDestroyed += this.OnWindowDestroyed;
                 this.Configuration = core.Components.Configuration;
                 this.Enabled = this.Configuration.GetElement<BooleanConfigurationElement>(
                     TaskbarButtonsBehaviourConfiguration.SECTION,
@@ -98,18 +99,28 @@ namespace FoxTunes
             base.InitializeComponent(core);
         }
 
-        protected virtual void OnWindowCreated(object sender, UserInterfaceWindowCreatedEvent e)
+        protected virtual void OnWindowCreated(object sender, UserInterfaceWindowEventArgs e)
         {
+            if (e.Window.Role != UserInterfaceWindowRole.Main)
+            {
+                //Only create taskbar buttons for main windows.
+                return;
+            }
             lock (SyncRoot)
             {
-                if (this.Windows.ContainsKey(e.Handle))
+                if (this.Windows.ContainsKey(e.Window.Handle))
                 {
                     //Uh.. Why was a window with the same handle "created" twice?
                     return;
                 }
-                this.Windows.Add(e.Handle, TaskbarButtonsWindowFlags.None);
+                this.Windows.Add(e.Window.Handle, TaskbarButtonsWindowFlags.None);
                 this.Update();
             }
+        }
+
+        protected virtual void OnWindowDestroyed(object sender, UserInterfaceWindowEventArgs e)
+        {
+            //Nothing to do.
         }
 
         public void Enable()
@@ -738,6 +749,11 @@ namespace FoxTunes
 
         protected virtual void OnDisposing()
         {
+            if (this.UserInterface != null)
+            {
+                this.UserInterface.WindowCreated -= this.OnWindowCreated;
+                this.UserInterface.WindowDestroyed -= this.OnWindowDestroyed;
+            }
             this.Disable();
         }
 

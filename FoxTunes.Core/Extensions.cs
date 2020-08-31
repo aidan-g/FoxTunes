@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace FoxTunes
 {
@@ -413,6 +414,15 @@ namespace FoxTunes
                 _key => value,
                 (_key, _value) => value
             );
+        }
+
+        public static bool TryRemove<TKey, TValue>(this ConditionalWeakTable<TKey, TValue> sequence, TKey key, out TValue value) where TKey : class where TValue : class
+        {
+            if (!sequence.TryGetValue(key, out value))
+            {
+                return false;
+            }
+            return sequence.Remove(key);
         }
     }
 }

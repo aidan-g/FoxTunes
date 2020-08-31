@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 
 namespace FoxTunes
 {
@@ -29,6 +30,13 @@ namespace FoxTunes
                 this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             }
             this.InitializeComponent();
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            global::FoxTunes.Properties.Settings.Default.PlaylistManagerWindowBounds = this.RestoreBounds;
+            global::FoxTunes.Properties.Settings.Default.Save();
+            base.OnClosing(e);
         }
     }
 }

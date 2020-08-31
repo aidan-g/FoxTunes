@@ -103,22 +103,22 @@ namespace FoxTunes
 
         public static Size GetElementPixelSize(this FrameworkElement element, double width, double height)
         {
-            var matrix = default(Matrix);
             var presentationSource = PresentationSource.FromVisual(element);
             if (presentationSource != null)
             {
-                matrix = presentationSource.CompositionTarget.TransformToDevice;
+                var matrix = presentationSource.CompositionTarget.TransformToDevice;
+                return (Size)matrix.Transform(new Vector(width, height));
             }
             else
             {
                 using (var hwndSource = new HwndSource(new HwndSourceParameters()))
                 {
-                    matrix = hwndSource.CompositionTarget.TransformToDevice;
+                    var matrix = hwndSource.CompositionTarget.TransformToDevice;
+                    return (Size)matrix.Transform(new Vector(width, height));
                 }
             }
-            return (Size)matrix.Transform(new Vector(width, height));
         }
-    
+
         public static bool IsMouseOver(this FrameworkElement element)
         {
             var x = default(int);

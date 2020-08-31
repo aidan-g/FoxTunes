@@ -1,6 +1,5 @@
 ﻿using FoxTunes.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -23,41 +22,9 @@ namespace FoxTunes
             }
         }
 
-        static MetaDataEditorWindow()
-        {
-            Instances = new List<WeakReference<MetaDataEditorWindow>>();
-        }
-
-        private static IList<WeakReference<MetaDataEditorWindow>> Instances { get; set; }
-
-        public static IEnumerable<MetaDataEditorWindow> Active
-        {
-            get
-            {
-                lock (Instances)
-                {
-                    return Instances
-                        .Where(instance => instance != null && instance.IsAlive)
-                        .Select(instance => instance.Target)
-                        .ToArray();
-                }
-            }
-        }
-
-        protected static void OnActiveChanged(MetaDataEditorWindow sender)
-        {
-            if (ActiveChanged == null)
-            {
-                return;
-            }
-            ActiveChanged(sender, EventArgs.Empty);
-        }
-
-        public static event EventHandler ActiveChanged;
-
         public MetaDataEditorWindow()
         {
-            var instance = Active.LastOrDefault();
+            var instance = Active.OfType<MetaDataEditorWindow>().LastOrDefault();
             if (instance != null)
             {
                 this.Left = instance.Left + STARTUP_LOCATION_OFFSET;
@@ -85,11 +52,6 @@ namespace FoxTunes
                 this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             }
             this.InitializeComponent();
-            lock (Instances)
-            {
-                Instances.Add(new WeakReference<MetaDataEditorWindow>(this));
-            }
-            OnActiveChanged(this);
         }
 
         public void Show(IFileData[] fileDatas)
@@ -126,63 +88,6 @@ namespace FoxTunes
             global::FoxTunes.Properties.Settings.Default.MetaDataWindowBounds = this.RestoreBounds;
             global::FoxTunes.Properties.Settings.Default.Save();
             base.OnClosing(e);
-        }
-
-        protected override void OnClosed(EventArgs e)
-        {
-            this.Dispose();
-            base.OnClosed(e);
-        }
-
-        public bool IsDisposed { get; private set; }
-
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (this.IsDisposed || !disposing)
-            {
-                return;
-            }
-            this.OnDisposing();
-            this.IsDisposed = true;
-        }
-
-        protected virtual void OnDisposing()
-        {
-            lock (Instances)
-            {
-                for (var a = Instances.Count - 1; a >= 0; a--)
-                {
-                    var instance = Instances[a];
-                    if (instance == null || !instance.IsAlive)
-                    {
-                        Instances.RemoveAt(a);
-                    }
-                    else if (object.ReferenceEquals(this, instance.Target))
-                    {
-                        Instances.RemoveAt(a);
-                    }
-                }
-            }
-            OnActiveChanged(this);
-        }
-
-        ~MetaDataEditorWindow()
-        {
-            Logger.Write(typeof(MetaDataEditorWindow), LogLevel.Error, "Component was not disposed: {0}", this.GetType().Name);
-            try
-            {
-                this.Dispose(true);
-            }
-            catch
-            {
-                //Nothing can be done, never throw on GC thread.
-            }
         }
     }
 }

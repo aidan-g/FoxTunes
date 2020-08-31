@@ -8,7 +8,7 @@ namespace FoxTunes
     /// <summary>
     /// Interaction logic for MiniWindow.xaml
     /// </summary>
-    public partial class MiniWindow : Window
+    public partial class MiniWindow : WindowBase
     {
         public static readonly DependencyProperty IsGlassEnabledProperty = DependencyProperty.Register(
             "IsGlassEnabled",
@@ -60,6 +60,15 @@ namespace FoxTunes
                 }
             }
             this.InitializeComponent();
+        }
+
+        protected override bool ApplyTemplate
+        {
+            get
+            {
+                //Don't create window chrome.
+                return false;
+            }
         }
 
         public bool IsGlassEnabled

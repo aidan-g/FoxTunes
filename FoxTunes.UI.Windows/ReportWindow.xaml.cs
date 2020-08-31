@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Windows;
-using FoxTunes.Interfaces;
+﻿using FoxTunes.Interfaces;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using System;
+using System.Windows;
 
 namespace FoxTunes
 {
@@ -21,41 +21,9 @@ namespace FoxTunes
             }
         }
 
-        static ReportWindow()
-        {
-            Instances = new List<WeakReference<ReportWindow>>();
-        }
-
-        private static IList<WeakReference<ReportWindow>> Instances { get; set; }
-
-        public static IEnumerable<ReportWindow> Active
-        {
-            get
-            {
-                lock (Instances)
-                {
-                    return Instances
-                        .Where(instance => instance != null && instance.IsAlive)
-                        .Select(instance => instance.Target)
-                        .ToArray();
-                }
-            }
-        }
-
-        protected static void OnActiveChanged(ReportWindow sender)
-        {
-            if (ActiveChanged == null)
-            {
-                return;
-            }
-            ActiveChanged(sender, EventArgs.Empty);
-        }
-
-        public static event EventHandler ActiveChanged;
-
         public ReportWindow()
         {
-            var instance = Active.LastOrDefault();
+            var instance = Active.OfType<ReportWindow>().LastOrDefault();
             if (instance != null)
             {
                 this.Left = instance.Left + STARTUP_LOCATION_OFFSET;
@@ -83,11 +51,6 @@ namespace FoxTunes
                 this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             }
             this.InitializeComponent();
-            lock (Instances)
-            {
-                Instances.Add(new WeakReference<ReportWindow>(this));
-            }
-            OnActiveChanged(this);
         }
 
         public IEnumerable<global::FoxTunes.ViewModel.Report> ViewModels
@@ -122,6 +85,13 @@ namespace FoxTunes
         protected virtual void OnClose(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            global::FoxTunes.Properties.Settings.Default.ReportWindowBounds = this.RestoreBounds;
+            global::FoxTunes.Properties.Settings.Default.Save();
+            base.OnClosing(e);
         }
     }
 }

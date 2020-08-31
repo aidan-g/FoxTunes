@@ -118,14 +118,9 @@ namespace FoxTunes
 
         const uint SWP_NOSIZE = 0x0001;
         const uint SWP_NOMOVE = 0x0002;
-        const uint SWP_NOZORDER = 0x0004;
         const uint SWP_NOREDRAW = 0x0008;
         const uint SWP_NOACTIVATE = 0x0010;
 
-        const uint SWP_FRAMECHANGED = 0x0020;
-        const uint SWP_SHOWWINDOW = 0x0040;
-        const uint SWP_HIDEWINDOW = 0x0080;
-        const uint SWP_NOCOPYBITS = 0x0100;
         const uint SWP_NOOWNERZORDER = 0x0200;
         const uint SWP_NOSENDCHANGING = 0x0400;
 

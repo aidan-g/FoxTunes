@@ -104,6 +104,10 @@ namespace FoxTunes.ViewModel
             {
                 if (this.PlaybackManager.CurrentStream != null)
                 {
+                    if (this.CurrentStream != null)
+                    {
+                        this.CurrentStream.Dispose();
+                    }
                     this.CurrentStream = new OutputStream(this.PlaybackManager.CurrentStream);
                 }
                 else

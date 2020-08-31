@@ -35,13 +35,13 @@ namespace FoxTunes
             }
         }
 
-        protected static void OnActiveChanged()
+        protected static void OnActiveChanged(BackgroundTask sender)
         {
             if (ActiveChanged == null)
             {
                 return;
             }
-            ActiveChanged(null, EventArgs.Empty);
+            ActiveChanged(sender, EventArgs.Empty);
         }
 
         public static event EventHandler ActiveChanged;
@@ -208,7 +208,7 @@ namespace FoxTunes
             {
                 Instances.Add(new WeakReference<IBackgroundTask>(this));
             }
-            OnActiveChanged();
+            OnActiveChanged(this);
             base.InitializeComponent(core);
         }
 
@@ -401,7 +401,7 @@ namespace FoxTunes
                     }
                 }
             }
-            OnActiveChanged();
+            OnActiveChanged(this);
         }
 
         ~BackgroundTask()

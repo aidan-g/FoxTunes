@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace FoxTunes.Interfaces
 {
     public interface IUserInterface : IStandardComponent
     {
+        IEnumerable<IUserInterfaceWindow> Windows { get; }
+
         Task Show();
 
         void Activate();
@@ -19,18 +22,33 @@ namespace FoxTunes.Interfaces
 
         void Restart();
 
-        event UserInterfaceWindowCreatedEventHandler WindowCreated;
+        event UserInterfaceWindowEventHandler WindowCreated;
+
+        event UserInterfaceWindowEventHandler WindowDestroyed;
     }
 
-    public delegate void UserInterfaceWindowCreatedEventHandler(object sender, UserInterfaceWindowCreatedEvent e);
-
-    public class UserInterfaceWindowCreatedEvent : EventArgs
+    public interface IUserInterfaceWindow
     {
-        public UserInterfaceWindowCreatedEvent(IntPtr handle)
+        IntPtr Handle { get; }
+
+        UserInterfaceWindowRole Role { get; }
+    }
+
+    public enum UserInterfaceWindowRole : byte
+    {
+        None,
+        Main
+    }
+
+    public delegate void UserInterfaceWindowEventHandler(object sender, UserInterfaceWindowEventArgs e);
+
+    public class UserInterfaceWindowEventArgs : EventArgs
+    {
+        public UserInterfaceWindowEventArgs(IUserInterfaceWindow window)
         {
-            this.Handle = handle;
+            this.Window = window;
         }
 
-        public IntPtr Handle { get; private set; }
+        public IUserInterfaceWindow Window { get; private set; }
     }
 }

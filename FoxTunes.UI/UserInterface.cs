@@ -1,11 +1,14 @@
-﻿using System;
+﻿using FoxTunes.Interfaces;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using FoxTunes.Interfaces;
 
 namespace FoxTunes
 {
     public abstract class UserInterface : StandardComponent, IUserInterface
     {
+        public abstract IEnumerable<IUserInterfaceWindow> Windows { get; }
+
         public abstract Task Show();
 
         public abstract void Activate();
@@ -20,15 +23,26 @@ namespace FoxTunes
 
         public abstract void Restart();
 
-        protected virtual void OnWindowCreated(IntPtr handle)
+        protected virtual void OnWindowCreated(IUserInterfaceWindow window)
         {
             if (this.WindowCreated == null)
             {
                 return;
             }
-            this.WindowCreated(this, new UserInterfaceWindowCreatedEvent(handle));
+            this.WindowCreated(this, new UserInterfaceWindowEventArgs(window));
         }
 
-        public event UserInterfaceWindowCreatedEventHandler WindowCreated;
+        public event UserInterfaceWindowEventHandler WindowCreated;
+
+        protected virtual void OnWindowDestroyed(IUserInterfaceWindow window)
+        {
+            if (this.WindowDestroyed == null)
+            {
+                return;
+            }
+            this.WindowDestroyed(this, new UserInterfaceWindowEventArgs(window));
+        }
+
+        public event UserInterfaceWindowEventHandler WindowDestroyed;
     }
 }

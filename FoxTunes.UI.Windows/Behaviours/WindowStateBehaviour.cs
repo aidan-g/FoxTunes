@@ -1,6 +1,6 @@
 ﻿using FoxTunes.Interfaces;
 using System;
-using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
@@ -8,52 +8,58 @@ using System.Windows.Interop;
 namespace FoxTunes
 {
     [ComponentDependency(Slot = ComponentSlots.UserInterface)]
-    public class WindowStateBehaviour : StandardBehaviour
+    public class WindowStateBehaviour : StandardBehaviour, IDisposable
     {
         const int WM_GETMINMAXINFO = 0x0024;
 
         public WindowStateBehaviour()
         {
-            this.Behaviours = new ConcurrentDictionary<Window, MinMaxBehaviour>();
-            Windows.MainWindowCreated += this.OnWindowCreated;
-            Windows.SettingsWindowCreated += this.OnWindowCreated;
+            this.Behaviours = new ConditionalWeakTable<IUserInterfaceWindow, MinMaxBehaviour>();
         }
 
-        public ConcurrentDictionary<Window, MinMaxBehaviour> Behaviours { get; private set; }
+        public ConditionalWeakTable<IUserInterfaceWindow, MinMaxBehaviour> Behaviours { get; private set; }
 
-        protected virtual void OnWindowCreated(object sender, EventArgs e)
+        public ICore Core { get; private set; }
+
+        public IUserInterface UserInterface { get; private set; }
+
+        public override void InitializeComponent(ICore core)
         {
-            var window = sender as Window;
+            this.Core = core;
+            this.UserInterface = core.Components.UserInterface;
+            this.UserInterface.WindowCreated += this.OnWindowCreated;
+            this.UserInterface.WindowDestroyed += this.OnWindowDestroyed;
+            base.InitializeComponent(core);
+        }
+
+        protected virtual void OnWindowCreated(object sender, UserInterfaceWindowEventArgs e)
+        {
+            var window = GetWindow(e.Window.Handle);
             if (window == null)
             {
                 return;
             }
-            window.Loaded += this.OnLoaded;
-            window.Closed += this.OnClosed;
+            if (window.ResizeMode != ResizeMode.CanResize && window.ResizeMode != ResizeMode.CanResizeWithGrip)
+            {
+                return;
+            }
+            this.Enable(e.Window);
         }
 
-        protected virtual void OnLoaded(object sender, RoutedEventArgs e)
+        protected virtual void OnWindowDestroyed(object sender, UserInterfaceWindowEventArgs e)
         {
-            var window = sender as Window;
-            if (window == null)
-            {
-                return;
-            }
-            var behaviour = new MinMaxBehaviour(window);
-            if (!this.Behaviours.TryAdd(window, behaviour))
-            {
-                return;
-            }
-            behaviour.Enable();
+            this.Disable(e.Window);
         }
 
-        protected virtual void OnClosed(object sender, EventArgs e)
+        protected virtual void Enable(IUserInterfaceWindow window)
         {
-            var window = sender as Window;
-            if (window == null)
-            {
-                return;
-            }
+            var behaviour = new MinMaxBehaviour(window.Handle);
+            behaviour.InitializeComponent(this.Core);
+            this.Behaviours.Add(window, behaviour);
+        }
+
+        protected virtual void Disable(IUserInterfaceWindow window)
+        {
             var behaviour = default(MinMaxBehaviour);
             if (!this.Behaviours.TryRemove(window, out behaviour))
             {
@@ -62,24 +68,85 @@ namespace FoxTunes
             behaviour.Dispose();
         }
 
-        public class MinMaxBehaviour : IDisposable
+        public bool IsDisposed { get; private set; }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (this.IsDisposed || !disposing)
+            {
+                return;
+            }
+            this.OnDisposing();
+            this.IsDisposed = true;
+        }
+
+        protected virtual void OnDisposing()
+        {
+            if (this.UserInterface != null)
+            {
+                this.UserInterface.WindowCreated -= this.OnWindowCreated;
+                this.UserInterface.WindowDestroyed -= this.OnWindowDestroyed;
+            }
+            foreach (var window in this.UserInterface.Windows)
+            {
+                this.Disable(window);
+            }
+        }
+
+        ~WindowStateBehaviour()
+        {
+            Logger.Write(this, LogLevel.Error, "Component was not disposed: {0}", this.GetType().Name);
+            try
+            {
+                this.Dispose(true);
+            }
+            catch
+            {
+                //Nothing can be done, never throw on GC thread.
+            }
+        }
+
+        public static Window GetWindow(IntPtr handle)
+        {
+            var windows = Application.Current.Windows;
+            for (var a = 0; a < windows.Count; a++)
+            {
+                var window = windows[a];
+                if (window.GetHandle() == handle)
+                {
+                    return window;
+                }
+            }
+            return null;
+        }
+
+        public class MinMaxBehaviour : BaseComponent, IDisposable
         {
             private MinMaxBehaviour()
             {
                 this.Hook = new HwndSourceHook(this.WindowProc);
             }
 
-            public MinMaxBehaviour(Window window) : this()
+            public MinMaxBehaviour(IntPtr handle) : this()
             {
-                this.Window = window;
-                this.Handle = window.GetHandle();
+                this.Handle = handle;
             }
-
-            public Window Window { get; private set; }
 
             public HwndSourceHook Hook { get; private set; }
 
             public IntPtr Handle { get; private set; }
+
+            public override void InitializeComponent(ICore core)
+            {
+                this.Enable();
+                base.InitializeComponent(core);
+            }
 
             public void Enable()
             {
