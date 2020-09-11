@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FoxTunes.Interfaces;
+using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
@@ -17,6 +18,18 @@ namespace FoxTunes
 
         public global::System.Windows.Window Window { get; private set; }
 
+        public string Id
+        {
+            get
+            {
+                if (!(this.Window is IUserInterfaceWindow window))
+                {
+                    return string.Empty;
+                }
+                return window.Id;
+            }
+        }
+
         public Rectangle Bounds
         {
             get
@@ -30,7 +43,31 @@ namespace FoxTunes
             }
             set
             {
-                SetWindowPos(this.Handle, IntPtr.Zero, value.X, value.Y, value.Width, value.Height, SWP_SHOWWINDOW);
+                var flags = SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER;
+                SetWindowPos(this.Handle, IntPtr.Zero, value.X, value.Y, value.Width, value.Height, flags);
+            }
+        }
+
+        public bool IsMaximized
+        {
+            get
+            {
+                return this.Window.WindowState == global::System.Windows.WindowState.Maximized;
+            }
+        }
+
+        public bool IsVisible
+        {
+            get
+            {
+                var bounds = this.Bounds;
+                var point = new POINT()
+                {
+                    X = bounds.X + (bounds.Width / 2),
+                    Y = bounds.Y + (bounds.Height / 2)
+                };
+                var handle = WindowFromPoint(point);
+                return this.Handle == handle;
             }
         }
 
@@ -90,6 +127,39 @@ namespace FoxTunes
             this.Window.Activate();
         }
 
+        public void BringToFront()
+        {
+            if (this.Window.Topmost)
+            {
+                //Already on top.
+                return;
+            }
+            this.Window.Topmost = true;
+            this.Window.Topmost = false;
+        }
+
+        public void SetCursor(ResizeDirection direction)
+        {
+            var cursor = default(global::System.Windows.Input.Cursor);
+            if (direction.HasFlag(ResizeDirection.Left | ResizeDirection.Top) || direction.HasFlag(ResizeDirection.Right | ResizeDirection.Bottom))
+            {
+                cursor = global::System.Windows.Input.Cursors.SizeNWSE;
+            }
+            else if (direction.HasFlag(ResizeDirection.Right | ResizeDirection.Top) || direction.HasFlag(ResizeDirection.Left | ResizeDirection.Bottom))
+            {
+                cursor = global::System.Windows.Input.Cursors.SizeNESW;
+            }
+            else if (direction.HasFlag(ResizeDirection.Top) || direction.HasFlag(ResizeDirection.Bottom))
+            {
+                cursor = global::System.Windows.Input.Cursors.SizeNS;
+            }
+            else if (direction.HasFlag(ResizeDirection.Left) || direction.HasFlag(ResizeDirection.Right))
+            {
+                cursor = global::System.Windows.Input.Cursors.SizeWE;
+            }
+            global::System.Windows.Input.Mouse.OverrideCursor = cursor;
+        }
+
         public static global::System.Windows.Window GetWindow(IntPtr handle)
         {
             var windows = System.Windows.Application.Current.Windows;
@@ -102,6 +172,13 @@ namespace FoxTunes
                 }
             }
             return null;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct POINT
+        {
+            public int X;
+            public int Y;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -120,6 +197,13 @@ namespace FoxTunes
         [DllImport("user32.dll")]
         private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
-        const uint SWP_SHOWWINDOW = 0x0040;
+        [DllImport("user32.dll")]
+        public static extern IntPtr WindowFromPoint(POINT lpPoint);
+
+        const uint SWP_NOZORDER = 0x0004;
+
+        const uint SWP_NOACTIVATE = 0x0010;
+
+        const uint SWP_NOOWNERZORDER = 0x0200;
     }
 }

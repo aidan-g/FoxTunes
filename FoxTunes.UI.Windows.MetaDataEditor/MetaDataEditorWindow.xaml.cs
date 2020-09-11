@@ -54,6 +54,14 @@ namespace FoxTunes
             this.InitializeComponent();
         }
 
+        public override string Id
+        {
+            get
+            {
+                return "82C7DF3A-5DD4-463D-B53C-A38DC1B9FF69";
+            }
+        }
+
         public void Show(IFileData[] fileDatas)
         {
             switch (fileDatas.Length)

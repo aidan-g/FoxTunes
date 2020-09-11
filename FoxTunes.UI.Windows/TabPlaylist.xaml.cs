@@ -97,6 +97,26 @@ namespace FoxTunes
             }
         }
 
+        protected virtual void OnHeaderClick(object sender, RoutedEventArgs e)
+        {
+            var columnHeader = e.OriginalSource as GridViewColumnHeader;
+            if (columnHeader == null)
+            {
+                return;
+            }
+            var column = columnHeader.Column as PlaylistGridViewColumn;
+            if (column == null || column.PlaylistColumn == null)
+            {
+                return;
+            }
+            var viewModel = this.FindResource<global::FoxTunes.ViewModel.GridPlaylist>("ViewModel");
+            if (viewModel == null)
+            {
+                return;
+            }
+            var task = viewModel.Sort(column.PlaylistColumn);
+        }
+
         protected virtual void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (this.ListView.SelectedItem != null)

@@ -32,6 +32,14 @@ namespace FoxTunes
             this.InitializeComponent();
         }
 
+        public override string Id
+        {
+            get
+            {
+                return "4CFF69B2-62F8-4689-BC02-6FD843E73BBC";
+            }
+        }
+
         protected override void OnClosing(CancelEventArgs e)
         {
             global::FoxTunes.Properties.Settings.Default.PlaylistManagerWindowBounds = this.RestoreBounds;

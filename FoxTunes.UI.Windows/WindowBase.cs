@@ -130,6 +130,8 @@ namespace FoxTunes
 
         #region IUserInterfaceWindow
 
+        public abstract string Id { get; }
+
         public virtual IntPtr Handle { get; private set; }
 
         public virtual UserInterfaceWindowRole Role

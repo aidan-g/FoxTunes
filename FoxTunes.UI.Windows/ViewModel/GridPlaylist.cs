@@ -582,6 +582,12 @@ namespace FoxTunes.ViewModel
             return Windows.Invoke(() => this.GridColumns = new ObservableCollection<PlaylistGridViewColumn>(columns));
         }
 
+        public async Task Sort(PlaylistColumn playlistColumn)
+        {
+            var playlist = await this.GetPlaylist().ConfigureAwait(false);
+            await this.PlaylistManager.Sort(playlist, playlistColumn).ConfigureAwait(false);
+        }
+
         protected override void OnDisposing()
         {
             if (this.GridViewColumnFactory != null)

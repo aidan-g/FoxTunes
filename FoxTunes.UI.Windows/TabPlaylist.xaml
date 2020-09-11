@@ -39,6 +39,7 @@
                   Windows:ListViewExtensions.GroupScript="{Binding GroupingScript, Source={StaticResource ViewModel}}"
                   VirtualizingStackPanel.IsVirtualizing="True"
                   VirtualizingStackPanel.VirtualizationMode="Recycling"
+                  GridViewColumnHeader.Click="OnHeaderClick"
                   SelectionChanged="OnSelectionChanged">
             <ListView.InputBindings>
                 <KeyBinding Key="Delete" Command="{Binding RemovePlaylistItemsCommand, Source={StaticResource ViewModel}}"></KeyBinding>

@@ -62,6 +62,14 @@ namespace FoxTunes
             this.InitializeComponent();
         }
 
+        public override string Id
+        {
+            get
+            {
+                return "95FA900C-2B6C-4571-B119-D24834E2FC22";
+            }
+        }
+
         protected override bool ApplyTemplate
         {
             get

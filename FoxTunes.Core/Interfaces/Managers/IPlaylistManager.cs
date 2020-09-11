@@ -46,6 +46,8 @@ namespace FoxTunes.Interfaces
 
         Task Clear(Playlist playlist);
 
+        Task Sort(Playlist playlist, PlaylistColumn playlistColumn);
+
         Playlist SelectedPlaylist { get; set; }
 
         event EventHandler SelectedPlaylistChanged;

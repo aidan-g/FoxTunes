@@ -53,6 +53,14 @@ namespace FoxTunes
             this.InitializeComponent();
         }
 
+        public override string Id
+        {
+            get
+            {
+                return "5AB7D852-198E-465C-BA26-11237E1A6B2A";
+            }
+        }
+
         public IEnumerable<global::FoxTunes.ViewModel.Report> ViewModels
         {
             get

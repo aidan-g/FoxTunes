@@ -241,6 +241,15 @@ namespace FoxTunes
             return sequence;
         }
 
+        public static IEnumerable<T> EnqueueRange<T>(this Queue<T> queue, IEnumerable<T> sequence)
+        {
+            foreach (var element in sequence)
+            {
+                queue.Enqueue(element);
+            }
+            return sequence;
+        }
+
         public static IEnumerable<T> RemoveRange<T>(this IList<T> list, IEnumerable<T> sequence)
         {
             foreach (var element in sequence)

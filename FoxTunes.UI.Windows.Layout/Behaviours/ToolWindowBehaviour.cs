@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -304,9 +305,10 @@ namespace FoxTunes
 
         public async Task<ToolWindowConfiguration> New()
         {
+            var configs = this.Windows.Keys;
             var config = new ToolWindowConfiguration()
             {
-                Title = "New Window",
+                Title = ToolWindowConfiguration.GetTitle(configs),
                 Width = 400,
                 Height = 250,
                 ShowWithMainWindow = true,
@@ -712,6 +714,29 @@ namespace FoxTunes
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public static string GetTitle(IEnumerable<ToolWindowConfiguration> configs)
+        {
+            var title = "New Window";
+            for (var a = 1; a < 100; a++)
+            {
+                var success = true;
+                foreach (var config in configs)
+                {
+                    if (string.Equals(config.Title, title, StringComparison.OrdinalIgnoreCase))
+                    {
+                        title = string.Format("New Window ({0})", a);
+                        success = false;
+                        break;
+                    }
+                }
+                if (success)
+                {
+                    return title;
+                }
+            }
+            return title;
+        }
     }
 
     public delegate void ToolWindowConfigurationEventHandler(object sender, ToolWindowConfigurationEventArgs e);

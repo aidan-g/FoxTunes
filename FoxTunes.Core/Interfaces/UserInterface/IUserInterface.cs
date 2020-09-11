@@ -29,6 +29,8 @@ namespace FoxTunes.Interfaces
 
     public interface IUserInterfaceWindow
     {
+        string Id { get; }
+
         IntPtr Handle { get; }
 
         UserInterfaceWindowRole Role { get; }

@@ -5,6 +5,7 @@ using FoxTunes.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FoxTunes
@@ -343,6 +344,56 @@ namespace FoxTunes
                     }
                 }, transaction).ConfigureAwait(false);
                 transaction.Commit();
+            }
+        }
+
+        protected virtual Task SortItems(PlaylistColumn playlistColumn)
+        {
+            switch (playlistColumn.Type)
+            {
+                case PlaylistColumnType.Tag:
+                    return this.SortItemsByMetaData(MetaDataItemType.Tag, playlistColumn.Tag);
+                case PlaylistColumnType.Property:
+                    return this.SortItemsByMetaData(MetaDataItemType.Property, playlistColumn.Property);
+                case PlaylistColumnType.Script:
+                    return this.SortItemsByScript(playlistColumn.Script);
+            }
+#if NET40
+            return TaskEx.FromResult(false);
+#else
+            return Task.CompletedTask;
+#endif
+        }
+
+        protected virtual Task SortItemsByMetaData(MetaDataItemType type, string value)
+        {
+#if NET40
+            return TaskEx.FromResult(false);
+#else
+            return Task.CompletedTask;
+#endif
+        }
+
+        protected virtual async Task SortItemsByScript(string script)
+        {
+            using (var transaction = this.Database.BeginTransaction(this.Database.PreferredIsolationLevel))
+            {
+                var set = this.Database.Set<PlaylistItem>(transaction);
+                var playlistItems = set.ToList();
+                using (var comparer = new PlaylistItemScriptComparer(script))
+                {
+                    comparer.InitializeComponent(this.Core);
+                    playlistItems.Sort(comparer);
+                }
+                for (var a = 0; a < playlistItems.Count; a++)
+                {
+                    playlistItems[a].Sequence = a;
+                }
+                await set.AddOrUpdateAsync(playlistItems).ConfigureAwait(false);
+                if (transaction.HasTransaction)
+                {
+                    transaction.Commit();
+                }
             }
         }
 

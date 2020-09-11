@@ -92,6 +92,58 @@ namespace FoxTunes
 
         public event EventHandler TypeChanged;
 
+        private string _Tag { get; set; }
+
+        public string Tag
+        {
+            get
+            {
+                return this._Tag;
+            }
+            set
+            {
+                this._Tag = value;
+                this.OnTagChanged();
+            }
+        }
+
+        protected virtual void OnTagChanged()
+        {
+            if (this.TagChanged != null)
+            {
+                this.TagChanged(this, EventArgs.Empty);
+            }
+            this.OnPropertyChanged("Tag");
+        }
+
+        public event EventHandler TagChanged;
+
+        private string _Property { get; set; }
+
+        public string Property
+        {
+            get
+            {
+                return this._Property;
+            }
+            set
+            {
+                this._Property = value;
+                this.OnPropertyChanged();
+            }
+        }
+
+        protected virtual void OnPropertyChanged()
+        {
+            if (this.PropertyChanged != null)
+            {
+                this.PropertyChanged(this, EventArgs.Empty);
+            }
+            this.OnPropertyChanged("Property");
+        }
+
+        public event EventHandler PropertyChanged;
+
         private string _Script { get; set; }
 
         public string Script
@@ -201,6 +253,8 @@ namespace FoxTunes
     {
         None = 0,
         Script = 1,
-        Plugin = 2
+        Plugin = 2,
+        Tag = 3,
+        Property = 4
     }
 }

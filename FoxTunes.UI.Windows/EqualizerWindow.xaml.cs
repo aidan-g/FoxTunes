@@ -25,6 +25,14 @@ namespace FoxTunes
             this.InitializeComponent();
         }
 
+        public override string Id
+        {
+            get
+            {
+                return "57C395DF-35A2-4EEB-B20A-5D6B11375BE1";
+            }
+        }
+
         protected override void OnClosing(CancelEventArgs e)
         {
             global::FoxTunes.Properties.Settings.Default.EqualizerWindowBounds = this.RestoreBounds;

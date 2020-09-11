@@ -488,6 +488,16 @@ namespace FoxTunes
             }
         }
 
+        public async Task Sort(Playlist playlist, PlaylistColumn playlistColumn)
+        {
+            using (var task = new SortPlaylistTask(playlist, playlistColumn))
+            {
+                task.InitializeComponent(this.Core);
+                await this.OnBackgroundTask(task).ConfigureAwait(false);
+                await task.Run().ConfigureAwait(false);
+            }
+        }
+
         private Playlist _SelectedPlaylist { get; set; }
 
         public Playlist SelectedPlaylist

@@ -32,6 +32,14 @@ namespace FoxTunes
             this.InitializeComponent();
         }
 
+        public override string Id
+        {
+            get
+            {
+                return "A4342D78-BE0A-4707-9180-B0D71093B074";
+            }
+        }
+
         protected override void OnClosing(CancelEventArgs e)
         {
             global::FoxTunes.Properties.Settings.Default.ToolWindowBounds = this.RestoreBounds;

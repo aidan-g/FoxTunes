@@ -1,4 +1,6 @@
-﻿namespace FoxTunes
+﻿using System.Security.Cryptography;
+
+namespace FoxTunes
 {
     /// <summary>
     /// Interaction logic for ToolWindow.xaml
@@ -8,6 +10,19 @@
         public ToolWindow()
         {
             this.InitializeComponent();
+        }
+
+        public override string Id
+        {
+            get
+            {
+                var configuration = this.Configuration;
+                if (configuration == null)
+                {
+                    return string.Empty;
+                }
+                return configuration.Title;
+            }
         }
 
         public ToolWindowConfiguration Configuration
