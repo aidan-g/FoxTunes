@@ -16,11 +16,19 @@ namespace FoxTunes
 
         public const string ORDER_SHUFFLE_ARTISTS = "DDDD150A-BE60-47EA-8C05-57219126BF5A";
 
+        public const string PRE_SORT_ORDER_ELEMENT = "FA40F96B-D6B6-42FB-BF95-B01A1F466AB0";
+
+        public const string SORT_ENABLED_ELEMENT = "F2EB04ED-2E13-4B03-9866-D7D197CB8A98";
+
         public static IEnumerable<ConfigurationSection> GetConfigurationSections()
         {
             yield return new ConfigurationSection(SECTION, "Playlist")
                 .WithElement(
-                    new SelectionConfigurationElement(ORDER_ELEMENT, "Order").WithOptions(GetOrderOptions())
+                    new SelectionConfigurationElement(ORDER_ELEMENT, "Order").WithOptions(GetOrderOptions()))
+                .WithElement(
+                    new TextConfigurationElement(PRE_SORT_ORDER_ELEMENT, "Pre Sorting", path: "Advanced").WithValue(Resources.PlaylistSequence).WithFlags(ConfigurationElementFlags.MultiLine))
+                .WithElement(
+                    new BooleanConfigurationElement(SORT_ENABLED_ELEMENT, "Sorting").WithValue(false)
             );
         }
 

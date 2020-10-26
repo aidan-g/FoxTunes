@@ -1,11 +1,13 @@
 ﻿using FoxTunes.Interfaces;
+using System;
 using System.Threading.Tasks;
 using System.Timers;
 
 namespace FoxTunes
 {
     [ComponentDependency(Slot = ComponentSlots.Database)]
-    public class MetaDataSynchronizer : StandardComponent, IMetaDataSynchronizer
+    [ComponentDependency(Slot = ComponentSlots.UserInterface)]
+    public class MetaDataSynchronizer : StandardComponent, IMetaDataSynchronizer, IDisposable
     {
         const int UPDATE_INTERVAL = 60000;
 
@@ -15,36 +17,57 @@ namespace FoxTunes
 
         public global::System.Timers.Timer Timer { get; private set; }
 
+        public BooleanConfigurationElement Enabled { get; private set; }
+
+        public SelectionConfigurationElement Write { get; private set; }
+
         public override void InitializeComponent(ICore core)
         {
             this.MetaDataManager = core.Managers.MetaData;
-            core.Components.Configuration.GetElement<SelectionConfigurationElement>(
+            this.Enabled = core.Components.Configuration.GetElement<BooleanConfigurationElement>(
+                MetaDataBehaviourConfiguration.SECTION,
+                MetaDataBehaviourConfiguration.BACKGROUND_WRITE_ELEMENT
+            );
+            this.Write = core.Components.Configuration.GetElement<SelectionConfigurationElement>(
                 MetaDataBehaviourConfiguration.SECTION,
                 MetaDataBehaviourConfiguration.WRITE_ELEMENT
-            ).ConnectValue(value =>
-            {
-                switch (MetaDataBehaviourConfiguration.GetWriteBehaviour(value))
-                {
-                    case WriteBehaviour.None:
-                        this.Disable();
-                        break;
-                    default:
-                        this.Enable();
-                        break;
-                }
-            });
+            );
+            this.Enabled.ValueChanged += this.OnValueChanged;
+            this.Write.ValueChanged += this.OnValueChanged;
+            this.Refresh();
             base.InitializeComponent(core);
+        }
+
+        protected virtual void OnValueChanged(object sender, EventArgs e)
+        {
+            this.Refresh();
+        }
+
+        private void Refresh()
+        {
+            if (this.Enabled.Value && MetaDataBehaviourConfiguration.GetWriteBehaviour(this.Write.Value) != WriteBehaviour.None)
+            {
+                this.Enable();
+            }
+            else
+            {
+                this.Disable();
+            }
         }
 
         private void Enable()
         {
             lock (SyncRoot)
             {
-                this.Timer = new global::System.Timers.Timer();
-                this.Timer.Interval = UPDATE_INTERVAL;
-                this.Timer.AutoReset = false;
-                this.Timer.Elapsed += this.OnElapsed;
-                this.Timer.Start();
+                if (this.Timer == null)
+                {
+                    this.Timer = new global::System.Timers.Timer();
+                    this.Timer.Interval = UPDATE_INTERVAL;
+                    this.Timer.AutoReset = false;
+                    this.Timer.Elapsed += this.OnElapsed;
+                    this.Timer.Start();
+                    Logger.Write(this, LogLevel.Debug, "Background meta data synchronization enabled.");
+                }
             }
         }
 
@@ -58,6 +81,7 @@ namespace FoxTunes
                     this.Timer.Elapsed -= this.OnElapsed;
                     this.Timer.Dispose();
                     this.Timer = null;
+                    Logger.Write(this, LogLevel.Debug, "Background meta data synchronization disabled.");
                 }
             }
         }
@@ -90,6 +114,35 @@ namespace FoxTunes
         public Task Synchronize(params PlaylistItem[] playlistItem)
         {
             return this.MetaDataManager.Synchronize(playlistItem);
+        }
+
+        public bool IsDisposed { get; private set; }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (this.IsDisposed || !disposing)
+            {
+                return;
+            }
+            this.OnDisposing();
+            this.IsDisposed = true;
+        }
+
+        protected virtual void OnDisposing()
+        {
+            this.Disable();
+        }
+
+        ~MetaDataSynchronizer()
+        {
+            Logger.Write(this, LogLevel.Error, "Component was not disposed: {0}", this.GetType().Name);
+            this.Dispose(true);
         }
     }
 }

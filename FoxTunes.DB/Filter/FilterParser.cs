@@ -115,11 +115,18 @@ namespace FoxTunes
 
             protected virtual IFilterParserResultGroup Parse(string filter)
             {
-                filter = string.Format(
-                    "{0}{1}{0}",
-                    FilterParserResultEntry.UNBOUNDED_WILDCARD,
-                    filter.Trim()
-                );
+                if (string.IsNullOrEmpty(filter))
+                {
+                    filter = FilterParserResultEntry.UNBOUNDED_WILDCARD;
+                }
+                else
+                {
+                    filter = string.Format(
+                        "{0}{1}{0}",
+                        FilterParserResultEntry.UNBOUNDED_WILDCARD,
+                        filter.Trim()
+                    );
+                }
                 var entries = this.SearchNames.Select(
                     name => new FilterParserResultEntry(name, FilterParserEntryOperator.Match, filter)
                 ).ToArray();

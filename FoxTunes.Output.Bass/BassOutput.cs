@@ -471,17 +471,16 @@ namespace FoxTunes
 
         public override async Task Unload(IOutputStream stream)
         {
-            var disposed = default(bool);
             var outputStream = stream as BassOutputStream;
             if (this.IsStarted)
             {
                 Logger.Write(this, LogLevel.Debug, "Unloading stream for file {0}: {1}", outputStream.FileName, outputStream.ChannelHandle);
-                disposed = await this.PipelineManager.WithPipelineExclusive(pipeline =>
+                await this.PipelineManager.WithPipelineExclusive(pipeline =>
                 {
                     if (pipeline != null)
                     {
                         var isPlaying = pipeline.Input.Position(outputStream) == 0;
-                        if (pipeline.Input.Remove(outputStream, true))
+                        if (pipeline.Input.Remove(outputStream, this.Unload))
                         {
                             Logger.Write(this, LogLevel.Debug, "Pipeline unloaded stream for file {0}: {1}", outputStream.FileName, outputStream.ChannelHandle);
                             if (isPlaying && !pipeline.Input.PreserveBuffer)
@@ -492,21 +491,26 @@ namespace FoxTunes
                                 Logger.Write(this, LogLevel.Debug, "The current stream was removed, clearing the buffer.");
                                 pipeline.ClearBuffer();
                             }
-                            return true;
                         }
                         else
                         {
                             //Probably not in the queue.
+                            this.Unload(outputStream);
                         }
                     }
-                    return false;
                 }).ConfigureAwait(false);
             }
-            this.OnUnloaded(outputStream);
-            if (!disposed)
+            else
             {
-                outputStream.Dispose();
+                //TODO: Is this possible? 
+                this.Unload(outputStream);
             }
+        }
+
+        protected virtual void Unload(BassOutputStream outputStream)
+        {
+            this.OnUnloaded(outputStream);
+            outputStream.Dispose();
             Logger.Write(this, LogLevel.Debug, "Unloaded stream for file {0}: {1}", outputStream.FileName, outputStream.ChannelHandle);
         }
 

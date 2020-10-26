@@ -76,9 +76,9 @@ namespace FoxTunes.Launcher
                         core.Initialize();
                         server.Message += (sender, e) =>
                         {
-                            core.Components.UserInterface.Run(e.Message);
+                            core.Managers.FileActionHandler.RunCommand(e.Message);
                         };
-                        core.Components.UserInterface.Run(Environment.CommandLine);
+                        core.Managers.FileActionHandler.RunCommand(Environment.CommandLine);
                     }
                     catch (Exception e)
                     {

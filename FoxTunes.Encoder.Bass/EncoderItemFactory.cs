@@ -139,7 +139,15 @@ namespace FoxTunes
                     }
                     break;
                 case BassEncoderOutputDestination.Source:
-                    directoryName = Path.GetDirectoryName(fileData.FileName);
+                    //TODO: I think we can always use fileData.DirectoryName
+                    if (FileSystemHelper.IsLocalPath(fileData.FileName))
+                    {
+                        directoryName = Path.GetDirectoryName(fileData.FileName);
+                    }
+                    else
+                    {
+                        directoryName = fileData.DirectoryName;
+                    }
                     break;
                 case BassEncoderOutputDestination.Specific:
                     directoryName = this.SpecificFolder;

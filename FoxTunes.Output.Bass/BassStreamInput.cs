@@ -71,7 +71,7 @@ namespace FoxTunes
 
         public abstract bool Add(BassOutputStream stream);
 
-        public abstract bool Remove(BassOutputStream stream, bool dispose);
+        public abstract bool Remove(BassOutputStream stream, Action<BassOutputStream> callBack);
 
         public abstract void Reset();
 

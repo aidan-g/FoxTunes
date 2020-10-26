@@ -361,7 +361,7 @@ namespace FoxTunes
                     Thread.Sleep(INTERVAL);
                     goto retry;
                 }
-                throw new InvalidOperationException(string.Format("Failed to create decoder stream for file \"{0}\".", fileName));
+                throw new InvalidOperationException(string.Format("Failed to create decoder stream for file \"{0}\": {1}", fileName, Enum.GetName(typeof(Errors), stream.Errors)));
             }
             return stream;
         }

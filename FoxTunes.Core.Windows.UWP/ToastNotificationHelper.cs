@@ -137,6 +137,10 @@ namespace FoxTunes
                 () => ComponentRegistry.Instance.GetComponent<IUserInterface>()
             );
 
+            public static readonly Lazy<IFileActionHandlerManager> FileActionHandlerManager = new Lazy<IFileActionHandlerManager>(
+                () => ComponentRegistry.Instance.GetComponent<IFileActionHandlerManager>()
+            );
+
             public static string ID
             {
                 get
@@ -166,18 +170,22 @@ namespace FoxTunes
             {
                 try
                 {
-                    var userInterface = UserInterface.Value;
-                    if (userInterface == null)
-                    {
-                        return;
-                    }
+
                     if (!string.IsNullOrEmpty(invokedArgs))
                     {
-                        userInterface.Run(invokedArgs);
+                        var fileActionHandlerManager = FileActionHandlerManager.Value;
+                        if (fileActionHandlerManager != null)
+                        {
+                            fileActionHandlerManager.RunCommand(invokedArgs);
+                        }
                     }
                     else
                     {
-                        userInterface.Activate();
+                        var userInterface = UserInterface.Value;
+                        if (userInterface != null)
+                        {
+                            userInterface.Activate();
+                        }
                     }
                 }
                 catch
@@ -222,8 +230,8 @@ namespace FoxTunes
         {
             void Activate(
                 [In, MarshalAs(UnmanagedType.LPWStr)] string appUserModelId,
-                [In, MarshalAs(UnmanagedType.LPWStr)]  string invokedArgs,
-                [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)]NotificationUserInputData[] data,
+                [In, MarshalAs(UnmanagedType.LPWStr)] string invokedArgs,
+                [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] NotificationUserInputData[] data,
                 [In, MarshalAs(UnmanagedType.U4)] uint dataCount
             );
         }

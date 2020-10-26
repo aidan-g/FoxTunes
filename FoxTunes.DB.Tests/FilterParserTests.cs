@@ -1,8 +1,5 @@
-﻿using FoxDb;
-using FoxDb.Interfaces;
-using FoxTunes.Interfaces;
+﻿using FoxTunes.Interfaces;
 using NUnit.Framework;
-using System.Collections.Generic;
 
 namespace FoxTunes
 {

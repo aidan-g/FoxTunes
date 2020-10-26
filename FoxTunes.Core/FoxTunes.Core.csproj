@@ -6,7 +6,7 @@
     <OutputPath>..\distribution\$(Platform)\</OutputPath>
     <SkipEnsureBindingRedirects>true</SkipEnsureBindingRedirects>
     <SkipValidatePackageReferences>true</SkipValidatePackageReferences>
-    <AssemblyVersion>2.2.2.0</AssemblyVersion>
+    <AssemblyVersion>2.2.3.0</AssemblyVersion>
     <Platforms>x86;x64</Platforms>
   </PropertyGroup>
 
@@ -27,6 +27,22 @@
     <PackageReference Include="FoxDb.Core" Version="0.5.0"></PackageReference>
     <PackageReference Include="FoxDb.Linq" Version="0.5.0"></PackageReference>
     <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" Condition="'$(TargetFramework)' == 'net40'" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>FoxTunes</CustomToolNamespace>
+    </EmbeddedResource>
   </ItemGroup>
 
   <Import Project="$(UserProfile)\.nuget\packages\Microsoft.Bcl.Build\1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="'$(TargetFramework)' == 'net40'" />

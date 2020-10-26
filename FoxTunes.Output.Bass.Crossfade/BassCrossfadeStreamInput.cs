@@ -148,7 +148,7 @@ namespace FoxTunes
             return true;
         }
 
-        public override bool Remove(BassOutputStream stream, bool dispose)
+        public override bool Remove(BassOutputStream stream, Action<BassOutputStream> callBack)
         {
             if (!this.Queue.Contains(stream.ChannelHandle))
             {
@@ -161,20 +161,14 @@ namespace FoxTunes
             if (this.Queue.Count() == 1)
             {
                 BassUtils.OK(BassCrossfade.StreamReset(this.Behaviour.Stop));
-                if (dispose)
-                {
-                    stream.Dispose();
-                }
+                callBack(stream);
                 return true;
             }
             //Fork so fade out doesn't block the next track being enqueued.
             this.Dispatch(() =>
             {
                 BassUtils.OK(BassCrossfade.ChannelRemove(stream.ChannelHandle));
-                if (dispose)
-                {
-                    stream.Dispose();
-                }
+                callBack(stream);
             });
             return true;
         }

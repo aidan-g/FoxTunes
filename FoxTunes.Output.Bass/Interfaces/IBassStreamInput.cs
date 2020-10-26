@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace FoxTunes.Interfaces
 {
@@ -16,7 +17,7 @@ namespace FoxTunes.Interfaces
 
         bool Add(BassOutputStream stream);
 
-        bool Remove(BassOutputStream stream, bool dispose);
+        bool Remove(BassOutputStream stream, Action<BassOutputStream> callBack);
 
         void Reset();
     }

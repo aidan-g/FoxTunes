@@ -32,22 +32,25 @@ namespace FoxTunes
             return components.OrderBy(this.ComponentPriority);
         }
 
-        protected virtual bool IncludeType(Type type)
+        public virtual bool IncludeType(Type type)
         {
-            var dependency = default(ComponentDependencyAttribute);
-            if (type.HasCustomAttribute<ComponentDependencyAttribute>(out dependency))
+            var dependencies = default(IEnumerable<ComponentDependencyAttribute>);
+            if (type.HasCustomAttributes<ComponentDependencyAttribute>(out dependencies))
             {
-                if (!string.IsNullOrEmpty(dependency.Id))
+                foreach (var dependency in dependencies)
                 {
-                    throw new NotImplementedException();
-                }
-                if (!string.IsNullOrEmpty(dependency.Slot))
-                {
-                    var id = ComponentResolver.Instance.Get(dependency.Slot);
-                    if (string.Equals(id, ComponentSlots.Blocked, StringComparison.OrdinalIgnoreCase))
+                    if (!string.IsNullOrEmpty(dependency.Id))
                     {
-                        Logger.Write(this, LogLevel.Debug, "Not loading component \"{0}\": Missing dependency \"{1}\".", type.FullName, id);
-                        return false;
+                        throw new NotImplementedException();
+                    }
+                    if (!string.IsNullOrEmpty(dependency.Slot))
+                    {
+                        var id = ComponentResolver.Instance.Get(dependency.Slot);
+                        if (string.Equals(id, ComponentSlots.Blocked, StringComparison.OrdinalIgnoreCase))
+                        {
+                            Logger.Write(this, LogLevel.Debug, "Not loading component \"{0}\": Missing dependency \"{1}\".", type.FullName, dependency.Slot);
+                            return false;
+                        }
                     }
                 }
             }

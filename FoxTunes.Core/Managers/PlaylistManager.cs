@@ -488,9 +488,9 @@ namespace FoxTunes
             }
         }
 
-        public async Task Sort(Playlist playlist, PlaylistColumn playlistColumn)
+        public async Task Sort(Playlist playlist, PlaylistColumn playlistColumn, bool descending)
         {
-            using (var task = new SortPlaylistTask(playlist, playlistColumn))
+            using (var task = new SortPlaylistTask(playlist, playlistColumn, descending))
             {
                 task.InitializeComponent(this.Core);
                 await this.OnBackgroundTask(task).ConfigureAwait(false);

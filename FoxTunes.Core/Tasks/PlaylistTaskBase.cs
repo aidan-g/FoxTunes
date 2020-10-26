@@ -44,6 +44,10 @@ namespace FoxTunes
 
         public IMetaDataBrowser MetaDataBrowser { get; private set; }
 
+        public IConfiguration Configuration { get; private set; }
+
+        public TextConfigurationElement Sort { get; private set; }
+
         public override void InitializeComponent(ICore core)
         {
             this.Core = core;
@@ -53,6 +57,11 @@ namespace FoxTunes
             this.SignalEmitter = core.Components.SignalEmitter;
             this.ScriptingRuntime = core.Components.ScriptingRuntime;
             this.MetaDataBrowser = core.Components.MetaDataBrowser;
+            this.Configuration = core.Components.Configuration;
+            this.Sort = this.Configuration.GetElement<TextConfigurationElement>(
+                PlaylistBehaviourConfiguration.SECTION,
+                PlaylistBehaviourConfiguration.PRE_SORT_ORDER_ELEMENT
+            );
             base.InitializeComponent(core);
         }
 
@@ -136,7 +145,7 @@ namespace FoxTunes
             {
                 using (var transaction = this.Database.BeginTransaction(this.Database.PreferredIsolationLevel))
                 {
-                    this.Offset = await this.Database.ExecuteScalarAsync<int>(this.Database.Queries.AddLibraryHierarchyNodeToPlaylist(filter), (parameters, phase) =>
+                    this.Offset = await this.Database.ExecuteScalarAsync<int>(this.Database.Queries.AddLibraryHierarchyNodeToPlaylist(filter, this.Sort.Value), (parameters, phase) =>
                     {
                         switch (phase)
                         {
@@ -284,6 +293,11 @@ namespace FoxTunes
 
         protected virtual async Task ShiftItems(QueryOperator @operator, int at, int by)
         {
+            if (by == 0)
+            {
+                //Nothing to do.
+                return;
+            }
             Logger.Write(
                 this,
                 LogLevel.Debug,
@@ -333,7 +347,8 @@ namespace FoxTunes
             Logger.Write(this, LogLevel.Debug, "Sequencing playlist items.");
             using (var transaction = this.Database.BeginTransaction(this.Database.PreferredIsolationLevel))
             {
-                await this.Database.ExecuteAsync(this.Database.Queries.SequencePlaylistItems, (parameters, phase) =>
+                var query = this.Database.Queries.SequencePlaylistItems(this.Sort.Value);
+                await this.Database.ExecuteAsync(query, (parameters, phase) =>
                 {
                     switch (phase)
                     {
@@ -347,16 +362,14 @@ namespace FoxTunes
             }
         }
 
-        protected virtual Task SortItems(PlaylistColumn playlistColumn)
+        protected virtual Task SortItems(PlaylistColumn playlistColumn, bool descending)
         {
             switch (playlistColumn.Type)
             {
                 case PlaylistColumnType.Tag:
-                    return this.SortItemsByMetaData(MetaDataItemType.Tag, playlistColumn.Tag);
-                case PlaylistColumnType.Property:
-                    return this.SortItemsByMetaData(MetaDataItemType.Property, playlistColumn.Property);
+                    return this.SortItemsByMetaData(MetaDataItemType.Tag, playlistColumn.Tag, descending);
                 case PlaylistColumnType.Script:
-                    return this.SortItemsByScript(playlistColumn.Script);
+                    return this.SortItemsByScript(playlistColumn.Script, descending);
             }
 #if NET40
             return TaskEx.FromResult(false);
@@ -365,7 +378,7 @@ namespace FoxTunes
 #endif
         }
 
-        protected virtual Task SortItemsByMetaData(MetaDataItemType type, string value)
+        protected virtual Task SortItemsByMetaData(MetaDataItemType type, string value, bool descending)
         {
 #if NET40
             return TaskEx.FromResult(false);
@@ -374,22 +387,33 @@ namespace FoxTunes
 #endif
         }
 
-        protected virtual async Task SortItemsByScript(string script)
+        protected virtual async Task SortItemsByScript(string script, bool descending)
         {
             using (var transaction = this.Database.BeginTransaction(this.Database.PreferredIsolationLevel))
             {
                 var set = this.Database.Set<PlaylistItem>(transaction);
-                var playlistItems = set.ToList();
+                var playlistItems = set.ToArray();
                 using (var comparer = new PlaylistItemScriptComparer(script))
                 {
                     comparer.InitializeComponent(this.Core);
-                    playlistItems.Sort(comparer);
+                    Array.Sort(playlistItems, comparer);
+                    if (descending)
+                    {
+                        Array.Reverse(playlistItems);
+                    }
                 }
-                for (var a = 0; a < playlistItems.Count; a++)
+                for (var a = 0; a < playlistItems.Length; a++)
                 {
                     playlistItems[a].Sequence = a;
                 }
-                await set.AddOrUpdateAsync(playlistItems).ConfigureAwait(false);
+                await EntityHelper<PlaylistItem>.Create(
+                    this.Database,
+                    this.Database.Tables.PlaylistItem,
+                    transaction
+                ).UpdateAsync(
+                    playlistItems,
+                    new[] { nameof(PlaylistItem.Sequence) }
+                ).ConfigureAwait(false);
                 if (transaction.HasTransaction)
                 {
                     transaction.Commit();

@@ -18,22 +18,16 @@ namespace FoxTunes
 
         public static bool HasCustomAttribute<T>(this Type type, bool inherit, out T attribute) where T : Attribute
         {
-            if (!type.Assembly.ReflectionOnly)
+            if (type.Assembly.ReflectionOnly)
             {
-                return (attribute = type.GetCustomAttribute<T>(inherit)) != null;
-            }
-            var sequence = type.GetCustomAttributesData();
-            foreach (var element in sequence)
-            {
-                if (!string.Equals(element.Constructor.DeclaringType.FullName, typeof(T).FullName, StringComparison.OrdinalIgnoreCase))
+                if (!type.HasCustomAttributeData<T>(inherit))
                 {
-                    continue;
+                    attribute = default(T);
+                    return false;
                 }
-                attribute = AssemblyRegistry.Instance.GetExecutableType(type).GetCustomAttribute<T>();
-                return true;
+                type = AssemblyRegistry.Instance.GetExecutableType(type);
             }
-            attribute = default(T);
-            return false;
+            return (attribute = type.GetCustomAttribute<T>(inherit)) != null;
         }
 
         public static bool HasCustomAttributes<T>(this Type type, out IEnumerable<T> attributes) where T : Attribute
@@ -43,30 +37,26 @@ namespace FoxTunes
 
         public static bool HasCustomAttributes<T>(this Type type, bool inherit, out IEnumerable<T> attributes) where T : Attribute
         {
-            if (!type.Assembly.ReflectionOnly)
+            if (type.Assembly.ReflectionOnly)
             {
-                return (attributes = type.GetCustomAttributes<T>(inherit)).Any();
-            }
-            var sequence = type.GetCustomAttributesData();
-            var result = new List<T>();
-            foreach (var element in sequence)
-            {
-                if (!string.Equals(element.Constructor.DeclaringType.FullName, typeof(T).FullName, StringComparison.OrdinalIgnoreCase))
+                if (!type.HasCustomAttributeData<T>(inherit))
                 {
-                    continue;
+                    attributes = default(IEnumerable<T>);
+                    return false;
                 }
-                result.Add(AssemblyRegistry.Instance.GetExecutableType(type).GetCustomAttribute<T>());
+                type = AssemblyRegistry.Instance.GetExecutableType(type);
             }
-            if (result.Any())
+            return (attributes = type.GetCustomAttributes<T>(inherit)).Any();
+        }
+
+        public static bool HasCustomAttributeData<T>(this Type type, bool inherit)
+        {
+            if (inherit)
             {
-                attributes = result;
-                return true;
+                throw new NotImplementedException();
             }
-            else
-            {
-                attributes = Enumerable.Empty<T>();
-                return false;
-            }
+            var typeNames = type.GetCustomAttributesData().Select(attributeData => attributeData.Constructor.DeclaringType.FullName);
+            return typeNames.Any(typeName => string.Equals(typeName, typeof(T).FullName, StringComparison.OrdinalIgnoreCase));
         }
 
         public static T GetCustomAttribute<T>(this Type type, bool inherit = false) where T : Attribute

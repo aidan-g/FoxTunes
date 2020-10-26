@@ -12,15 +12,15 @@ namespace FoxTunes
     [Component("AF71D00F-5D47-4740-BC14-1B3E4513A1A3", ComponentSlots.None, priority: ComponentAttribute.PRIORITY_HIGH)]
     public class PlaylistCache : StandardComponent, IPlaylistCache, IDisposable
     {
-        public Playlist[] Playlists { get; private set; }
+        public Lazy<Playlist[]> Playlists { get; private set; }
 
-        public ConcurrentDictionary<Playlist, IndexedArray<PlaylistItem>> Items { get; private set; }
+        public ConcurrentDictionary<Playlist, Lazy<IndexedArray<PlaylistItem>>> Items { get; private set; }
 
-        public ConcurrentDictionary<Playlist, IndexedArray<PlaylistItem>.Index<int>> ItemsById { get; private set; }
+        public ConcurrentDictionary<Playlist, Lazy<IndexedArray<PlaylistItem>.Index<int>>> ItemsById { get; private set; }
 
-        public ConcurrentDictionary<Playlist, IndexedArray<PlaylistItem>.Index<int>> ItemsBySequence { get; private set; }
+        public ConcurrentDictionary<Playlist, Lazy<IndexedArray<PlaylistItem>.Index<int>>> ItemsBySequence { get; private set; }
 
-        public ConcurrentDictionary<Playlist, IndexedArray<PlaylistItem>.Index<int>> ItemsByLibraryId { get; private set; }
+        public ConcurrentDictionary<Playlist, Lazy<IndexedArray<PlaylistItem>.Index<int>>> ItemsByLibraryId { get; private set; }
 
         public ISignalEmitter SignalEmitter { get; private set; }
 
@@ -68,17 +68,17 @@ namespace FoxTunes
         {
             if (this.Playlists == null)
             {
-                this.Playlists = factory().ToArray();
+                this.Playlists = new Lazy<Playlist[]>(() => factory().ToArray());
             }
-            return this.Playlists;
+            return this.Playlists.Value;
         }
 
         public PlaylistItem[] GetItems(Playlist playlist, Func<IEnumerable<PlaylistItem>> factory)
         {
             return this.Items.GetOrAdd(
                 playlist,
-                key => new IndexedArray<PlaylistItem>(factory().ToArray())
-            ).InnerArray;
+                key => new Lazy<IndexedArray<PlaylistItem>>(() => new IndexedArray<PlaylistItem>(factory().ToArray()))
+            ).Value.InnerArray;
         }
 
         public bool TryGetItemById(int id, out PlaylistItem result)
@@ -87,8 +87,8 @@ namespace FoxTunes
             {
                 if (this.ItemsById.GetOrAdd(
                     pair.Key,
-                    key => pair.Value.By(playlistItem => playlistItem.Id, IndexedCollection.IndexType.Single)
-                ).TryFind(id, out result))
+                    key => new Lazy<IndexedCollection<PlaylistItem>.Index<int>>(() => pair.Value.Value.By(playlistItem => playlistItem.Id, IndexedCollection.IndexType.Single))
+                ).Value.TryFind(id, out result))
                 {
                     return true;
                 }
@@ -99,13 +99,13 @@ namespace FoxTunes
 
         public bool TryGetItemBySequence(Playlist playlist, int sequence, out PlaylistItem result)
         {
-            var playlistItems = default(IndexedArray<PlaylistItem>);
+            var playlistItems = default(Lazy<IndexedArray<PlaylistItem>>);
             if (this.Items.TryGetValue(playlist, out playlistItems))
             {
                 if (this.ItemsBySequence.GetOrAdd(
                     playlist,
-                    key => playlistItems.By(playlistItem => playlistItem.Sequence, IndexedCollection.IndexType.Single)
-                ).TryFind(sequence, out result))
+                    key => new Lazy<IndexedCollection<PlaylistItem>.Index<int>>(() => playlistItems.Value.By(playlistItem => playlistItem.Sequence, IndexedCollection.IndexType.Single))
+                ).Value.TryFind(sequence, out result))
                 {
                     return true;
                 }
@@ -121,8 +121,8 @@ namespace FoxTunes
             {
                 list.AddRange(this.ItemsById.GetOrAdd(
                     pair.Key,
-                    key => pair.Value.By(playlistItem => playlistItem.LibraryItem_Id.GetValueOrDefault(), IndexedCollection.IndexType.Multiple)
-                ).FindAll(id));
+                    key => new Lazy<IndexedCollection<PlaylistItem>.Index<int>>(() => pair.Value.Value.By(playlistItem => playlistItem.LibraryItem_Id.GetValueOrDefault(), IndexedCollection.IndexType.Multiple))
+                ).Value.FindAll(id));
             }
             if (!list.Any())
             {
@@ -136,10 +136,10 @@ namespace FoxTunes
         public void Reset()
         {
             this.Playlists = null;
-            this.Items = new ConcurrentDictionary<Playlist, IndexedArray<PlaylistItem>>();
-            this.ItemsById = new ConcurrentDictionary<Playlist, IndexedArray<PlaylistItem>.Index<int>>();
-            this.ItemsBySequence = new ConcurrentDictionary<Playlist, IndexedArray<PlaylistItem>.Index<int>>();
-            this.ItemsByLibraryId = new ConcurrentDictionary<Playlist, IndexedArray<PlaylistItem>.Index<int>>();
+            this.Items = new ConcurrentDictionary<Playlist, Lazy<IndexedArray<PlaylistItem>>>();
+            this.ItemsById = new ConcurrentDictionary<Playlist, Lazy<IndexedArray<PlaylistItem>.Index<int>>>();
+            this.ItemsBySequence = new ConcurrentDictionary<Playlist, Lazy<IndexedArray<PlaylistItem>.Index<int>>>();
+            this.ItemsByLibraryId = new ConcurrentDictionary<Playlist, Lazy<IndexedArray<PlaylistItem>.Index<int>>>();
         }
 
         public void Reset(Playlist playlist)

@@ -14,15 +14,21 @@ namespace FoxTunes
         {
         }
 
-        public override IDatabaseQuery AddLibraryHierarchyNodeToPlaylist(string filter)
+        public override IDatabaseQuery AddLibraryHierarchyNodeToPlaylist(string filter, string sort)
         {
-            var result = default(IFilterParserResult);
-            if (!string.IsNullOrEmpty(filter) && !this.FilterParser.TryParse(filter, out result))
+            var filterResult = default(IFilterParserResult);
+            var sortResult = default(ISortParserResult);
+            if (!string.IsNullOrEmpty(filter) && !this.FilterParser.TryParse(filter, out filterResult))
             {
                 //TODO: Warn, failed to parse filter.
-                result = null;
+                filterResult = null;
             }
-            var template = new AddLibraryHierarchyNodeToPlaylist(this.Database, result);
+            if (!string.IsNullOrEmpty(sort) && !this.SortParser.TryParse(sort, out sortResult))
+            {
+                //TODO: Warn, failed to parse sort.
+                sortResult = null;
+            }
+            var template = new AddLibraryHierarchyNodeToPlaylist(this.Database, filterResult, sortResult);
             return this.Database.QueryFactory.Create(
                 template.TransformText(),
                 new DatabaseQueryParameter("playlistId", DbType.Int32, 0, 0, 0, ParameterDirection.Input, false, null, DatabaseQueryParameterFlags.None),
@@ -33,17 +39,20 @@ namespace FoxTunes
             );
         }
 
-        public override IDatabaseQuery SequencePlaylistItems
+        public override IDatabaseQuery SequencePlaylistItems(string sort)
         {
-            get
+            var sortResult = default(ISortParserResult);
+            if (!string.IsNullOrEmpty(sort) && !this.SortParser.TryParse(sort, out sortResult))
             {
-                var playlistSequenceBuilder = new PlaylistSequenceBuilder(this.Database);
-                return this.Database.QueryFactory.Create(
-                    playlistSequenceBuilder.TransformText(),
-                    new DatabaseQueryParameter("playlistId", DbType.Int32, 0, 0, 0, ParameterDirection.Input, false, null, DatabaseQueryParameterFlags.None),
-                    new DatabaseQueryParameter("status", DbType.Byte, 0, 0, 0, ParameterDirection.Input, false, null, DatabaseQueryParameterFlags.None)
-                );
+                //TODO: Warn, failed to parse sort.
+                sortResult = null;
             }
+            var template = new PlaylistSequenceBuilder(this.Database, sortResult);
+            return this.Database.QueryFactory.Create(
+                template.TransformText(),
+                new DatabaseQueryParameter("playlistId", DbType.Int32, 0, 0, 0, ParameterDirection.Input, false, null, DatabaseQueryParameterFlags.None),
+                new DatabaseQueryParameter("status", DbType.Byte, 0, 0, 0, ParameterDirection.Input, false, null, DatabaseQueryParameterFlags.None)
+            );
         }
 
         public override IDatabaseQuery GetLibraryHierarchyMetaData(string filter)

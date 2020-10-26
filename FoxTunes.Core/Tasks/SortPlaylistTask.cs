@@ -8,16 +8,19 @@ namespace FoxTunes
 {
     public class SortPlaylistTask : PlaylistTaskBase
     {
-        public SortPlaylistTask(Playlist playlist, PlaylistColumn playlistColumn) : base(playlist)
+        public SortPlaylistTask(Playlist playlist, PlaylistColumn playlistColumn, bool descending) : base(playlist)
         {
             this.PlaylistColumn = playlistColumn;
+            this.Descending = descending;
         }
 
         public PlaylistColumn PlaylistColumn { get; private set; }
 
+        public bool Descending { get; private set; }
+
         protected override Task OnRun()
         {
-            return this.SortItems(this.PlaylistColumn);
+            return this.SortItems(this.PlaylistColumn, this.Descending);
         }
 
         protected override async Task OnCompleted()

@@ -2,13 +2,14 @@
 using ManagedBass.ReplayGain;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace FoxTunes
 {
     [ComponentDependency(Slot = ComponentSlots.Output)]
+    [ComponentDependency(Slot = ComponentSlots.UserInterface)] //TODO: Depends on a setting defined by BassReplayGainScannerBehaviour
     public class BassReplayGainBehaviour : StandardBehaviour, IConfigurableComponent, IDisposable
     {
         public BassReplayGainBehaviour()

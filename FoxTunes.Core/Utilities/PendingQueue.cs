@@ -50,6 +50,16 @@ namespace FoxTunes
             }
         }
 
+        public void EnqueueRange(IEnumerable<T> values)
+        {
+            lock (SyncRoot)
+            {
+                this.Queue.EnqueueRange(values);
+                this.Timer.Stop();
+                this.Timer.Start();
+            }
+        }
+
         protected virtual void OnElapsed(object sender, ElapsedEventArgs e)
         {
             try

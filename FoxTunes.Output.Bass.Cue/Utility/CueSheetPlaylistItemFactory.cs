@@ -22,10 +22,13 @@ namespace FoxTunes
             { "DATE", CommonMetaData.Year }
         };
 
+        public IOutput Output { get; private set; }
+
         public IMetaDataSourceFactory MetaDataSourceFactory { get; private set; }
 
         public override void InitializeComponent(ICore core)
         {
+            this.Output = core.Components.Output;
             this.MetaDataSourceFactory = core.Factories.MetaDataSource;
             base.InitializeComponent(core);
         }
@@ -38,17 +41,18 @@ namespace FoxTunes
             for (var a = 0; a < cueSheet.Files.Length; a++)
             {
                 var file = cueSheet.Files[a];
+                var target = this.Resolve(directoryName, file.Path);
                 var metaData = default(IEnumerable<MetaDataItem>);
                 try
                 {
                     metaData = (
-                        await metaDataSource.GetMetaData(Path.Combine(directoryName, file.Path)).ConfigureAwait(false)
+                        await metaDataSource.GetMetaData(target).ConfigureAwait(false)
                     ).ToArray();
                 }
                 catch (Exception e)
                 {
                     metaData = Enumerable.Empty<MetaDataItem>();
-                    Logger.Write(this, LogLevel.Debug, "Failed to read meta data from file \"{0}\": {1}", file.Path, e.Message);
+                    Logger.Write(this, LogLevel.Debug, "Failed to read meta data from file \"{0}\": {1}", target, e.Message);
                 }
                 for (var b = 0; b < file.Tracks.Length; b++)
                 {
@@ -56,7 +60,7 @@ namespace FoxTunes
                     if (b + 1 < file.Tracks.Length)
                     {
                         fileName = BassCueStreamAdvisor.CreateUrl(
-                            Path.Combine(directoryName, file.Path),
+                            target,
                             file.Tracks[b].Index.Time,
                             CueSheet.GetTrackLength(file.Tracks[b], file.Tracks[b + 1])
                         );
@@ -64,7 +68,7 @@ namespace FoxTunes
                     else
                     {
                         fileName = BassCueStreamAdvisor.CreateUrl(
-                            Path.Combine(directoryName, file.Path),
+                            target,
                             file.Tracks[b].Index.Time
                         );
                     }
@@ -129,6 +133,35 @@ namespace FoxTunes
             //TODO: Just don't provide any duration for now.
             metaDataItems.Remove(CommonProperties.Duration);
             return metaDataItems.Values.ToArray();
+        }
+
+        protected virtual string Resolve(string directoryName, string name)
+        {
+            var fileName = Path.Combine(directoryName, name);
+            if (File.Exists(fileName))
+            {
+                return fileName;
+            }
+            Logger.Write(this, LogLevel.Warn, "Cue sheet references non existant file \"{0}\", attempting to resolve it...", fileName);
+            return this.Resolve(Directory.GetFiles(directoryName), Path.GetFileNameWithoutExtension(name));
+        }
+
+        protected virtual string Resolve(IEnumerable<string> fileNames, string name)
+        {
+            foreach (var fileName in fileNames)
+            {
+                if (!Path.GetFileNameWithoutExtension(fileName).Equals(name, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+                if (!this.Output.IsSupported(fileName))
+                {
+                    continue;
+                }
+                Logger.Write(this, LogLevel.Warn, "Located a suitable file \"{0}\".", fileName);
+                return fileName;
+            }
+            throw new InvalidOperationException(string.Format("Cue sheet references non existant name \"{0}\".", name));
         }
     }
 }

@@ -17,7 +17,26 @@ AS
 		LEFT OUTER JOIN "MetaDataItems" 
 			ON "MetaDataItems"."Id" = "PlaylistItem_MetaDataItem"."MetaDataItem_Id"
                     OR "MetaDataItems"."Id" = "LibraryItem_MetaDataItem"."MetaDataItem_Id"
-	WHERE "PlaylistItems"."Status" = @status
+	WHERE "PlaylistItems"."Playlist_Id" = @playlistId 
+		AND "PlaylistItems"."Status" = @status
+		AND
+		(
+<#
+var first = true;
+foreach (var name in this.Names)
+{
+	if (first)
+	{
+		first = false;
+	}
+	else
+	{
+#> OR <#
+	}
+#>"MetaDataItems"."Name" = <#= this.Database.QueryFactory.Dialect.String(name) #><#
+}
+#>
+		)
 )
 ,
 "HorizontalMetaData"
@@ -30,7 +49,7 @@ AS
 		new[] { "Id", "FileName" }, 
 		new[] { "Name" }, 
 		new[] { "Value" }, 
-		this.Columns
+		this.Names
 	).TransformText() 
 #>
 )
@@ -43,15 +62,7 @@ FROM "PlaylistItems"
 		SELECT "HorizontalMetaData"."Id", ROW_NUMBER() OVER 
 		(
 			ORDER BY 
-				CASE 
-					WHEN <#= this.Database.QueryFactory.Dialect.Identifier("HorizontalMetaData", this.GetColumn(CustomMetaData.VariousArtists)) #> IS NOT NULL THEN <#= this.Database.QueryFactory.Dialect.String("1") #>
-					ELSE <#= this.Database.QueryFactory.Dialect.Identifier("HorizontalMetaData", this.GetColumn(CommonMetaData.Artist)) #> 
-				END, 
-				<#= this.Database.QueryFactory.Dialect.Identifier("HorizontalMetaData", this.GetColumn(CommonMetaData.Year)) #>, 
-				<#= this.Database.QueryFactory.Dialect.Identifier("HorizontalMetaData", this.GetColumn(CommonMetaData.Album)) #>, 
-				CAST(<#= this.Database.QueryFactory.Dialect.Identifier("HorizontalMetaData", this.GetColumn(CommonMetaData.Disc)) #> AS int), 
-				CAST(<#= this.Database.QueryFactory.Dialect.Identifier("HorizontalMetaData", this.GetColumn(CommonMetaData.Track)) #> AS int), 
-				"HorizontalMetaData"."FileName"
+<#= new PlaylistSortBuilder(this.Database, this.Sort).TransformText() #>
 		) AS "RowNumber"
 		FROM "HorizontalMetaData"
 	) AS "PlaylistItemsRowNumber" 

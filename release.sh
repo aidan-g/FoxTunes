@@ -237,6 +237,14 @@ STATISTICS="
 FoxTunes.Statistics.dll
 "
 
+LYRICS="
+FoxTunes.UI.Windows.Lyrics.dll
+"
+
+SNAPPING="
+FoxTunes.UI.Windows.Snapping.dll
+"
+
 LAYOUT="
 FoxTunes.UI.Windows.Layout.dll
 "
@@ -262,6 +270,7 @@ eq
 layout
 librarybrowser
 logger
+lyrics
 metadataeditor
 ratings
 replaygain
@@ -316,12 +325,14 @@ do
 		mkdir -p "./release/$platform/$target/Plugins/layout"
 		mkdir -p "./release/$platform/$target/Plugins/librarybrowser"
 		mkdir -p "./release/$platform/$target/Plugins/logger"
+		mkdir -p "./release/$platform/$target/Plugins/lyrics"
 		mkdir -p "./release/$platform/$target/Plugins/metadataeditor"
 		mkdir -p "./release/$platform/$target/Plugins/mod"
 		mkdir -p "./release/$platform/$target/Plugins/mod/addon"
 		mkdir -p "./release/$platform/$target/Plugins/ratings"
 		mkdir -p "./release/$platform/$target/Plugins/replaygain"
 		mkdir -p "./release/$platform/$target/Plugins/simplemetadata"
+		mkdir -p "./release/$platform/$target/Plugins/snapping"
 		mkdir -p "./release/$platform/$target/Plugins/sox"
 		mkdir -p "./release/$platform/$target/Plugins/spectrum"
 		mkdir -p "./release/$platform/$target/Plugins/sqlite"
@@ -617,6 +628,22 @@ do
 		do
 				echo $file
 				cp "./distribution/$platform/$target/$file" "./release/$platform/$target/Plugins/layout"
+		done
+		echo
+
+		echo "Creating plugin: lyrics"
+		for file in $LYRICS
+		do
+				echo $file
+				cp "./distribution/$platform/$target/$file" "./release/$platform/$target/Plugins/lyrics"
+		done
+		echo
+
+		echo "Creating plugin: snapping"
+		for file in $SNAPPING
+		do
+				echo $file
+				cp "./distribution/$platform/$target/$file" "./release/$platform/$target/Plugins/snapping"
 		done
 		echo
 

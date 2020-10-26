@@ -1,6 +1,7 @@
 ﻿using FoxTunes.Interfaces;
 using ManagedBass;
 using ManagedBass.Gapless;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -121,7 +122,7 @@ namespace FoxTunes
             return true;
         }
 
-        public override bool Remove(BassOutputStream stream, bool dispose)
+        public override bool Remove(BassOutputStream stream, Action<BassOutputStream> callBack)
         {
             if (!this.Queue.Contains(stream.ChannelHandle))
             {
@@ -130,10 +131,7 @@ namespace FoxTunes
             }
             Logger.Write(this, LogLevel.Debug, "Removing stream from the queue: {0}", stream.ChannelHandle);
             BassUtils.OK(BassGapless.ChannelRemove(stream.ChannelHandle));
-            if (dispose)
-            {
-                stream.Dispose();
-            }
+            callBack(stream);
             return true;
         }
 

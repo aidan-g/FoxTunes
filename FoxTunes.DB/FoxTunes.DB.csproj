@@ -6,7 +6,7 @@
     <OutputPath>..\distribution\$(Platform)\</OutputPath>
     <SkipEnsureBindingRedirects>true</SkipEnsureBindingRedirects>
     <SkipValidatePackageReferences>true</SkipValidatePackageReferences>
-    <AssemblyVersion>2.2.2.0</AssemblyVersion>
+    <AssemblyVersion>2.2.3.0</AssemblyVersion>
     <Platforms>x86;x64</Platforms>
   </PropertyGroup>
 
@@ -64,6 +64,19 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>LibraryHierarchyFilterBuilder.tt</DependentUpon>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+      <None Update="Templates\PlaylistSortBuilder.tt">
+  	    <Generator>TextTemplatingFilePreprocessor</Generator>
+  	    <LastGenOutput>PlaylistSortBuilder.cs</LastGenOutput>
+  	    <CustomToolNamespace>FoxTunes.Templates</CustomToolNamespace>
+      </None>
+      <Compile Update="Templates\PlaylistSortBuilder.cs">
+  	    <DesignTime>True</DesignTime>
+  	    <AutoGen>True</AutoGen>
+  	    <DependentUpon>PlaylistSortBuilder.tt</DependentUpon>
+      </Compile>
   </ItemGroup>
 
   <ItemGroup>

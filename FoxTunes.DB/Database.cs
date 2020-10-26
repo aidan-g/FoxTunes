@@ -82,7 +82,7 @@ namespace FoxTunes
 #if NET40
                 return TaskEx.FromResult(false);
 #else
-                return Task.FromResult(false);
+                return Task.CompletedTask;
 #endif
             }
             return this.Error(this, new ComponentErrorEventArgs(message, exception));

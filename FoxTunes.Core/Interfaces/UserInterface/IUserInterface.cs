@@ -12,8 +12,6 @@ namespace FoxTunes.Interfaces
 
         void Activate();
 
-        void Run(string message);
-
         void Warn(string message);
 
         void Fatal(Exception exception);

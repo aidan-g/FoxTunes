@@ -11,5 +11,7 @@
         IHierarchyManager Hierarchy { get; }
 
         IMetaDataManager MetaData { get; }
+
+        IFileActionHandlerManager FileActionHandler { get; }
     }
 }

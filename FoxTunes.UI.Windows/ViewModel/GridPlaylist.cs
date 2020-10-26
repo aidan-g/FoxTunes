@@ -1,4 +1,5 @@
-﻿using FoxDb;
+﻿#define FILE_ACTION_MANAGER_DROP_ACTION
+using FoxDb;
 using FoxTunes.Integration;
 using FoxTunes.Interfaces;
 using System;
@@ -14,6 +15,10 @@ namespace FoxTunes.ViewModel
 {
     public abstract class GridPlaylist : PlaylistBase
     {
+        public PlaylistColumn SortColumn { get; private set; }
+
+        public IFileActionHandlerManager FileActionHandlerManager { get; private set; }
+
         public IConfiguration Configuration { get; private set; }
 
         private bool _GroupingEnabled { get; set; }
@@ -67,6 +72,32 @@ namespace FoxTunes.ViewModel
         }
 
         public event EventHandler GroupingScriptChanged;
+
+        private bool _SortingEnabled { get; set; }
+
+        public bool SortingEnabled
+        {
+            get
+            {
+                return this._SortingEnabled;
+            }
+            set
+            {
+                this._SortingEnabled = value;
+                this.OnSortingEnabledChanged();
+            }
+        }
+
+        protected virtual void OnSortingEnabledChanged()
+        {
+            if (this.SortingEnabledChanged != null)
+            {
+                this.SortingEnabledChanged(this, EventArgs.Empty);
+            }
+            this.OnPropertyChanged("SortingEnabled");
+        }
+
+        public event EventHandler SortingEnabledChanged;
 
         public PlaylistGridViewColumnFactory GridViewColumnFactory { get; private set; }
 
@@ -186,6 +217,7 @@ namespace FoxTunes.ViewModel
             this.GridViewColumnFactory = new PlaylistGridViewColumnFactory(this.ScriptingRuntime);
             this.GridViewColumnFactory.PositionChanged += this.OnColumnChanged;
             this.GridViewColumnFactory.WidthChanged += this.OnColumnChanged;
+            this.FileActionHandlerManager = core.Managers.FileActionHandler;
             this.Configuration = core.Components.Configuration;
 #if NET40
             //ListView grouping is too slow under net40 due to lack of virtualization.
@@ -199,6 +231,10 @@ namespace FoxTunes.ViewModel
                 PlaylistGroupingBehaviourConfiguration.GROUP_SCRIPT_ELEMENT
             ).ConnectValue(value => this.GroupingScript = value);
 #endif
+            this.Configuration.GetElement<BooleanConfigurationElement>(
+                PlaylistBehaviourConfiguration.SECTION,
+                PlaylistBehaviourConfiguration.SORT_ENABLED_ELEMENT
+            ).ConnectValue(value => this.SortingEnabled = value);
         }
 
         protected virtual void OnSelectedItemsChanged(object sender, EventArgs e)
@@ -392,7 +428,11 @@ namespace FoxTunes.ViewModel
                 if (e.Data.GetDataPresent(DataFormats.FileDrop))
                 {
                     var paths = e.Data.GetData(DataFormats.FileDrop) as IEnumerable<string>;
+#if FILE_ACTION_MANAGER_DROP_ACTION
+                    return this.FileActionHandlerManager.RunPaths(paths);
+#else
                     return this.AddToPlaylist(paths);
+#endif
                 }
                 if (e.Data.GetDataPresent(typeof(LibraryHierarchyNode)))
                 {
@@ -410,7 +450,11 @@ namespace FoxTunes.ViewModel
                 if (ShellIDListHelper.GetDataPresent(e.Data))
                 {
                     var paths = ShellIDListHelper.GetData(e.Data);
+#if FILE_ACTION_MANAGER_DROP_ACTION
+                    return this.FileActionHandlerManager.RunPaths(paths);
+#else
                     return this.AddToPlaylist(paths);
+#endif
                 }
 #endif
             }
@@ -584,8 +628,23 @@ namespace FoxTunes.ViewModel
 
         public async Task Sort(PlaylistColumn playlistColumn)
         {
+            if (!this.SortingEnabled)
+            {
+                Logger.Write(this, LogLevel.Warn, "Sorting is disabled.");
+                return;
+            }
             var playlist = await this.GetPlaylist().ConfigureAwait(false);
-            await this.PlaylistManager.Sort(playlist, playlistColumn).ConfigureAwait(false);
+            var descending = default(bool);
+            if (object.ReferenceEquals(this.SortColumn, playlistColumn))
+            {
+                this.SortColumn = null;
+                descending = true;
+            }
+            else
+            {
+                this.SortColumn = playlistColumn;
+            }
+            await this.PlaylistManager.Sort(playlist, playlistColumn, descending).ConfigureAwait(false);
         }
 
         protected override void OnDisposing()

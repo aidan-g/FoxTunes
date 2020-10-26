@@ -76,7 +76,7 @@ namespace FoxTunes
                             break;
                         }
                         this.Description = libraryHierarchyNode.Value;
-                        await this.AddPlaylistItems(this.Database.Queries.AddLibraryHierarchyNodeToPlaylist(this.Filter), libraryHierarchyNode, transaction).ConfigureAwait(false);
+                        await this.AddPlaylistItems(this.Database.Queries.AddLibraryHierarchyNodeToPlaylist(this.Filter, this.Sort.Value), libraryHierarchyNode, transaction).ConfigureAwait(false);
                         this.Position = ++position;
                     }
                     if (transaction.HasTransaction)

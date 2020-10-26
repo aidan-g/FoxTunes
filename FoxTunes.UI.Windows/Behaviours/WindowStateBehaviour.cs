@@ -92,10 +92,10 @@ namespace FoxTunes
             {
                 this.UserInterface.WindowCreated -= this.OnWindowCreated;
                 this.UserInterface.WindowDestroyed -= this.OnWindowDestroyed;
-            }
-            foreach (var window in this.UserInterface.Windows)
-            {
-                this.Disable(window);
+                foreach (var window in this.UserInterface.Windows)
+                {
+                    this.Disable(window);
+                }
             }
         }
 

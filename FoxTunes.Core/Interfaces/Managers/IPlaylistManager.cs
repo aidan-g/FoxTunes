@@ -46,7 +46,7 @@ namespace FoxTunes.Interfaces
 
         Task Clear(Playlist playlist);
 
-        Task Sort(Playlist playlist, PlaylistColumn playlistColumn);
+        Task Sort(Playlist playlist, PlaylistColumn playlistColumn, bool descending);
 
         Playlist SelectedPlaylist { get; set; }
 

@@ -1,0 +1,30 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="FoxDb" #>
+<#@ import namespace="FoxTunes.Interfaces" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+
+<#
+foreach (var expression in this.Sort.Expressions)
+{
+	switch (expression.Operator)
+	{
+		default:
+#><#= this.Database.QueryFactory.Dialect.Identifier("HorizontalMetaData", this.GetColumn(expression.Name)) #><#			
+			break;
+		case SortParserResultOperator.Numeric:
+#>CAST(<#= this.Database.QueryFactory.Dialect.Identifier("HorizontalMetaData", this.GetColumn(expression.Name)) #> AS int)<#
+			break;
+		case SortParserResultOperator.NullCoalesce:
+#>CASE WHEN <#= this.Database.QueryFactory.Dialect.Identifier("HorizontalMetaData", this.GetColumn(expression.Name)) #> IS NOT NULL 
+		THEN <#= this.Database.QueryFactory.Dialect.String("1") #>
+		ELSE <#= this.Database.QueryFactory.Dialect.Identifier("HorizontalMetaData", this.GetColumn(expression.Child.Name)) #>
+END<#
+			break;
+	}
+#>, <#
+}
+#>
+"HorizontalMetaData"."FileName"

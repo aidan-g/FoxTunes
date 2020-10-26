@@ -6,7 +6,7 @@
 		<OutputPath>..\distribution\$(Platform)\</OutputPath>
 		<SkipEnsureBindingRedirects>true</SkipEnsureBindingRedirects>
 		<SkipValidatePackageReferences>true</SkipValidatePackageReferences>
-		<AssemblyVersion>2.2.2.0</AssemblyVersion>
+		<AssemblyVersion>2.2.3.0</AssemblyVersion>
 		<Platforms>x86;x64</Platforms>
 	</PropertyGroup>
 

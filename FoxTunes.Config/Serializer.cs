@@ -53,6 +53,7 @@ namespace FoxTunes
 
         public static IEnumerable<KeyValuePair<string, IEnumerable<KeyValuePair<string, string>>>> Load(Stream stream)
         {
+            var sections = new List<KeyValuePair<string, IEnumerable<KeyValuePair<string, string>>>>();
             using (var reader = new XmlTextReader(stream))
             {
                 reader.WhitespaceHandling = WhitespaceHandling.Significant;
@@ -62,7 +63,7 @@ namespace FoxTunes
                     var id = reader.GetAttribute(nameof(ConfigurationSection.Id));
                     Logger.Write(typeof(Serializer), LogLevel.Trace, "Loading configuration section: \"{0}\".", id);
                     reader.ReadStartElement(nameof(ConfigurationSection));
-                    yield return new KeyValuePair<string, IEnumerable<KeyValuePair<string, string>>>(id, Load(reader));
+                    sections.Add(new KeyValuePair<string, IEnumerable<KeyValuePair<string, string>>>(id, Load(reader)));
                     if (reader.NodeType == XmlNodeType.EndElement && string.Equals(reader.Name, nameof(ConfigurationSection)))
                     {
                         reader.ReadEndElement();
@@ -73,22 +74,25 @@ namespace FoxTunes
                     reader.ReadEndElement();
                 }
             }
+            return sections;
         }
 
         private static IEnumerable<KeyValuePair<string, string>> Load(XmlReader reader)
         {
+            var elements = new List<KeyValuePair<string, string>>();
             while (reader.IsStartElement(nameof(ConfigurationElement)))
             {
                 var id = reader.GetAttribute(nameof(ConfigurationElement.Id));
                 Logger.Write(typeof(Serializer), LogLevel.Trace, "Loading configuration element: \"{0}\".", id);
                 reader.ReadStartElement(nameof(ConfigurationElement));
-                yield return new KeyValuePair<string, string>(id, reader.Value);
+                elements.Add(new KeyValuePair<string, string>(id, reader.Value));
                 reader.Read(); //Done with <![CDATA[
                 if (reader.NodeType == XmlNodeType.EndElement && string.Equals(reader.Name, nameof(ConfigurationElement)))
                 {
                     reader.ReadEndElement();
                 }
             }
+            return elements;
         }
     }
 }

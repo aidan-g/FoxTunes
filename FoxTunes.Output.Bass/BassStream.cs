@@ -36,8 +36,11 @@ namespace FoxTunes
         {
             get
             {
+                if (this.Provider == null)
+                {
+                    return 0;
+                }
                 return this.Provider.GetPosition(this.ChannelHandle);
-
             }
             set
             {

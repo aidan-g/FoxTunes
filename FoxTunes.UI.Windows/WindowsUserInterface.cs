@@ -19,13 +19,9 @@ namespace FoxTunes
         {
             this.Application = new Application();
             this.Application.DispatcherUnhandledException += this.OnApplicationDispatcherUnhandledException;
-            this.Queue = new PendingQueue<KeyValuePair<IFileActionHandler, string>>(TimeSpan.FromSeconds(1));
-            this.Queue.Complete += this.OnComplete;
             WindowBase.Created += this.OnWindowCreated;
             WindowBase.Destroyed += this.OnWindowDestroyed;
         }
-
-        public CommandLineParser.OpenMode OpenMode { get; private set; }
 
         private Application _Application { get; set; }
 
@@ -53,25 +49,14 @@ namespace FoxTunes
 
         public event EventHandler ApplicationChanged;
 
-        public PendingQueue<KeyValuePair<IFileActionHandler, string>> Queue { get; private set; }
-
         public ICore Core { get; private set; }
 
         public IOutput Output { get; private set; }
-
-        public IPlaylistBrowser PlaylistBrowser { get; private set; }
-
-        public IPlaylistManager PlaylistManager { get; private set; }
-
-        public IEnumerable<IFileActionHandler> FileActionHandlers { get; private set; }
 
         public override void InitializeComponent(ICore core)
         {
             this.Core = core;
             this.Output = core.Components.Output;
-            this.PlaylistBrowser = core.Components.PlaylistBrowser;
-            this.PlaylistManager = core.Managers.Playlist;
-            this.FileActionHandlers = ComponentRegistry.Instance.GetComponents<IFileActionHandler>();
             base.InitializeComponent(core);
         }
 
@@ -113,28 +98,6 @@ namespace FoxTunes
             });
         }
 
-        public override void Run(string message)
-        {
-            var mode = default(CommandLineParser.OpenMode);
-            var paths = default(IEnumerable<string>);
-            if (!CommandLineParser.TryParse(message, out paths, out mode))
-            {
-                return;
-            }
-            this.OpenMode = mode;
-            foreach (var path in paths)
-            {
-                foreach (var handler in this.FileActionHandlers)
-                {
-                    if (handler.CanHandle(path))
-                    {
-                        this.Queue.Enqueue(new KeyValuePair<IFileActionHandler, string>(handler, path));
-                        break;
-                    }
-                }
-            }
-        }
-
         public override void Warn(string message)
         {
             MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -153,37 +116,6 @@ namespace FoxTunes
         public override void Restart()
         {
             MessageBox.Show("Restart is required.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-        }
-
-        protected virtual void OnComplete(object sender, PendingQueueEventArgs<KeyValuePair<IFileActionHandler, string>> e)
-        {
-            var task = this.OnOpen(e.Sequence);
-        }
-
-        protected virtual async Task OnOpen(IEnumerable<KeyValuePair<IFileActionHandler, string>> sequence)
-        {
-            try
-            {
-                var playlist = this.PlaylistManager.SelectedPlaylist;
-                var index = this.PlaylistBrowser.GetInsertIndex(playlist);
-                var handlers = new Dictionary<IFileActionHandler, IList<string>>();
-                foreach (var element in sequence)
-                {
-                    handlers.GetOrAdd(element.Key, key => new List<string>()).Add(element.Value);
-                }
-                foreach (var pair in handlers)
-                {
-                    await pair.Key.Handle(pair.Value).ConfigureAwait(false);
-                }
-                if (this.OpenMode == CommandLineParser.OpenMode.Play)
-                {
-                    await this.PlaylistManager.Play(playlist, index).ConfigureAwait(false);
-                }
-            }
-            finally
-            {
-                this.OpenMode = CommandLineParser.OpenMode.Default;
-            }
         }
 
         protected virtual void OnApplicationDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
@@ -238,11 +170,6 @@ namespace FoxTunes
 
         protected virtual void OnDisposing()
         {
-            if (this.Queue != null)
-            {
-                this.Queue.Complete -= this.OnComplete;
-                this.Queue.Dispose();
-            }
             WindowBase.Created -= this.OnWindowCreated;
             WindowBase.Destroyed -= this.OnWindowDestroyed;
         }

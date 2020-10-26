@@ -34,7 +34,7 @@ namespace FoxTunes
 
         public WaveFormGenerator.WaveFormGeneratorData GetOrCreate(IOutputStream stream, int resolution, Func<WaveFormGenerator.WaveFormGeneratorData> factory)
         {
-            var key = new Key(stream.FileName, resolution);
+            var key = new Key(stream.FileName, stream.Length, resolution);
             return this.Store.GetOrAdd(key, () =>
             {
                 if (this.Enabled.Value)
@@ -107,6 +107,7 @@ namespace FoxTunes
             unchecked
             {
                 hashCode = (hashCode * 29) + stream.FileName.GetHashCode();
+                hashCode = (hashCode * 29) + stream.Length.GetHashCode();
                 hashCode = (hashCode * 29) + resolution.GetHashCode();
             }
             return Math.Abs(hashCode).ToString();
@@ -114,13 +115,16 @@ namespace FoxTunes
 
         public class Key : IEquatable<Key>
         {
-            public Key(string fileName, int resolution)
+            public Key(string fileName, long length, int resolution)
             {
                 this.FileName = fileName;
+                this.Length = length;
                 this.Resolution = resolution;
             }
 
             public string FileName { get; private set; }
+
+            public long Length { get; private set; }
 
             public int Resolution { get; private set; }
 
@@ -135,6 +139,10 @@ namespace FoxTunes
                     return true;
                 }
                 if (!string.Equals(this.FileName, other.FileName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
+                if (this.Length != other.Length)
                 {
                     return false;
                 }
@@ -159,6 +167,7 @@ namespace FoxTunes
                     {
                         hashCode += this.FileName.ToLower().GetHashCode();
                     }
+                    hashCode += this.Length.GetHashCode();
                     hashCode += this.Resolution.GetHashCode();
                 }
                 return hashCode;

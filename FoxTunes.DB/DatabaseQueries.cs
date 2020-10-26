@@ -2,8 +2,6 @@
 using FoxDb.Interfaces;
 using FoxTunes.Interfaces;
 using FoxTunes.Templates;
-using System;
-using System.Collections.Generic;
 using System.Data;
 
 namespace FoxTunes
@@ -19,11 +17,14 @@ namespace FoxTunes
 
         public IFilterParser FilterParser { get; private set; }
 
+        public ISortParser SortParser { get; private set; }
+
         public override void InitializeComponent(ICore core)
         {
             if (core != null)
             {
                 this.FilterParser = core.Components.FilterParser;
+                this.SortParser = core.Components.SortParser;
             }
             base.InitializeComponent(core);
         }
@@ -43,7 +44,7 @@ namespace FoxTunes
             }
         }
 
-        public abstract IDatabaseQuery AddLibraryHierarchyNodeToPlaylist(string filter);
+        public abstract IDatabaseQuery AddLibraryHierarchyNodeToPlaylist(string filter, string sort);
 
         public IDatabaseQuery AddLibraryMetaDataItem
         {
@@ -213,7 +214,7 @@ namespace FoxTunes
             }
         }
 
-        public abstract IDatabaseQuery SequencePlaylistItems { get; }
+        public abstract IDatabaseQuery SequencePlaylistItems(string sort);
 
         public IDatabaseQuery UpdateLibraryHierarchyNode
         {

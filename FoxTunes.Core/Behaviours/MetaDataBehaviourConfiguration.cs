@@ -48,6 +48,8 @@ namespace FoxTunes
 
         public const string WRITE_TAGS_AND_STATISTICS_OPTION = "CCCC75D8-4BCA-41E4-99A1-540F78B170EE";
 
+        public const string BACKGROUND_WRITE_ELEMENT = "MMMMF522-A8F2-42A9-8F48-6EE98775E34E";
+
         public static IEnumerable<ConfigurationSection> GetConfigurationSections()
         {
             var releaseType = StandardComponents.Instance.Configuration.ReleaseType;
@@ -81,7 +83,9 @@ namespace FoxTunes
                 .WithElement(
                     new IntegerConfigurationElement(THREADS_ELEMENT, "Background Threads", path: "Advanced").WithValue(Math.Max(Environment.ProcessorCount, 4)).WithValidationRule(new IntegerValidationRule(1, 32)).DependsOn(SECTION, ENABLE_ELEMENT))
                 .WithElement(
-                    new SelectionConfigurationElement(WRITE_ELEMENT, "Write Behaviour", path: "Advanced").WithOptions(GetWriteBehaviourOptions()).DependsOn(SECTION, ENABLE_ELEMENT)
+                    new SelectionConfigurationElement(WRITE_ELEMENT, "Write Behaviour", path: "Advanced").WithOptions(GetWriteBehaviourOptions()).DependsOn(SECTION, ENABLE_ELEMENT))
+                .WithElement(
+                    new BooleanConfigurationElement(BACKGROUND_WRITE_ELEMENT, "Background Synchronizer", path: "Advanced").WithValue(releaseType == ReleaseType.Default).DependsOn(SECTION, ENABLE_ELEMENT)
             );
         }
 

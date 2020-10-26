@@ -23,10 +23,6 @@ namespace FoxTunes
 
         const string COLLAPSE_RIGHT = "DDDD";
 
-        const string DirectionLeft = "Left";
-
-        const string DirectionRight = "Right";
-
         public static readonly DependencyProperty LeftComponentProperty = DependencyProperty.Register(
             "LeftComponent",
             typeof(UIComponentConfiguration),
@@ -302,7 +298,7 @@ namespace FoxTunes
                 else
                 {
                     this.SplitterColumn.Width = new GridLength(4, GridUnitType.Pixel);
-                    if (string.Equals(this.SplitterDirection, DirectionLeft, StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(this.SplitterDirection, Enum.GetName(typeof(Dock), Dock.Left), StringComparison.OrdinalIgnoreCase))
                     {
                         this.LeftColumn.SetBinding(
                             ColumnDefinition.WidthProperty,
@@ -384,13 +380,13 @@ namespace FoxTunes
             {
                 this.SplitterDistance = "1*";
             }
-            if (this.Component.MetaData.TryGetValue(nameof(this.SplitterDirection), out splitterDirection))
+            if (this.Component.MetaData.TryGetValue(nameof(this.SplitterDirection), out splitterDirection) && IsSplitterDirectionValid(splitterDirection))
             {
                 this.SplitterDirection = splitterDirection;
             }
             else
             {
-                this.SplitterDirection = DirectionLeft;
+                this.SplitterDirection = Enum.GetName(typeof(Dock), Dock.Left);
             }
             if (this.Component.MetaData.TryGetValue(nameof(this.CollapseLeft), out collapseLeft))
             {
@@ -643,13 +639,13 @@ namespace FoxTunes
                     InvocationComponent.CATEGORY_GLOBAL,
                     FREEZE_LEFT,
                     "Freeze Left",
-                    attributes: string.Equals(this.SplitterDirection, DirectionLeft, StringComparison.OrdinalIgnoreCase) ? InvocationComponent.ATTRIBUTE_SELECTED : InvocationComponent.ATTRIBUTE_NONE
+                    attributes: string.Equals(this.SplitterDirection, Enum.GetName(typeof(Dock), Dock.Left), StringComparison.OrdinalIgnoreCase) ? InvocationComponent.ATTRIBUTE_SELECTED : InvocationComponent.ATTRIBUTE_NONE
                 );
                 yield return new InvocationComponent(
                     InvocationComponent.CATEGORY_GLOBAL,
                     FREEZE_RIGHT,
                     "Freeze Right",
-                    attributes: string.Equals(this.SplitterDirection, DirectionRight, StringComparison.OrdinalIgnoreCase) ? InvocationComponent.ATTRIBUTE_SELECTED : InvocationComponent.ATTRIBUTE_NONE
+                    attributes: string.Equals(this.SplitterDirection, Enum.GetName(typeof(Dock), Dock.Right), StringComparison.OrdinalIgnoreCase) ? InvocationComponent.ATTRIBUTE_SELECTED : InvocationComponent.ATTRIBUTE_NONE
                 );
                 yield return new InvocationComponent(
                     InvocationComponent.CATEGORY_GLOBAL,
@@ -671,15 +667,31 @@ namespace FoxTunes
             switch (component.Id)
             {
                 case FREEZE_LEFT:
-                    return Windows.Invoke(() => this.SplitterDirection = DirectionLeft);
+                    return Windows.Invoke(() => this.SplitterDirection = Enum.GetName(typeof(Dock), Dock.Left));
                 case FREEZE_RIGHT:
-                    return Windows.Invoke(() => this.SplitterDirection = DirectionRight);
+                    return Windows.Invoke(() => this.SplitterDirection = Enum.GetName(typeof(Dock), Dock.Right));
                 case COLLAPSE_LEFT:
                     return Windows.Invoke(() => this.CollapseLeft = !this.CollapseLeft);
                 case COLLAPSE_RIGHT:
                     return Windows.Invoke(() => this.CollapseRight = !this.CollapseRight);
             }
             return base.InvokeAsync(component);
+        }
+
+        public static bool IsSplitterDirectionValid(string splitterDirection)
+        {
+            if (!string.IsNullOrEmpty(splitterDirection))
+            {
+                if (string.Equals(Enum.GetName(typeof(Dock), Dock.Left), splitterDirection, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+                if (string.Equals(Enum.GetName(typeof(Dock), Dock.Right), splitterDirection, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
