@@ -1,5 +1,6 @@
 ﻿using FoxTunes.Interfaces;
 using ManagedBass;
+using ManagedBass.Substream;
 using System;
 using System.Collections.Generic;
 
@@ -7,6 +8,12 @@ namespace FoxTunes
 {
     public class BassSkipSilenceStreamAdvice : BassStreamAdvice
     {
+        static BassSkipSilenceStreamAdvice()
+        {
+            BassSubstream.Init();
+            BassSubstream.FreeParent = true;
+        }
+
         public BassSkipSilenceStreamAdvice(string fileName, TimeSpan leadIn, TimeSpan leadOut) : base(fileName)
         {
             this.LeadIn = leadIn;
@@ -36,7 +43,7 @@ namespace FoxTunes
                 ) - Bass.ChannelSeconds2Bytes(
                     channelHandle,
                     this.LeadOut.TotalSeconds
-                );
+                ) - offset;
             }
             if (offset != 0 || length != 0)
             {
@@ -44,11 +51,9 @@ namespace FoxTunes
                 {
                     length = Bass.ChannelGetLength(channelHandle, PositionFlags.Bytes) - offset;
                 }
-                stream = new BassSubstream(
+                stream = new BassStream(
                     provider,
-                    BassSubstreamHandler.CreateStream(channelHandle, offset, length, BassFlags.AutoFree),
-                    channelHandle,
-                    offset,
+                    BassSubstream.CreateStream(channelHandle, offset, length, flags),
                     length,
                     advice,
                     flags

@@ -1,5 +1,6 @@
 ﻿using FoxTunes.Interfaces;
 using ManagedBass;
+using ManagedBass.Substream;
 using System;
 using System.Collections.Generic;
 
@@ -9,7 +10,8 @@ namespace FoxTunes
     {
         static BassCueStreamAdvice()
         {
-            BassSubstreamHandler.Init();
+            BassSubstream.Init();
+            BassSubstream.FreeParent = true;
         }
 
         public BassCueStreamAdvice(string fileName, string offset, string length) : base(fileName)
@@ -40,11 +42,9 @@ namespace FoxTunes
                 {
                     length = Bass.ChannelGetLength(channelHandle, PositionFlags.Bytes) - offset;
                 }
-                stream = new BassSubstream(
+                stream = new BassStream(
                     provider,
-                    BassSubstreamHandler.CreateStream(channelHandle, offset, length, BassFlags.AutoFree),
-                    channelHandle,
-                    offset,
+                    BassSubstream.CreateStream(channelHandle, offset, length, flags),
                     length,
                     advice,
                     flags

@@ -103,8 +103,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FoxTunes.Output.Bass.Replay
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FoxTunes.Output.Bass.Cue", "FoxTunes.Output.Bass.Cue\FoxTunes.Output.Bass.Cue.csproj", "{B310D412-A0BD-4D93-8F54-6BCC35C66744}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bass_substream_handler", "bass_substream_handler\bass_substream_handler.vcxproj", "{085D0BF6-B9D1-4DF8-93CE-3364D52E1F69}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FoxTunes.Output.Bass.Mod", "FoxTunes.Output.Bass.Mod\FoxTunes.Output.Bass.Mod.csproj", "{5AB4D410-4754-4B16-B58F-917A7208951F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FoxTunes.Output.Bass.Crossfade", "FoxTunes.Output.Bass.Crossfade\FoxTunes.Output.Bass.Crossfade.csproj", "{9A08E6C9-B8BE-4091-AABA-7FE961EEF222}"
@@ -121,7 +119,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FoxTunes.Statistics", "FoxT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FoxTunes.UI.Windows.Lyrics", "FoxTunes.UI.Windows.Lyrics\FoxTunes.UI.Windows.Lyrics.csproj", "{D12DBBC4-9B7F-4266-B613-ADA2EE17F1FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoxTunes.UI.Windows.Snapping", "FoxTunes.UI.Windows.Snapping\FoxTunes.UI.Windows.Snapping.csproj", "{5F4775F6-B042-4068-B4E6-5B49A247C256}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FoxTunes.UI.Windows.Snapping", "FoxTunes.UI.Windows.Snapping\FoxTunes.UI.Windows.Snapping.csproj", "{5F4775F6-B042-4068-B4E6-5B49A247C256}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -483,14 +481,6 @@ Global
 		{B310D412-A0BD-4D93-8F54-6BCC35C66744}.Release|x64.Build.0 = Release|x64
 		{B310D412-A0BD-4D93-8F54-6BCC35C66744}.Release|x86.ActiveCfg = Release|x86
 		{B310D412-A0BD-4D93-8F54-6BCC35C66744}.Release|x86.Build.0 = Release|x86
-		{085D0BF6-B9D1-4DF8-93CE-3364D52E1F69}.Debug|x64.ActiveCfg = Release|x64
-		{085D0BF6-B9D1-4DF8-93CE-3364D52E1F69}.Debug|x64.Build.0 = Release|x64
-		{085D0BF6-B9D1-4DF8-93CE-3364D52E1F69}.Debug|x86.ActiveCfg = Release|Win32
-		{085D0BF6-B9D1-4DF8-93CE-3364D52E1F69}.Debug|x86.Build.0 = Release|Win32
-		{085D0BF6-B9D1-4DF8-93CE-3364D52E1F69}.Release|x64.ActiveCfg = Release|x64
-		{085D0BF6-B9D1-4DF8-93CE-3364D52E1F69}.Release|x64.Build.0 = Release|x64
-		{085D0BF6-B9D1-4DF8-93CE-3364D52E1F69}.Release|x86.ActiveCfg = Release|Win32
-		{085D0BF6-B9D1-4DF8-93CE-3364D52E1F69}.Release|x86.Build.0 = Release|Win32
 		{5AB4D410-4754-4B16-B58F-917A7208951F}.Debug|x64.ActiveCfg = Debug|x64
 		{5AB4D410-4754-4B16-B58F-917A7208951F}.Debug|x64.Build.0 = Debug|x64
 		{5AB4D410-4754-4B16-B58F-917A7208951F}.Debug|x86.ActiveCfg = Debug|x86

@@ -11,13 +11,13 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Platform)' == 'x86'">
-    <None Include="..\lib\x86\bass_substream_handler.dll" Link="bass_substream_handler.dll">
+    <None Include="..\lib\x86\bass_substream.dll" Link="bass_substream.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
   <ItemGroup Condition="'$(Platform)' == 'x64'">
-    <None Include="..\lib\x64\bass_substream_handler.dll" Link="bass_substream_handler.dll">
+    <None Include="..\lib\x64\bass_substream.dll" Link="bass_substream.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -26,11 +26,17 @@
     <Reference Include="ManagedBass" Condition="'$(TargetFramework)' == 'net40'">
       <HintPath>..\lib\net40\ManagedBass.dll</HintPath>
     </Reference>
+    <Reference Include="ManagedBass.Substream" Condition="'$(TargetFramework)' == 'net40'">
+      <HintPath>..\lib\net40\ManagedBass.Substream.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="ManagedBass" Condition="'$(TargetFramework)' == 'net461'">
       <HintPath>..\lib\ManagedBass.dll</HintPath>
+    </Reference>
+    <Reference Include="ManagedBass.Substream" Condition="'$(TargetFramework)' == 'net461'">
+      <HintPath>..\lib\ManagedBass.Substream.dll</HintPath>
     </Reference>
   </ItemGroup>
 
@@ -45,7 +51,7 @@
   <ItemGroup>
     <ProjectReference Include="..\FoxTunes.Output.Bass\FoxTunes.Output.Bass.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" Condition="'$(TargetFramework)' == 'net40'" />
   </ItemGroup>
