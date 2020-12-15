@@ -33,7 +33,7 @@ namespace FoxTunes.ViewModel
                 {
                     return;
                 }
-                this.OnSelectedSectionChanged();
+                this.OnSelectedSectionChanging();
                 this._SelectedSection = value;
                 this.OnSelectedSectionChanged();
             }
@@ -227,7 +227,11 @@ namespace FoxTunes.ViewModel
             this.Path = path;
             if (string.IsNullOrEmpty(this.Path))
             {
-                foreach (var element in this.Section.Elements.OrderBy(element => element.Id))
+                var elements = this.Section.Elements
+                    //Always put "Advanced" settings last.
+                    .OrderBy(element => string.IsNullOrEmpty(element.Path) || element.Path.Contains("Advanced", true))
+                    .ThenBy(element => element.Id);
+                foreach (var element in elements)
                 {
                     if (!componentSettings.MatchesFilter(this.Section, false) && !componentSettings.MatchesFilter(element))
                     {

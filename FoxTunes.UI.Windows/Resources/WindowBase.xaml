@@ -6,7 +6,7 @@
     xmlns:ViewModel="clr-namespace:FoxTunes.ViewModel;assembly=FoxTunes.UI.Windows"
     TargetType="{x:Type Window}">
     <ControlTemplate.Resources>
-        <ViewModel:WindowBase x:Key="ViewModel" Core="{Binding}"></ViewModel:WindowBase>
+        <ViewModel:WindowBase x:Key="ViewModel" Core="{TemplateBinding DataContext}"></ViewModel:WindowBase>
     </ControlTemplate.Resources>
     <Grid Background="{DynamicResource NormalBrush}">
         <Grid.LayoutTransform>

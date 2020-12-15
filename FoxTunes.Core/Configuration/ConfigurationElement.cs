@@ -133,9 +133,9 @@ namespace FoxTunes
             return this;
         }
 
-        private IDictionary<string, ISet<string>> _Dependencies;
+        private ObservableCollection<Dependency> _Dependencies;
 
-        public IDictionary<string, ISet<string>> Dependencies
+        public ObservableCollection<Dependency> Dependencies
         {
             get
             {
@@ -144,8 +144,20 @@ namespace FoxTunes
             private set
             {
                 this._Dependencies = value;
+                this.OnDependenciesChanged();
             }
         }
+
+        protected virtual void OnDependenciesChanged()
+        {
+            if (this.DependenciesChanged != null)
+            {
+                this.DependenciesChanged(this, EventArgs.Empty);
+            }
+            this.OnPropertyChanged("Dependencies");
+        }
+
+        public event EventHandler DependenciesChanged;
 
         public abstract void InitializeComponent();
 
@@ -167,11 +179,21 @@ namespace FoxTunes
 
         public ConfigurationElement DependsOn(string sectionId, string elementId)
         {
+            return this.DependsOn(new BooleanDependency(sectionId, elementId));
+        }
+
+        public ConfigurationElement DependsOn(string sectionId, string elementId, string optionId)
+        {
+            return this.DependsOn(new SelectionDependency(sectionId, elementId, optionId));
+        }
+
+        public ConfigurationElement DependsOn(Dependency dependency)
+        {
             if (this.Dependencies == null)
             {
-                this.Dependencies = new Dictionary<string, ISet<string>>(StringComparer.OrdinalIgnoreCase);
+                this.Dependencies = new ObservableCollection<Dependency>();
             }
-            this.Dependencies.GetOrAdd(sectionId, _sectionId => new HashSet<string>()).Add(elementId);
+            this.Dependencies.Add(dependency);
             return this;
         }
 

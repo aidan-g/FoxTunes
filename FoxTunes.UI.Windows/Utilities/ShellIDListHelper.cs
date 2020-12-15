@@ -1,5 +1,4 @@
-﻿#if VISTA
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -17,10 +16,10 @@ namespace FoxTunes
 
         public static IEnumerable<string> GetData(IDataObject dataObject)
         {
-            var shellItems = default(Shell.IShellItemArray);
-            Shell.SHCreateShellItemArrayFromDataObject(
+            var shellItems = default(ModernShell.IShellItemArray);
+            ModernShell.SHCreateShellItemArrayFromDataObject(
                 (global::System.Runtime.InteropServices.ComTypes.IDataObject)dataObject,
-                new Guid(Shell.InterfaceGuids.IShellItemArray),
+                new Guid(ModernShell.InterfaceGuids.IShellItemArray),
                 out shellItems
             );
 
@@ -41,19 +40,19 @@ namespace FoxTunes
             }
         }
 
-        private static IEnumerable<Shell.IShellItem> GetItems(Shell.IShellItemArray shellItems)
+        private static IEnumerable<ModernShell.IShellItem> GetItems(ModernShell.IShellItemArray shellItems)
         {
             var count = default(uint);
             shellItems.GetCount(out count);
             for (var position = default(uint); position < count; position++)
             {
-                var shellItem = default(Shell.IShellItem);
+                var shellItem = default(ModernShell.IShellItem);
                 shellItems.GetItemAt(position, out shellItem);
                 yield return shellItem;
             }
         }
 
-        private static string GetDisplayName(Shell.IShellItem shellItem, Shell.SIGDN sigdn)
+        private static string GetDisplayName(ModernShell.IShellItem shellItem, ModernShell.SIGDN sigdn)
         {
             var pointer = shellItem.GetDisplayName(sigdn);
             var result = Marshal.PtrToStringUni(pointer);
@@ -61,18 +60,18 @@ namespace FoxTunes
             return result;
         }
 
-        private static IEnumerable<string> GetFolders(Shell.IShellItem shellItem)
+        private static IEnumerable<string> GetFolders(ModernShell.IShellItem shellItem)
         {
-            var id = new Guid(Shell.ShellGuids.IShellItemArray);
-            var shellLibrary = (Shell.IShellLibrary)new Shell.ShellLibrary();
-            var shellItems = default(Shell.IShellItemArray);
+            var id = new Guid(ModernShell.InterfaceGuids.IShellItemArray);
+            var shellLibrary = (ModernShell.IShellLibrary)new ModernShell.ShellLibrary();
+            var shellItems = default(ModernShell.IShellItemArray);
             try
             {
-                shellLibrary.LoadLibraryFromItem(shellItem, Shell.AccessModes.Read);
+                shellLibrary.LoadLibraryFromItem(shellItem, ModernShell.AccessModes.Read);
                 try
                 {
-                    var result = shellLibrary.GetFolders(Shell.LibraryFolderFilter.AllItems, ref id, out shellItems);
-                    if (result == Shell.HResult.S_OK)
+                    var result = shellLibrary.GetFolders(ModernShell.LibraryFolderFilter.AllItems, ref id, out shellItems);
+                    if (result == ModernShell.HResult.S_OK)
                     {
                         foreach (var folder in GetFolders(shellItems))
                         {
@@ -91,14 +90,13 @@ namespace FoxTunes
             }
         }
 
-        private static IEnumerable<string> GetFolders(Shell.IShellItemArray shellItems)
+        private static IEnumerable<string> GetFolders(ModernShell.IShellItemArray shellItems)
         {
             foreach (var shellItem in GetItems(shellItems))
             {
-                yield return GetDisplayName(shellItem, Shell.SIGDN.DESKTOPABSOLUTEPARSING);
+                yield return GetDisplayName(shellItem, ModernShell.SIGDN.DESKTOPABSOLUTEPARSING);
                 Marshal.ReleaseComObject(shellItem);
             }
         }
     }
 }
-#endif

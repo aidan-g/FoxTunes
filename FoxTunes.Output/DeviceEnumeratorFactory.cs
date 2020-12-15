@@ -1,5 +1,4 @@
-﻿#if VISTA
-using System;
+﻿using System;
 
 namespace FoxTunes
 {
@@ -14,4 +13,3 @@ namespace FoxTunes
         }
     }
 }
-#endif

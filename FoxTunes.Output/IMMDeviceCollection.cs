@@ -1,5 +1,4 @@
-﻿#if VISTA
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 
 namespace FoxTunes
@@ -12,4 +11,3 @@ namespace FoxTunes
         int Item(int number, out IMMDevice device);
     }
 }
-#endif

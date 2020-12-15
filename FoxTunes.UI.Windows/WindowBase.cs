@@ -160,7 +160,9 @@ namespace FoxTunes
             {
                 using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(global::FoxTunes.Resources.WindowBase)))
                 {
-                    return (ControlTemplate)XamlReader.Load(stream);
+                    var template = (ControlTemplate)XamlReader.Load(stream);
+                    template.Seal();
+                    return template;
                 }
             }
         }

@@ -6,6 +6,8 @@ namespace FoxTunes
     {
         public const string SECTION = BassEncoderBehaviourConfiguration.SECTION;
 
+        public const string ENABLED_ELEMENT = BassEncoderBehaviourConfiguration.ENABLED_ELEMENT;
+
         public const string DEPTH_ELEMENT = "AAAA6691D-4FCE-427D-A563-159A6A5FCFC5";
 
         public const string DEPTH_AUTO_OPTION = "BBBB1569-442B-4F8A-9A00-3F9D033F2294";
@@ -23,6 +25,7 @@ namespace FoxTunes
             yield return new ConfigurationSection(SECTION, "Converter")
                 .WithElement(new SelectionConfigurationElement(DEPTH_ELEMENT, "Depth", path: settings.Name)
                     .WithOptions(GetDepthOptions())
+                    .DependsOn(SECTION, ENABLED_ELEMENT)
             );
         }
 

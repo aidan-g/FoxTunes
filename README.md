@@ -50,10 +50,11 @@ Various optional plugins are available;
 * ASIO - Low latency exclusive output, supports DSD direct.
 * CD - Play audio CDs from a physical drive.
 * CROSSFADE - A fading input transport: https://github.com/aidan-g/BASS_CROSSFADE
-* CUE - Play cue sheets.
+* CUE - Play cue sheets: https://github.com/aidan-g/BASS_SUBSTREAM
+  * Provides the "skip silence" feature which can trim silence from the start and end of media.
+* DirectSound - Use standard windows audio session for output.
 * DSD - Required for DSD direct.
 * DTS - Play .dts multi channel format: https://github.com/aidan-g/BASS_DTS
-* DirectSound - Use standard windows audio session for output.
 * Encoder - A converter with various output formats. 
   * Can split cue sheets with the CUE plugin.
   * Can rip CDs with the CD plugin.
@@ -63,19 +64,24 @@ Various optional plugins are available;
 * Layout - A flexible layout system with various panel types: 
 * LibraryBrowser - An album art grid interface for the library. It can use lots of memory.
 * Logging - Use Log4Net logging back-end. Can be configured and disabled.
+* Lyrics - A simple lyrics viewer and editor.
 * MetaDataEditor - A simple batch mode tag editor. Can embed artwork.
 * MOD - Play various mod music formats.
 * ParametricEqualizer - A ten band parametric equalizer.
+* Ratings - 1-5 based star rating system with several controls for viewing and editing.
 * ReplayGain - Canculate and utilize replay gain meta data for tracks and albums: https://github.com/aidan-g/BASS_REPLAY_GAIN
   * Can calculate on demand (per track) if you don't mind waiting a moment for playback.
-* Ratings - 1-5 based star rating system with several controls for viewing and editing.
 * Resampler - SOXR based high quality configurable resampler. Can perform up/down sampling: https://github.com/aidan-g/BASS_SOX
-* SQLite - Use SQLite for database functions.
 * SimpleMetaData - A meta data provider using the file path and regular expressions. Recommended for older systems.
+* Snapping - Enable winamp like window snapping.
 * Spectrum - A simple spectrum visualization.
+* SQLite - Use SQLite for database functions.
 * SqlServer - Use Microsoft SQL Server for database functions.
 * Statistics - Playback statistics like play count and last played date/time.
 * TagLib - Use TagLib for meta data functions.
+* Tempo - Adjust the tempo and pitch of media.
+* Tools - A framework for external tools.
+  * Open media with MusicBrainz Picard.
 * WASAPI - Windows Audio Session API output.
 * WaveBar - A wave form seek bar with mono and multi channel modes.
 * Windows - Global key bindings (Multi media keys), system tray icon, system media transport controls, taskbar controls.

@@ -6,6 +6,8 @@ namespace FoxTunes
     {
         public const string SECTION = BassEncoderBehaviourConfiguration.SECTION;
 
+        public const string ENABLED_ELEMENT = BassEncoderBehaviourConfiguration.ENABLED_ELEMENT;
+
         public const string DEPTH_ELEMENT = "AAAAF597-9BC4-45AD-AEA6-AEB20E515247";
 
         public const string DEPTH_AUTO_OPTION = "BBBBDEFA-1E12-4F2B-82B2-D45CBDEBE2C9";
@@ -50,20 +52,26 @@ namespace FoxTunes
         {
             yield return new ConfigurationSection(SECTION, "Converter")
                 .WithElement(new SelectionConfigurationElement(DEPTH_ELEMENT, "Depth", path: settings.Name)
-                    .WithOptions(GetDepthOptions()))
+                    .WithOptions(GetDepthOptions())
+                    .DependsOn(SECTION, ENABLED_ELEMENT))
                 .WithElement(new IntegerConfigurationElement(COMPRESSION_ELEMENT, "Compression Level", path: settings.Name)
                     .WithValue(DEFAULT_COMPRESSION)
-                    .WithValidationRule(new IntegerValidationRule(MIN_COMPRESSION, MAX_COMPRESSION)))
+                    .WithValidationRule(new IntegerValidationRule(MIN_COMPRESSION, MAX_COMPRESSION))
+                    .DependsOn(SECTION, ENABLED_ELEMENT))
                 .WithElement(new IntegerConfigurationElement(PROCESSING_ELEMENT, "Additional Processing", path: settings.Name)
                     .WithValue(DEFAULT_PROCESSING)
-                    .WithValidationRule(new IntegerValidationRule(MIN_PROCESSING, MAX_PROCESSING)))
+                    .WithValidationRule(new IntegerValidationRule(MIN_PROCESSING, MAX_PROCESSING))
+                    .DependsOn(SECTION, ENABLED_ELEMENT))
                 .WithElement(new BooleanConfigurationElement(HYBRID_ELEMENT, "Hybrid Lossy", path: settings.Name)
-                    .WithValue(false))
+                    .WithValue(false)
+                    .DependsOn(SECTION, ENABLED_ELEMENT))
                 .WithElement(new BooleanConfigurationElement(CORRECTION_ELEMENT, "Correction File", path: settings.Name)
-                    .WithValue(false).DependsOn(SECTION, HYBRID_ELEMENT))
+                    .WithValue(false).DependsOn(SECTION, HYBRID_ELEMENT)
+                    .DependsOn(SECTION, ENABLED_ELEMENT))
                 .WithElement(new IntegerConfigurationElement(BITRATE_ELEMENT, "Bitrate", path: settings.Name)
                     .WithValue(DEFAULT_BITRATE).DependsOn(SECTION, HYBRID_ELEMENT)
                     .WithValidationRule(new IntegerValidationRule(MIN_BITRATE, MAX_BITRATE))
+                    .DependsOn(SECTION, ENABLED_ELEMENT)
                 );
         }
 

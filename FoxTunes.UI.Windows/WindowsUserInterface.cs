@@ -105,7 +105,8 @@ namespace FoxTunes
 
         public override void Fatal(Exception exception)
         {
-            MessageBox.Show(exception.Message, "Fatal", MessageBoxButton.OK, MessageBoxImage.Error);
+            var message = exception.Message + Environment.NewLine + Environment.NewLine + exception.StackTrace;
+            MessageBox.Show(message, "Fatal", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         public override bool Confirm(string message)

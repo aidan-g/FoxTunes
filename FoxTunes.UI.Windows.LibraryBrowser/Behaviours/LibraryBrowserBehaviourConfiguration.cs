@@ -11,13 +11,15 @@ namespace FoxTunes
 
         const int DEFAULT_LIST_TILE_SIZE = 80;
 
+        public const string SECTION = WindowsUserInterfaceConfiguration.SECTION;
+
         public const string LIBRARY_BROWSER_VIEW = "GGHH4863-172A-40E5-B57D-EFD0DCCC8110";
 
         public const string LIBRARY_BROWSER_VIEW_GRID = "AAAADACF-67FE-4D9F-B6C9-F9AD6D7B20C2";
 
         public const string LIBRARY_BROWSER_VIEW_LIST = "BBBB0E54-FC32-4DBC-A13F-AE0B2060AC1A";
 
-        public const string LIBRARY_BROWSER_TILE_SIZE = "HHHH0E5E-FB67-43D3-AE30-BF7571A1A8B1";
+        public const string LIBRARY_BROWSER_TILE_SIZE = "IIII0E5E-FB67-43D3-AE30-BF7571A1A8B1";
 
         public const string LIBRARY_BROWSER_TILE_IMAGE = "HHIIFCBE-2AA0-4B99-9C6E-E3F196540807";
 
@@ -27,13 +29,18 @@ namespace FoxTunes
 
         public static IEnumerable<ConfigurationSection> GetConfigurationSections()
         {
-            yield return new ConfigurationSection(WindowsUserInterfaceConfiguration.SECTION, "Appearance")
+            yield return new ConfigurationSection(SECTION, "Appearance")
                 .WithElement(
-                    new SelectionConfigurationElement(LIBRARY_BROWSER_VIEW, "Library View").WithOptions(GetLibraryViewOptions()))
+                    new SelectionConfigurationElement(LIBRARY_BROWSER_VIEW, "View Type", path: "Library Browser")
+                        .WithOptions(GetLibraryViewOptions()))
                 .WithElement(
-                    new SelectionConfigurationElement(LIBRARY_BROWSER_TILE_IMAGE, "Library Tile Image", path: "Advanced").WithOptions(GetLibraryImageOptions()))
+                    new SelectionConfigurationElement(LIBRARY_BROWSER_TILE_IMAGE, "Image Type", path: "Library Browser")
+                        .WithOptions(GetLibraryImageOptions()))
                 .WithElement(
-                    new IntegerConfigurationElement(LIBRARY_BROWSER_TILE_SIZE, "Library Tile Size", path: "Advanced").WithValue(DEFAULT_GRID_TILE_SIZE).WithValidationRule(new IntegerValidationRule(60, 300, 4))
+                    new IntegerConfigurationElement(LIBRARY_BROWSER_TILE_SIZE, "Tile Size", path: "Library Browser")
+                        .WithValue(DEFAULT_GRID_TILE_SIZE)
+                        .DependsOn(SECTION, LIBRARY_BROWSER_VIEW, LIBRARY_BROWSER_VIEW_GRID)
+                        .WithValidationRule(new IntegerValidationRule(60, 300, 4))
             );
             var element = ComponentRegistry.Instance.GetComponent<IConfiguration>().GetElement<SelectionConfigurationElement>(
                 WindowsUserInterfaceConfiguration.SECTION,

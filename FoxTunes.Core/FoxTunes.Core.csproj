@@ -10,10 +10,6 @@
     <Platforms>x86;x64</Platforms>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
-    <DefineConstants>VISTA</DefineConstants>
-  </PropertyGroup>
-  
   <ItemGroup>
     <Reference Include="System.Configuration" />
     <Reference Include="Microsoft.CSharp" />

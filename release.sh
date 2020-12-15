@@ -208,7 +208,7 @@ bass_replay_gain.dll
 
 CUE="
 FoxTunes.Output.Bass.Cue.dll
-bass_substream_handler.dll
+bass_substream.dll
 "
 
 MOD="
@@ -249,6 +249,10 @@ LAYOUT="
 FoxTunes.UI.Windows.Layout.dll
 "
 
+TEMPO="
+FoxTunes.Output.Bass.Tempo.dll
+"
+
 MINIMAL="
 bass
 conf
@@ -277,6 +281,7 @@ replaygain
 sox
 spectrum
 statistics
+tempo
 tools
 wasapi
 wavebar
@@ -339,6 +344,7 @@ do
 		mkdir -p "./release/$platform/$target/Plugins/sqlserver"
 		mkdir -p "./release/$platform/$target/Plugins/statistics"
 		mkdir -p "./release/$platform/$target/Plugins/taglibmetadata"
+		mkdir -p "./release/$platform/$target/Plugins/tempo"
 		mkdir -p "./release/$platform/$target/Plugins/tools"
 		mkdir -p "./release/$platform/$target/Plugins/wasapi"
 		mkdir -p "./release/$platform/$target/Plugins/wavebar"
@@ -644,6 +650,14 @@ do
 		do
 				echo $file
 				cp "./distribution/$platform/$target/$file" "./release/$platform/$target/Plugins/snapping"
+		done
+		echo
+
+		echo "Creating plugin: tempo"
+		for file in $TEMPO
+		do
+				echo $file
+				cp "./distribution/$platform/$target/$file" "./release/$platform/$target/Plugins/tempo"
 		done
 		echo
 

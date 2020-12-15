@@ -1,5 +1,4 @@
-﻿#if VISTA
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 
 namespace FoxTunes
@@ -18,4 +17,3 @@ namespace FoxTunes
         int UnregisterEndpointNotificationCallback(IMMNotificationClient client);
     }
 }
-#endif

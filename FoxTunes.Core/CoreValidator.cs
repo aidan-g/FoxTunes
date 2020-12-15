@@ -16,15 +16,31 @@ namespace FoxTunes
 
         public bool Validate(ICore core)
         {
-            var types = typeof(ICore).Assembly.GetExportedTypes().Where(IsRequiredInterface);
+            return this.ValidateInterfaces(core) && this.ValidateSlots(core);
+        }
+
+        protected virtual bool ValidateInterfaces(ICore core)
+        {
+            var success = true;
+            var types = typeof(ICore).Assembly
+                .GetExportedTypes()
+                .Where(IsRequiredInterface);
             foreach (var type in types)
             {
                 if (ComponentRegistry.Instance.GetComponent(type) == null)
                 {
-                    Logger.Write(this, LogLevel.Error, "Required component \"{0}\" was not found.", type.Name);
-                    return false;
+                    if (core.Components.UserInterface != null)
+                    {
+                        core.Components.UserInterface.Warn(string.Format("Component missing or invalid for interface \"{0}\".", type.FullName));
+                    }
+                    success = false;
                 }
             }
+            return success;
+        }
+
+        protected virtual bool ValidateSlots(ICore core)
+        {
             var success = true;
             foreach (var key in ComponentSlots.Lookup.Keys)
             {
@@ -39,11 +55,7 @@ namespace FoxTunes
                     success = false;
                 }
             }
-            if (!success)
-            {
-                return false;
-            }
-            return true;
+            return success;
         }
 
         private static bool IsRequiredInterface(Type type)

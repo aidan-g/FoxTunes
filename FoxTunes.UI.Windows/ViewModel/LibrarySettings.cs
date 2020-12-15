@@ -17,6 +17,8 @@ namespace FoxTunes.ViewModel
 
         public IDatabaseFactory DatabaseFactory { get; private set; }
 
+        public ISignalEmitter SignalEmitter { get; private set; }
+
         private CollectionManager<LibraryHierarchy> _LibraryHierarchies { get; set; }
 
         public CollectionManager<LibraryHierarchy> LibraryHierarchies
@@ -237,6 +239,8 @@ namespace FoxTunes.ViewModel
             this.LibraryManager = this.Core.Managers.Library;
             this.HierarchyManager = this.Core.Managers.Hierarchy;
             this.DatabaseFactory = this.Core.Factories.Database;
+            this.SignalEmitter = this.Core.Components.SignalEmitter;
+            this.SignalEmitter.Signal += this.OnSignal;
             this.LibraryHierarchyLevels = new CollectionManager<LibraryHierarchyLevel>()
             {
                 ItemFactory = () =>
@@ -286,6 +290,20 @@ namespace FoxTunes.ViewModel
             await Windows.Invoke(() => this.OnIsSavingChanged()).ConfigureAwait(false);
         }
 
+        private Task OnSignal(object sender, ISignal signal)
+        {
+            switch (signal.Name)
+            {
+                case CommonSignals.SettingsUpdated:
+                    return this.Refresh();
+            }
+#if NET40
+            return TaskEx.FromResult(false);
+#else
+            return Task.CompletedTask;
+#endif
+        }
+
         protected virtual void OnSelectedValueChanged(object sender, EventArgs e)
         {
             if (this.LibraryHierarchies.SelectedValue != null)
@@ -317,6 +335,10 @@ namespace FoxTunes.ViewModel
         protected override void OnDisposing()
         {
             global::FoxTunes.BackgroundTask.ActiveChanged -= this.OnActiveChanged;
+            if (this.SignalEmitter != null)
+            {
+                this.SignalEmitter.Signal -= this.OnSignal;
+            }
             if (this.LibraryHierarchies != null)
             {
                 this.LibraryHierarchies.SelectedValueChanged -= this.OnSelectedValueChanged;

@@ -23,12 +23,12 @@ AS
 		LEFT OUTER JOIN "LibraryItem_MetaDataItem"
                 ON "LibraryItem_MetaDataItem"."LibraryItem_Id" = "PlaylistItems"."LibraryItem_Id"
 		LEFT OUTER JOIN "MetaDataItems" 
-			ON "MetaDataItems"."Id" = "PlaylistItem_MetaDataItem"."MetaDataItem_Id"
+			ON
+			(
+				"MetaDataItems"."Id" = "PlaylistItem_MetaDataItem"."MetaDataItem_Id"
                     OR "MetaDataItems"."Id" = "LibraryItem_MetaDataItem"."MetaDataItem_Id"
-	WHERE "PlaylistItems"."Playlist_Id" = @playlistId 
-		AND "PlaylistItems"."Status" = @status
-		AND
-		(
+			) AND
+			(
 <#
 var first = true;
 foreach (var name in this.Names)
@@ -44,7 +44,9 @@ foreach (var name in this.Names)
 #>"MetaDataItems"."Name" = <#= this.Database.QueryFactory.Dialect.String(name) #><#
 }
 #>
-		)
+			)
+	WHERE "PlaylistItems"."Playlist_Id" = @playlistId 
+		AND "PlaylistItems"."Status" = @status
 )
 ,
 "HorizontalMetaData"

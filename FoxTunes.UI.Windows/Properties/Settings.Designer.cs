@@ -130,5 +130,17 @@ namespace FoxTunes.Properties {
                 this["ReportWindowBounds"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0,0,0,0")]
+        public global::System.Windows.Rect TempoWindowBounds {
+            get {
+                return ((global::System.Windows.Rect)(this["TempoWindowBounds"]));
+            }
+            set {
+                this["TempoWindowBounds"] = value;
+            }
+        }
     }
 }

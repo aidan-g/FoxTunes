@@ -257,12 +257,10 @@ namespace FoxTunes.ViewModel
                 {
                     effects = DragDropEffects.Copy;
                 }
-#if VISTA
                 if (ShellIDListHelper.GetDataPresent(e.Data))
                 {
                     effects = DragDropEffects.Copy;
                 }
-#endif
             }
             catch (Exception exception)
             {
@@ -302,13 +300,11 @@ namespace FoxTunes.ViewModel
                         .OrderBy(playlistItem => playlistItem.Sequence);
                     return this.AddPlaylist(playlistItems);
                 }
-#if VISTA
                 if (ShellIDListHelper.GetDataPresent(e.Data))
                 {
                     var paths = ShellIDListHelper.GetData(e.Data);
                     return this.AddPlaylist(paths);
                 }
-#endif
             }
             catch (Exception exception)
             {

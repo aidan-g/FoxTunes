@@ -32,8 +32,11 @@ namespace FoxTunes
 
         public const string VOLUME_ELEMENT = "QQQQ1AF3-507A-426A-AE65-F118D1E71F2D";
 
+        public const string DEVICE_MONITOR_ELEMENT = "RRRRDF0E-CC69-41E2-B149-DBCDDC2622EA";
+
         public static IEnumerable<ConfigurationSection> GetConfigurationSections()
         {
+            var releaseType = StandardComponents.Instance.Configuration.ReleaseType;
             yield return new ConfigurationSection(SECTION, "Output")
                 .WithElement(new SelectionConfigurationElement(RATE_ELEMENT, "Rate", path: "Advanced").WithOptions(GetRateOptions()))
                 .WithElement(new SelectionConfigurationElement(DEPTH_ELEMENT, "Depth", path: "Advanced").WithOptions(GetDepthOptions()))
@@ -44,7 +47,8 @@ namespace FoxTunes
                 .WithElement(new IntegerConfigurationElement(BUFFER_LENGTH_ELEMENT, "Buffer Length", path: "Advanced").WithValue(500).WithValidationRule(new IntegerValidationRule(10, 5000)))
                 .WithElement(new BooleanConfigurationElement(VOLUME_ENABLED_ELEMENT, "Software Volume Control", path: "Advanced").WithValue(false))
                 .WithElement(new DoubleConfigurationElement(VOLUME_ELEMENT, "Software Volume Level", path: "Advanced").WithValue(1).WithValidationRule(new DoubleValidationRule(0, 1, 0.01)).DependsOn(SECTION, VOLUME_ENABLED_ELEMENT))
-                .WithElement(new IntegerConfigurationElement(RESAMPLE_QUALITY_ELEMENT, "Resampling Quality", path: "Advanced").WithValue(2).WithValidationRule(new IntegerValidationRule(1, 10))
+                .WithElement(new IntegerConfigurationElement(RESAMPLE_QUALITY_ELEMENT, "Resampling Quality", path: "Advanced").WithValue(2).WithValidationRule(new IntegerValidationRule(1, 10)))
+                .WithElement(new BooleanConfigurationElement(DEVICE_MONITOR_ELEMENT, "Monitor Device Settings", path: "Advanced").WithValue(releaseType == ReleaseType.Default)
             );
         }
 

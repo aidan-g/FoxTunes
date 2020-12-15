@@ -34,22 +34,40 @@ namespace FoxTunes
 
         public virtual bool IncludeType(Type type)
         {
-            var dependencies = default(IEnumerable<ComponentDependencyAttribute>);
-            if (type.HasCustomAttributes<ComponentDependencyAttribute>(out dependencies))
             {
-                foreach (var dependency in dependencies)
+                var dependencies = default(IEnumerable<PlatformDependencyAttribute>);
+                if (type.HasCustomAttributes<PlatformDependencyAttribute>(out dependencies))
                 {
-                    if (!string.IsNullOrEmpty(dependency.Id))
+                    var major = Environment.OSVersion.Version.Major;
+                    var minor = Environment.OSVersion.Version.Minor;
+                    foreach (var dependency in dependencies)
                     {
-                        throw new NotImplementedException();
-                    }
-                    if (!string.IsNullOrEmpty(dependency.Slot))
-                    {
-                        var id = ComponentResolver.Instance.Get(dependency.Slot);
-                        if (string.Equals(id, ComponentSlots.Blocked, StringComparison.OrdinalIgnoreCase))
+                        if (major < dependency.Major || minor < dependency.Minor)
                         {
-                            Logger.Write(this, LogLevel.Debug, "Not loading component \"{0}\": Missing dependency \"{1}\".", type.FullName, dependency.Slot);
+                            Logger.Write(this, LogLevel.Debug, "Not loading component \"{0}\": Requires platform {1}.{2}.", type.FullName, dependency.Major, dependency.Minor);
                             return false;
+                        }
+                    }
+                }
+            }
+            {
+                var dependencies = default(IEnumerable<ComponentDependencyAttribute>);
+                if (type.HasCustomAttributes<ComponentDependencyAttribute>(out dependencies))
+                {
+                    foreach (var dependency in dependencies)
+                    {
+                        if (!string.IsNullOrEmpty(dependency.Id))
+                        {
+                            throw new NotImplementedException();
+                        }
+                        if (!string.IsNullOrEmpty(dependency.Slot))
+                        {
+                            var id = ComponentResolver.Instance.Get(dependency.Slot);
+                            if (string.Equals(id, ComponentSlots.Blocked, StringComparison.OrdinalIgnoreCase))
+                            {
+                                Logger.Write(this, LogLevel.Debug, "Not loading component \"{0}\": Missing dependency \"{1}\".", type.FullName, dependency.Slot);
+                                return false;
+                            }
                         }
                     }
                 }

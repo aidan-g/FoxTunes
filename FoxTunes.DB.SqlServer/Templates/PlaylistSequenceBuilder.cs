@@ -19,7 +19,7 @@ namespace FoxTunes.Templates
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\personal\FoxTunes\FoxTunes.DB.SqlServer\Templates\PlaylistSequenceBuilder.tt"
+    #line 1 "C:\Source\FoxTunes\FoxTunes.DB.SqlServer\Templates\PlaylistSequenceBuilder.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "16.0.0.0")]
     public partial class PlaylistSequenceBuilder : PlaylistSequenceBuilderBase
     {
@@ -40,15 +40,15 @@ AS
         LEFT OUTER JOIN ""LibraryItem_MetaDataItem""
                 ON ""LibraryItem_MetaDataItem"".""LibraryItem_Id"" = ""PlaylistItems"".""LibraryItem_Id""
 		LEFT OUTER JOIN ""MetaDataItems"" 
-			ON ""MetaDataItems"".""Id"" = ""PlaylistItem_MetaDataItem"".""MetaDataItem_Id""
+			ON 
+			(
+				""MetaDataItems"".""Id"" = ""PlaylistItem_MetaDataItem"".""MetaDataItem_Id""
                     OR ""MetaDataItems"".""Id"" = ""LibraryItem_MetaDataItem"".""MetaDataItem_Id""
-	WHERE ""PlaylistItems"".""Playlist_Id"" = @playlistId 
-		AND ""PlaylistItems"".""Status"" = @status
-		AND
-		(
+			) AND
+			(
 ");
             
-            #line 24 "C:\personal\FoxTunes\FoxTunes.DB.SqlServer\Templates\PlaylistSequenceBuilder.tt"
+            #line 24 "C:\Source\FoxTunes\FoxTunes.DB.SqlServer\Templates\PlaylistSequenceBuilder.tt"
 
 var first = true;
 foreach (var name in this.Names)
@@ -65,7 +65,7 @@ foreach (var name in this.Names)
             #line hidden
             this.Write(" OR ");
             
-            #line 34 "C:\personal\FoxTunes\FoxTunes.DB.SqlServer\Templates\PlaylistSequenceBuilder.tt"
+            #line 34 "C:\Source\FoxTunes\FoxTunes.DB.SqlServer\Templates\PlaylistSequenceBuilder.tt"
 
 	}
 
@@ -74,22 +74,23 @@ foreach (var name in this.Names)
             #line hidden
             this.Write("\"MetaDataItems\".\"Name\" = ");
             
-            #line 36 "C:\personal\FoxTunes\FoxTunes.DB.SqlServer\Templates\PlaylistSequenceBuilder.tt"
+            #line 36 "C:\Source\FoxTunes\FoxTunes.DB.SqlServer\Templates\PlaylistSequenceBuilder.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(this.Database.QueryFactory.Dialect.String(name)));
             
             #line default
             #line hidden
             
-            #line 36 "C:\personal\FoxTunes\FoxTunes.DB.SqlServer\Templates\PlaylistSequenceBuilder.tt"
+            #line 36 "C:\Source\FoxTunes\FoxTunes.DB.SqlServer\Templates\PlaylistSequenceBuilder.tt"
 
 }
 
             
             #line default
             #line hidden
-            this.Write("\t\t)\r\n)\r\n,\r\n\"HorizontalMetaData\"\r\nAS\r\n(\r\n");
+            this.Write("\t\t\t)\r\n\tWHERE \"PlaylistItems\".\"Playlist_Id\" = @playlistId \r\n\t\tAND \"PlaylistItems\"." +
+                    "\"Status\" = @status\r\n)\r\n,\r\n\"HorizontalMetaData\"\r\nAS\r\n(\r\n");
             
-            #line 45 "C:\personal\FoxTunes\FoxTunes.DB.SqlServer\Templates\PlaylistSequenceBuilder.tt"
+            #line 47 "C:\Source\FoxTunes\FoxTunes.DB.SqlServer\Templates\PlaylistSequenceBuilder.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(new PivotViewBuilder(
 		this.Database,
 		"VerticalMetaData", 
@@ -105,7 +106,7 @@ foreach (var name in this.Names)
                     "ROM \"PlaylistItems\"\r\n\tJOIN\r\n\t(\r\n\t\tSELECT \"HorizontalMetaData\".\"Id\", ROW_NUMBER()" +
                     " OVER \r\n\t\t(\r\n\t\t\tORDER BY \r\n");
             
-            #line 65 "C:\personal\FoxTunes\FoxTunes.DB.SqlServer\Templates\PlaylistSequenceBuilder.tt"
+            #line 67 "C:\Source\FoxTunes\FoxTunes.DB.SqlServer\Templates\PlaylistSequenceBuilder.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(new PlaylistSortBuilder(this.Database, this.Sort).TransformText()));
             
             #line default

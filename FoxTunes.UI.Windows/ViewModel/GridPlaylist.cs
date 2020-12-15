@@ -397,12 +397,10 @@ namespace FoxTunes.ViewModel
                 {
                     effects = DragDropEffects.Copy;
                 }
-#if VISTA
                 if (ShellIDListHelper.GetDataPresent(e.Data))
                 {
                     effects = DragDropEffects.Copy;
                 }
-#endif
             }
             catch (Exception exception)
             {
@@ -428,11 +426,7 @@ namespace FoxTunes.ViewModel
                 if (e.Data.GetDataPresent(DataFormats.FileDrop))
                 {
                     var paths = e.Data.GetData(DataFormats.FileDrop) as IEnumerable<string>;
-#if FILE_ACTION_MANAGER_DROP_ACTION
                     return this.FileActionHandlerManager.RunPaths(paths);
-#else
-                    return this.AddToPlaylist(paths);
-#endif
                 }
                 if (e.Data.GetDataPresent(typeof(LibraryHierarchyNode)))
                 {
@@ -446,17 +440,11 @@ namespace FoxTunes.ViewModel
                         .OrderBy(playlistItem => playlistItem.Sequence);
                     return this.AddToPlaylist(playlistItems);
                 }
-#if VISTA
                 if (ShellIDListHelper.GetDataPresent(e.Data))
                 {
                     var paths = ShellIDListHelper.GetData(e.Data);
-#if FILE_ACTION_MANAGER_DROP_ACTION
                     return this.FileActionHandlerManager.RunPaths(paths);
-#else
-                    return this.AddToPlaylist(paths);
-#endif
                 }
-#endif
             }
             catch (Exception exception)
             {
@@ -467,24 +455,6 @@ namespace FoxTunes.ViewModel
 #else
             return Task.CompletedTask;
 #endif
-        }
-
-        private async Task AddToPlaylist(IEnumerable<string> paths)
-        {
-            var sequence = default(int);
-            var playlist = await this.GetPlaylist().ConfigureAwait(false);
-            if (playlist == null)
-            {
-                return;
-            }
-            if (this.TryGetInsertSequence(out sequence))
-            {
-                await this.PlaylistManager.Insert(playlist, sequence, paths, false).ConfigureAwait(false);
-            }
-            else
-            {
-                await this.PlaylistManager.Add(playlist, paths, false).ConfigureAwait(false);
-            }
         }
 
         private async Task AddToPlaylist(LibraryHierarchyNode libraryHierarchyNode)

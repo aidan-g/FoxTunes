@@ -1,5 +1,4 @@
-﻿#if VISTA
-using FoxTunes.Interfaces;
+﻿using FoxTunes.Interfaces;
 using System;
 using System.Threading.Tasks;
 
@@ -9,12 +8,19 @@ namespace FoxTunes
     {
         public static readonly TimeSpan TIMEOUT = TimeSpan.FromMilliseconds(100);
 
-        protected BassDeviceMonitorBehaviour()
+        private BassDeviceMonitorBehaviour()
         {
             this.Debouncer = new Debouncer(TIMEOUT);
         }
 
+        protected BassDeviceMonitorBehaviour(string id) : this()
+        {
+            this.Id = id;
+        }
+
         public Debouncer Debouncer { get; private set; }
+
+        public string Id { get; private set; }
 
         public IBassOutput Output { get; private set; }
 
@@ -22,22 +28,21 @@ namespace FoxTunes
 
         public IPlaybackManager PlaybackManager { get; private set; }
 
+        public IConfiguration Configuration { get; private set; }
+
+        public BooleanConfigurationElement EnabledElement { get; private set; }
+
+        public SelectionConfigurationElement OutputElement { get; private set; }
+
         public NotificationClient NotificationClient { get; private set; }
 
         new public bool IsInitialized { get; private set; }
 
-        private bool _Enabled { get; set; }
-
-        public bool Enabled
+        public bool IsEnabled
         {
             get
             {
-                return this._Enabled;
-            }
-            set
-            {
-                this._Enabled = value;
-                Logger.Write(this, LogLevel.Debug, "Enabled = {0}", this.Enabled);
+                return this.EnabledElement.Value && string.Equals(this.OutputElement.Value.Id, this.Id, StringComparison.OrdinalIgnoreCase);
             }
         }
 
@@ -48,12 +53,21 @@ namespace FoxTunes
             this.Output.Free += this.OnFree;
             this.PlaylistManager = core.Managers.Playlist;
             this.PlaybackManager = core.Managers.Playback;
+            this.Configuration = core.Components.Configuration;
+            this.EnabledElement = this.Configuration.GetElement<BooleanConfigurationElement>(
+                BassOutputConfiguration.SECTION,
+                BassOutputConfiguration.DEVICE_MONITOR_ELEMENT
+            );
+            this.OutputElement = this.Configuration.GetElement<SelectionConfigurationElement>(
+                BassOutputConfiguration.SECTION,
+                BassOutputConfiguration.OUTPUT_ELEMENT
+            );
             base.InitializeComponent(core);
         }
 
         protected virtual void OnInit(object sender, EventArgs e)
         {
-            if (!this.Enabled || this.IsInitialized)
+            if (!this.IsEnabled || this.IsInitialized)
             {
                 return;
             }
@@ -226,4 +240,3 @@ namespace FoxTunes
         }
     }
 }
-#endif

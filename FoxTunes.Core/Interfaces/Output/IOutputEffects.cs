@@ -1,11 +1,11 @@
-﻿using System;
-
-namespace FoxTunes.Interfaces
+﻿namespace FoxTunes.Interfaces
 {
     public interface IOutputEffects : IStandardComponent
     {
         IOutputVolume Volume { get; }
 
         IOutputEqualizer Equalizer { get; }
+
+        IOutputTempo Tempo { get; }
     }
 }

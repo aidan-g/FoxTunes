@@ -29,5 +29,8 @@
     <Setting Name="ReportWindowBounds" Type="System.Windows.Rect" Scope="User">
       <Value Profile="(Default)">0,0,0,0</Value>
     </Setting>
+    <Setting Name="TempoWindowBounds" Type="System.Windows.Rect" Scope="User">
+      <Value Profile="(Default)">0,0,0,0</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

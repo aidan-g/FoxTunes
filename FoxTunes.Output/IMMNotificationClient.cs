@@ -1,5 +1,4 @@
-﻿#if VISTA
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 
 namespace FoxTunes
@@ -63,4 +62,3 @@ namespace FoxTunes
         Com
     }
 }
-#endif

@@ -393,12 +393,10 @@ namespace FoxTunes.ViewModel
                 {
                     effects = DragDropEffects.Copy;
                 }
-#if VISTA
                 if (ShellIDListHelper.GetDataPresent(e.Data))
                 {
                     effects = DragDropEffects.Copy;
                 }
-#endif
             }
             catch (Exception exception)
             {
@@ -426,13 +424,11 @@ namespace FoxTunes.ViewModel
                     var paths = e.Data.GetData(DataFormats.FileDrop) as IEnumerable<string>;
                     this.Value = paths.FirstOrDefault();
                 }
-#if VISTA
                 if (ShellIDListHelper.GetDataPresent(e.Data))
                 {
                     var paths = ShellIDListHelper.GetData(e.Data);
-                    this.SetValue(paths.FirstOrDefault());
+                    this.Value = paths.FirstOrDefault();
                 }
-#endif
             }
             catch (Exception exception)
             {

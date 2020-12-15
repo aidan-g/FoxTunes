@@ -121,6 +121,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FoxTunes.UI.Windows.Lyrics"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FoxTunes.UI.Windows.Snapping", "FoxTunes.UI.Windows.Snapping\FoxTunes.UI.Windows.Snapping.csproj", "{5F4775F6-B042-4068-B4E6-5B49A247C256}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoxTunes.Output.Bass.Tempo", "FoxTunes.Output.Bass.Tempo\FoxTunes.Output.Bass.Tempo.csproj", "{52B51207-89D3-47C6-80EA-637E71D8FFF0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -553,6 +555,14 @@ Global
 		{5F4775F6-B042-4068-B4E6-5B49A247C256}.Release|x64.Build.0 = Release|x64
 		{5F4775F6-B042-4068-B4E6-5B49A247C256}.Release|x86.ActiveCfg = Release|x86
 		{5F4775F6-B042-4068-B4E6-5B49A247C256}.Release|x86.Build.0 = Release|x86
+		{52B51207-89D3-47C6-80EA-637E71D8FFF0}.Debug|x64.ActiveCfg = Debug|x64
+		{52B51207-89D3-47C6-80EA-637E71D8FFF0}.Debug|x64.Build.0 = Debug|x64
+		{52B51207-89D3-47C6-80EA-637E71D8FFF0}.Debug|x86.ActiveCfg = Debug|x86
+		{52B51207-89D3-47C6-80EA-637E71D8FFF0}.Debug|x86.Build.0 = Debug|x86
+		{52B51207-89D3-47C6-80EA-637E71D8FFF0}.Release|x64.ActiveCfg = Release|x64
+		{52B51207-89D3-47C6-80EA-637E71D8FFF0}.Release|x64.Build.0 = Release|x64
+		{52B51207-89D3-47C6-80EA-637E71D8FFF0}.Release|x86.ActiveCfg = Release|x86
+		{52B51207-89D3-47C6-80EA-637E71D8FFF0}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

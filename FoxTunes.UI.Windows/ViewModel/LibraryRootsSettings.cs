@@ -11,6 +11,10 @@ namespace FoxTunes.ViewModel
 {
     public class LibraryRootsSettings : ViewModelBase
     {
+        public ILibraryManager LibraryManager { get; private set; }
+
+        public IHierarchyManager HierarchyManager { get; private set; }
+
         public IDatabaseFactory DatabaseFactory { get; private set; }
 
         public ISignalEmitter SignalEmitter { get; private set; }
@@ -35,18 +39,13 @@ namespace FoxTunes.ViewModel
             this.OnPropertyChanged("LibraryRoots");
         }
 
-        private bool _IsSaving { get; set; }
-
         public bool IsSaving
         {
             get
             {
-                return this._IsSaving;
-            }
-            set
-            {
-                this._IsSaving = value;
-                this.OnIsSavingChanged();
+                return global::FoxTunes.BackgroundTask.Active
+                    .OfType<LibraryTaskBase>()
+                    .Any();
             }
         }
 
@@ -78,7 +77,6 @@ namespace FoxTunes.ViewModel
             var exception = default(Exception);
             try
             {
-                await Windows.Invoke(() => this.IsSaving = true).ConfigureAwait(false);
                 using (var database = this.DatabaseFactory.Create())
                 {
                     using (var task = new SingletonReentrantTask(CancellationToken.None, ComponentSlots.Database, SingletonReentrantTask.PRIORITY_HIGH, cancellationToken =>
@@ -100,15 +98,12 @@ namespace FoxTunes.ViewModel
                         await task.Run().ConfigureAwait(false);
                     }
                 }
+                await this.LibraryManager.Rescan().ConfigureAwait(false);
                 return;
             }
             catch (Exception e)
             {
                 exception = e;
-            }
-            finally
-            {
-                await Windows.Invoke(() => this.IsSaving = false).ConfigureAwait(false);
             }
             await this.OnError("Save", exception).ConfigureAwait(false);
             throw exception;
@@ -132,6 +127,9 @@ namespace FoxTunes.ViewModel
 
         public override void InitializeComponent(ICore core)
         {
+            global::FoxTunes.BackgroundTask.ActiveChanged += this.OnActiveChanged;
+            this.LibraryManager = this.Core.Managers.Library;
+            this.HierarchyManager = this.Core.Managers.Hierarchy;
             this.DatabaseFactory = this.Core.Factories.Database;
             this.SignalEmitter = this.Core.Components.SignalEmitter;
             this.SignalEmitter.Signal += this.OnSignal;
@@ -140,10 +138,16 @@ namespace FoxTunes.ViewModel
             base.InitializeComponent(core);
         }
 
+        protected virtual async void OnActiveChanged(object sender, EventArgs e)
+        {
+            await Windows.Invoke(() => this.OnIsSavingChanged()).ConfigureAwait(false);
+        }
+
         private Task OnSignal(object sender, ISignal signal)
         {
             switch (signal.Name)
             {
+                case CommonSignals.LibraryUpdated:
                 case CommonSignals.SettingsUpdated:
                     return this.Refresh();
             }
@@ -172,6 +176,7 @@ namespace FoxTunes.ViewModel
 
         protected override void OnDisposing()
         {
+            global::FoxTunes.BackgroundTask.ActiveChanged -= this.OnActiveChanged;
             if (this.SignalEmitter != null)
             {
                 this.SignalEmitter.Signal -= this.OnSignal;

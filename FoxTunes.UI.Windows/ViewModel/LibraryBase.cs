@@ -370,12 +370,10 @@ namespace FoxTunes.ViewModel
                 {
                     effects = DragDropEffects.Copy;
                 }
-#if VISTA
                 if (ShellIDListHelper.GetDataPresent(e.Data))
                 {
                     effects = DragDropEffects.Copy;
                 }
-#endif
             }
             catch (Exception exception)
             {
@@ -403,13 +401,11 @@ namespace FoxTunes.ViewModel
                     var paths = e.Data.GetData(DataFormats.FileDrop) as IEnumerable<string>;
                     return this.LibraryManager.Add(paths);
                 }
-#if VISTA
                 if (ShellIDListHelper.GetDataPresent(e.Data))
                 {
                     var paths = ShellIDListHelper.GetData(e.Data);
                     return this.LibraryManager.Add(paths);
                 }
-#endif
             }
             catch (Exception exception)
             {

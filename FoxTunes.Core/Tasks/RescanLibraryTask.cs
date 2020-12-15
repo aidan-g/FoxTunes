@@ -11,21 +11,6 @@ namespace FoxTunes
 {
     public class RescanLibraryTask : LibraryTaskBase
     {
-        public RescanLibraryTask() : this(Enumerable.Empty<string>(), Enumerable.Empty<LibraryItem>())
-        {
-
-        }
-
-        public RescanLibraryTask(IEnumerable<string> roots, IEnumerable<LibraryItem> items) : base()
-        {
-            this.Roots = roots;
-            this.Items = items;
-        }
-
-        public IEnumerable<string> Roots { get; private set; }
-
-        public IEnumerable<LibraryItem> Items { get; private set; }
-
         public override bool Visible
         {
             get
@@ -50,17 +35,9 @@ namespace FoxTunes
 
         protected override async Task OnRun()
         {
-            var roots = default(IEnumerable<string>);
-            if (this.Roots != null && this.Roots.Any())
-            {
-                roots = this.Roots;
-            }
-            else
-            {
-                roots = await this.GetRoots().ConfigureAwait(false);
-            }
+            var roots = await this.GetRoots().ConfigureAwait(false);
             await this.CheckPaths(roots).ConfigureAwait(false);
-            await this.RescanLibrary().ConfigureAwait(false);
+            await this.RescanLibrary(roots).ConfigureAwait(false);
             await this.RemoveHierarchies(LibraryItemStatus.Remove).ConfigureAwait(false);
             await this.RemoveItems(LibraryItemStatus.Remove).ConfigureAwait(false);
             await this.AddPaths(roots).ConfigureAwait(false);
@@ -78,10 +55,15 @@ namespace FoxTunes
             }
         }
 
-        protected virtual async Task RescanLibrary()
+        protected virtual async Task RescanLibrary(IEnumerable<string> paths)
         {
             var predicate = new Func<LibraryItem, bool>(libraryItem =>
             {
+                if (!paths.Any(path => libraryItem.FileName.StartsWith(path)))
+                {
+                    Logger.Write(this, LogLevel.Debug, "Removing unparented file: {0} => {1}", libraryItem.Id, libraryItem.FileName);
+                    return true;
+                }
                 var file = new FileInfo(libraryItem.FileName);
                 if (!file.Exists)
                 {
@@ -113,7 +95,7 @@ namespace FoxTunes
             {
                 using (var transaction = this.Database.BeginTransaction(this.Database.PreferredIsolationLevel))
                 {
-                    using (var libraryUpdater = new LibraryUpdater(this.Database, this.Items, predicate, action, this.Visible, transaction))
+                    using (var libraryUpdater = new LibraryUpdater(this.Database, Enumerable.Empty<LibraryItem>(), predicate, action, this.Visible, transaction))
                     {
                         libraryUpdater.InitializeComponent(this.Core);
                         await this.WithSubTask(libraryUpdater,

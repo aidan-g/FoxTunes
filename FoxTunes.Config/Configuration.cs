@@ -190,22 +190,20 @@ namespace FoxTunes
                     {
                         continue;
                     }
-                    foreach (var pair in element.Dependencies)
-                    {
-                        this.ConnectDependencies(element, pair.Key, pair.Value);
-                    }
+                    this.ConnectDependencies(element);
                 }
             }
         }
 
-        protected virtual void ConnectDependencies(ConfigurationElement element, string sectionId, IEnumerable<string> elementIds)
+        protected virtual void ConnectDependencies(ConfigurationElement element)
         {
-            var dependencies = elementIds.Select(
-                elementId => this.GetElement<BooleanConfigurationElement>(sectionId, elementId)
-            ).ToArray();
+            var dependencies = element.Dependencies.ToDictionary(
+                dependency => dependency,
+                dependency => this.GetElement(dependency.SectionId, dependency.ElementId)
+            );
             var handler = new EventHandler((sender, e) =>
             {
-                if (dependencies.All(dependency => dependency != null && dependency.Value))
+                if (dependencies.All(pair => pair.Key.Validate(pair.Value)))
                 {
                     element.Show();
                 }
@@ -214,9 +212,9 @@ namespace FoxTunes
                     element.Hide();
                 }
             });
-            foreach (var dependency in dependencies)
+            foreach (var pair in dependencies)
             {
-                dependency.ValueChanged += handler;
+                pair.Key.AddHandler(pair.Value, handler);
             }
             handler(typeof(Configuration), EventArgs.Empty);
         }

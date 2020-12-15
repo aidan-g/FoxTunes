@@ -49,7 +49,9 @@ namespace FoxTunes
             {
                 using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(Resources.Rating)))
                 {
-                    return (DataTemplate)XamlReader.Load(stream);
+                    var template = (DataTemplate)XamlReader.Load(stream);
+                    template.Seal();
+                    return template;
                 }
             }
         }

@@ -279,6 +279,8 @@ namespace FoxTunes.ViewModel
 
         protected override void OnDisposing()
         {
+            Windows.EqualizerWindowCreated -= this.OnEqualizerWindowCreated;
+            Windows.EqualizerWindowClosed -= this.OnEqualizerWindowClosed;
             if (this.Effects != null && this.Effects.Equalizer != null)
             {
                 this.Effects.Equalizer.AvailableChanged -= this.OnAvailableChanged;

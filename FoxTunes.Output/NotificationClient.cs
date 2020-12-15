@@ -1,5 +1,4 @@
-﻿#if VISTA
-using FoxTunes.Interfaces;
+﻿using FoxTunes.Interfaces;
 using System;
 using System.Threading.Tasks;
 
@@ -173,4 +172,3 @@ namespace FoxTunes
         public PropertyKey Key { get; private set; }
     }
 }
-#endif

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FoxTunes.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -28,23 +29,28 @@ namespace FoxTunes
         {
             yield return new ConfigurationSection(SECTION, "Converter")
                 .WithElement(
-                    new BooleanConfigurationElement(ENABLED_ELEMENT, "Enabled").WithValue(false))
+                    new BooleanConfigurationElement(ENABLED_ELEMENT, "Enabled")
+                        .WithValue(false))
                 .WithElement(
-                    new SelectionConfigurationElement(DESTINATION_ELEMENT, "Destination").WithOptions(GetDestinationOptions()))
+                    new SelectionConfigurationElement(DESTINATION_ELEMENT, "Destination")
+                        .WithOptions(GetDestinationOptions())
+                        .DependsOn(SECTION, ENABLED_ELEMENT))
                 .WithElement(
-                    new TextConfigurationElement(DESTINATION_LOCATION_ELEMENT, "Location").WithValue(
-                        Path.Combine(
-                            Publication.StoragePath,
-                            "Converter"
-                        )
-                    ).WithFlags(ConfigurationElementFlags.FolderName)
-                )
+                    new TextConfigurationElement(DESTINATION_LOCATION_ELEMENT, "Location")
+                        .WithValue(Path.Combine(Publication.StoragePath, "Converter"))
+                        .WithFlags(ConfigurationElementFlags.FolderName)
+                        .DependsOn(SECTION, ENABLED_ELEMENT)
+                        .DependsOn(SECTION, DESTINATION_ELEMENT, DESTINATION_SPECIFIC_OPTION))
                 .WithElement(
-                    new BooleanConfigurationElement(COPY_TAGS, "Copy Tags").WithValue(true))
+                    new BooleanConfigurationElement(COPY_TAGS, "Copy Tags")
+                    .WithValue(true)
+                    .DependsOn(SECTION, ENABLED_ELEMENT))
                 .WithElement(
-                    new IntegerConfigurationElement(THREADS_ELEMENT, "Background Threads").WithValue(Environment.ProcessorCount).WithValidationRule(new IntegerValidationRule(1, 32))
+                    new IntegerConfigurationElement(THREADS_ELEMENT, "Background Threads")
+                    .WithValue(Environment.ProcessorCount)
+                    .WithValidationRule(new IntegerValidationRule(1, 32))
+                    .DependsOn(SECTION, ENABLED_ELEMENT)
             );
-            StandardComponents.Instance.Configuration.GetElement<SelectionConfigurationElement>(SECTION, DESTINATION_ELEMENT).ConnectValue(option => UpdateConfiguration(option));
         }
 
         private static IEnumerable<SelectionConfigurationOption> GetDestinationOptions()
@@ -65,20 +71,6 @@ namespace FoxTunes
                     return BassEncoderOutputDestination.Source;
                 case DESTINATION_SPECIFIC_OPTION:
                     return BassEncoderOutputDestination.Specific;
-            }
-        }
-
-        private static void UpdateConfiguration(SelectionConfigurationOption option)
-        {
-            switch (option.Id)
-            {
-                case DESTINATION_BROWSE_OPTION:
-                case DESTINATION_SOURCE_OPTION:
-                    StandardComponents.Instance.Configuration.GetElement(SECTION, DESTINATION_LOCATION_ELEMENT).Hide();
-                    break;
-                case DESTINATION_SPECIFIC_OPTION:
-                    StandardComponents.Instance.Configuration.GetElement(SECTION, DESTINATION_LOCATION_ELEMENT).Show();
-                    break;
             }
         }
     }

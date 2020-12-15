@@ -44,6 +44,8 @@ namespace FoxTunes
 
         public int Compression { get; private set; }
 
+        public bool IgnoreErrors { get; private set; }
+
         public override void InitializeComponent(ICore core)
         {
             core.Components.Configuration.GetElement<SelectionConfigurationElement>(
@@ -54,6 +56,10 @@ namespace FoxTunes
                 FlacEncoderSettingsConfiguration.SECTION,
                 FlacEncoderSettingsConfiguration.COMPRESSION_ELEMENT
             ).ConnectValue(value => this.Compression = value);
+            core.Components.Configuration.GetElement<BooleanConfigurationElement>(
+                FlacEncoderSettingsConfiguration.SECTION,
+                FlacEncoderSettingsConfiguration.IGNORE_ERRORS_ELEMENT
+            ).ConnectValue(value => this.IgnoreErrors = value);
             base.InitializeComponent(core);
         }
 
@@ -64,15 +70,27 @@ namespace FoxTunes
             {
                 throw new NotImplementedException();
             }
-            return string.Format(
-                "--no-seektable --force-raw-format --endian=little --sign=signed --sample-rate={0} --channels={1} --bps={2} --input-size={3} - --compression-level-{4} -o \"{5}\"",
+            var length = this.GetLength(encoderItem, stream);
+            var arguments = string.Format(
+                "--no-seektable --force-raw-format --endian=little --sign=signed --sample-rate={0} --channels={1} --bps={2} - --compression-level-{3} -o \"{4}\"",
                 channelInfo.Frequency,
                 channelInfo.Channels,
                 this.GetDepth(encoderItem, stream),
-                this.GetLength(encoderItem, stream),
                 this.Compression,
                 encoderItem.OutputFileName
             );
+            if (this.IgnoreErrors)
+            {
+                arguments += " --decode-through-errors";
+            }
+            else
+            {
+                arguments += string.Format(
+                    "--input-size={0}",
+                    length
+                );
+            }
+            return arguments;
         }
 
         public override int GetDepth(EncoderItem encoderItem, IBassStream stream)
