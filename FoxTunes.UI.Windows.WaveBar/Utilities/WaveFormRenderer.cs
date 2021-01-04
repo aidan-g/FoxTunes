@@ -88,8 +88,8 @@ namespace FoxTunes
                 }
             }
 
-            this.GeneratorData = null;
-            this.RendererData = null;
+            this.GeneratorData = WaveFormGenerator.WaveFormGeneratorData.Empty;
+            this.RendererData = WaveFormRendererData.Empty;
 
             if (stream == null)
             {
@@ -307,6 +307,13 @@ namespace FoxTunes
             var center = rendererData.Height / 2.0f;
             var factor = rendererData.NormalizedPeak;
 
+            if (factor == 0)
+            {
+                //Peak has not been calculated.
+                //I don't know how this happens, but it does.
+                return;
+            }
+
             var data = generatorData.Data;
             var waveElements = rendererData.WaveElements;
             var powerElements = rendererData.PowerElements;
@@ -392,6 +399,13 @@ namespace FoxTunes
         private static void UpdateSeperate(WaveFormGenerator.WaveFormGeneratorData generatorData, WaveFormRendererData rendererData, bool rms)
         {
             var factor = rendererData.NormalizedPeak / generatorData.Channels;
+
+            if (factor == 0)
+            {
+                //Peak has not been calculated.
+                //I don't know how this happens, but it does.
+                return;
+            }
 
             var data = generatorData.Data;
             var waveElements = rendererData.WaveElements;
@@ -677,6 +691,8 @@ namespace FoxTunes
             public float Peak;
 
             public float NormalizedPeak;
+
+            public static readonly WaveFormRendererData Empty = new WaveFormRendererData();
         }
 
         public struct Int32Pair

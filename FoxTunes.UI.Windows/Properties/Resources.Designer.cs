@@ -166,7 +166,7 @@ namespace FoxTunes {
         ///    xmlns:ViewModel=&quot;clr-namespace:FoxTunes.ViewModel;assembly=FoxTunes.UI.Windows&quot;
         ///    TargetType=&quot;{x:Type Window}&quot;&gt;
         ///    &lt;ControlTemplate.Resources&gt;
-        ///        &lt;ViewModel:WindowBase x:Key=&quot;ViewModel&quot; Core=&quot;{Binding}&quot;&gt;&lt;/ViewM [rest of string was truncated]&quot;;.
+        ///        &lt;!-- We cannot set the Core property of ViewModel:WindowBase her [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string WindowBase {
             get {

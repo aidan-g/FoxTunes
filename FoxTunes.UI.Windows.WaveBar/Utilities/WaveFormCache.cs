@@ -54,6 +54,12 @@ namespace FoxTunes
             });
         }
 
+        public bool Remove(IOutputStream stream, int resolution)
+        {
+            var key = new Key(stream.FileName, stream.Length, resolution);
+            return this.Store.TryRemove(key);
+        }
+
         protected virtual bool TryLoad(string fileName, out WaveFormGenerator.WaveFormGeneratorData data)
         {
             try

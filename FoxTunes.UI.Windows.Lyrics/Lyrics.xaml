@@ -8,7 +8,9 @@
              xmlns:LocalWindows="clr-namespace:FoxTunes" 
              xmlns:ViewModel="clr-namespace:FoxTunes.ViewModel"
              xmlns:LocalViewModel="clr-namespace:FoxTunes.ViewModel"
-             mc:Ignorable="d" d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance Core:Core, IsDesignTimeCreatable=False}">
+             mc:Ignorable="d" d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance Core:Core, IsDesignTimeCreatable=False}"
+             MinWidth="200"
+             MinHeight="200">
     <UserControl.Resources>
         <LocalViewModel:Lyrics x:Key="ViewModel" Core="{Binding}"></LocalViewModel:Lyrics>
     </UserControl.Resources>

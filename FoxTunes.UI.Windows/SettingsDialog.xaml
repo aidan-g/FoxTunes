@@ -28,14 +28,20 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
                 <TreeView 
-                        ItemsSource="{Binding Sections, Source={StaticResource ViewModel}}" 
-                        Windows:TreeViewExtensions.SelectedItem="{Binding SelectedSection, Source={StaticResource ViewModel}}"
+                        ItemsSource="{Binding Pages, Source={StaticResource ViewModel}}" 
+                        Windows:TreeViewExtensions.SelectedItem="{Binding SelectedPage, Source={StaticResource ViewModel}}"
                         Windows:TreeViewExtensions.RightButtonSelect="True"
                         Margin="0,0,0,3">
                     <Windows:TreeViewExtensions.ItemContainerStyle>
                         <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
-                            <Setter Property="TreeViewItem.IsSelected" Value="{Binding IsSelected}"></Setter>
-                            <Setter Property="TreeViewItem.IsExpanded" Value="{Binding IsExpanded}"></Setter>
+                            <Setter Property="Visibility" Value="Visible"></Setter>
+                            <Setter Property="IsSelected" Value="{Binding IsSelected}"></Setter>
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded}"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsVisible}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
                         </Style>
                     </Windows:TreeViewExtensions.ItemContainerStyle>
                     <TreeView.ItemTemplate>
@@ -47,7 +53,7 @@
                 <Windows:SearchBox Grid.Row="1" SearchText="{Binding Filter, Source={StaticResource ViewModel}, UpdateSourceTrigger=PropertyChanged}" Interval="0"></Windows:SearchBox>
                 <ScrollViewer Grid.Column="1" Grid.RowSpan="2" Grid.IsSharedSizeScope="True" VerticalScrollBarVisibility="Auto" Margin="4,0,0,0" Padding="4" Background="{DynamicResource NormalBrush}">
                     <Grid>
-                        <ItemsControl ItemsSource="{Binding SelectedSection.Elements, Source={StaticResource ViewModel}}">
+                        <ItemsControl ItemsSource="{Binding SelectedPage.Elements, Source={StaticResource ViewModel}}">
                             <ItemsControl.ItemContainerStyle>
                                 <Style TargetType="{x:Type ContentPresenter}">
                                     <Style.Triggers>
@@ -105,7 +111,7 @@
                                 <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SelectedSection.HasElements, Mode=OneWay, Source={StaticResource ViewModel}}" Value="False">
+                                        <DataTrigger Binding="{Binding SelectedPage.HasElements, Mode=OneWay, Source={StaticResource ViewModel}}" Value="False">
                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                         </DataTrigger>
                                     </Style.Triggers>

@@ -1,5 +1,6 @@
 ﻿using FoxDb;
 using FoxTunes.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -41,12 +42,7 @@ namespace FoxTunes
         {
             get
             {
-                using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(Resources.PlaybackState)))
-                {
-                    var template = (DataTemplate)XamlReader.Load(stream);
-                    template.Seal();
-                    return template;
-                }
+                return TemplateFactory.Template;
             }
         }
 
@@ -85,6 +81,29 @@ namespace FoxTunes
                     Enabled = true
                 });
                 transaction.Commit();
+            }
+        }
+
+        private static class TemplateFactory
+        {
+            private static Lazy<DataTemplate> _Template = new Lazy<DataTemplate>(GetTemplate);
+
+            public static DataTemplate Template
+            {
+                get
+                {
+                    return _Template.Value;
+                }
+            }
+
+            private static DataTemplate GetTemplate()
+            {
+                using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(Resources.PlaybackState)))
+                {
+                    var template = (DataTemplate)XamlReader.Load(stream);
+                    template.Seal();
+                    return template;
+                }
             }
         }
     }

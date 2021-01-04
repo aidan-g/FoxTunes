@@ -7,6 +7,10 @@ namespace FoxTunes
 {
     public static class BassDirectSoundStreamOutputConfiguration
     {
+        public const string SECTION = BassOutputConfiguration.SECTION;
+
+        public const string OUTPUT_ELEMENT = BassOutputConfiguration.OUTPUT_ELEMENT;
+
         public const string OUTPUT_DS_OPTION = "AAAA1348-069B-4763-89CF-5ACBE53E9F75";
 
         public const string ELEMENT_DS_DEVICE = "BBBBD4A5-4DD5-4985-A373-565335084B80";
@@ -15,28 +19,28 @@ namespace FoxTunes
 
         public static IEnumerable<ConfigurationSection> GetConfigurationSections()
         {
-            yield return new ConfigurationSection(BassOutputConfiguration.SECTION, "Output")
-                .WithElement(new SelectionConfigurationElement(BassOutputConfiguration.OUTPUT_ELEMENT, "Mode")
-                    .WithOptions(new[] { new SelectionConfigurationOption(OUTPUT_DS_OPTION, "Direct Sound").Default() }))
+            yield return new ConfigurationSection(SECTION, "Output")
+                .WithElement(new SelectionConfigurationElement(OUTPUT_ELEMENT, "Mode")
+                    .WithOptions(new[] { new SelectionConfigurationOption(OUTPUT_DS_OPTION, "Direct Sound").Default() })
+                    .DependsOn(SECTION, OUTPUT_ELEMENT, OUTPUT_DS_OPTION))
                 .WithElement(new SelectionConfigurationElement(ELEMENT_DS_DEVICE, "Device", path: "Direct Sound")
-                    .WithOptions(GetDSDevices()))
+                    .WithOptions(GetDSDevices())
+                    .DependsOn(SECTION, OUTPUT_ELEMENT, OUTPUT_DS_OPTION))
                 .WithElement(new CommandConfigurationElement(ELEMENT_REFRESH, "Refresh Devices", path: "Direct Sound")
+                    .WithHandler(() =>
+                    {
+                        var element = StandardComponents.Instance.Configuration.GetElement<SelectionConfigurationElement>(
+                            BassOutputConfiguration.SECTION,
+                            ELEMENT_DS_DEVICE
+                        );
+                        if (element == null)
+                        {
+                            return;
+                        }
+                        element.WithOptions(GetDSDevices(), true);
+                    })
+                    .DependsOn(SECTION, OUTPUT_ELEMENT, OUTPUT_DS_OPTION)
             );
-            StandardComponents.Instance.Configuration.GetElement<CommandConfigurationElement>(
-                BassOutputConfiguration.SECTION,
-                ELEMENT_REFRESH
-            ).WithHandler(() =>
-            {
-                var element = StandardComponents.Instance.Configuration.GetElement<SelectionConfigurationElement>(
-                    BassOutputConfiguration.SECTION,
-                    ELEMENT_DS_DEVICE
-                );
-                if (element == null)
-                {
-                    return;
-                }
-                element.WithOptions(GetDSDevices(), true);
-            });
         }
 
         public static int GetDsDevice(SelectionConfigurationOption option)

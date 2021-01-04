@@ -1,5 +1,6 @@
 ﻿using FoxTunes.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,62 +13,62 @@ namespace FoxTunes.ViewModel
     {
         public ComponentSettings()
         {
-            this.Sections = new ObservableCollection<ConfigurationSection>();
+            this.Pages = new ObservableCollection<ComponentSettingsPage>();
         }
 
         public IConfiguration Configuration { get; private set; }
 
-        public ObservableCollection<ConfigurationSection> Sections { get; private set; }
+        public ObservableCollection<ComponentSettingsPage> Pages { get; private set; }
 
-        private ConfigurationSection _SelectedSection { get; set; }
+        private ComponentSettingsPage _SelectedPage { get; set; }
 
-        public ConfigurationSection SelectedSection
+        public ComponentSettingsPage SelectedPage
         {
             get
             {
-                return this._SelectedSection;
+                return this._SelectedPage;
             }
             set
             {
-                if (object.ReferenceEquals(this._SelectedSection, value))
+                if (object.ReferenceEquals(this._SelectedPage, value))
                 {
                     return;
                 }
-                this.OnSelectedSectionChanging();
-                this._SelectedSection = value;
-                this.OnSelectedSectionChanged();
+                this.OnSelectedPageChanging();
+                this._SelectedPage = value;
+                this.OnSelectedPageChanged();
             }
         }
 
-        protected virtual void OnSelectedSectionChanging()
+        protected virtual void OnSelectedPageChanging()
         {
-            if (this.SelectedSection != null)
+            if (this.SelectedPage != null)
             {
-                this.SelectedSection.IsSelected = false;
+                this.SelectedPage.IsSelected = false;
             }
-            if (this.SelectedSectionChanging != null)
+            if (this.SelectedPageChanging != null)
             {
-                this.SelectedSectionChanging(this, EventArgs.Empty);
+                this.SelectedPageChanging(this, EventArgs.Empty);
             }
-            this.OnPropertyChanging("SelectedSection");
+            this.OnPropertyChanging("SelectedPage");
         }
 
-        public event EventHandler SelectedSectionChanging;
+        public event EventHandler SelectedPageChanging;
 
-        protected virtual void OnSelectedSectionChanged()
+        protected virtual void OnSelectedPageChanged()
         {
-            if (this.SelectedSection != null)
+            if (this.SelectedPage != null)
             {
-                this.SelectedSection.IsSelected = true;
+                this.SelectedPage.IsSelected = true;
             }
-            if (this.SelectedSectionChanged != null)
+            if (this.SelectedPageChanged != null)
             {
-                this.SelectedSectionChanged(this, EventArgs.Empty);
+                this.SelectedPageChanged(this, EventArgs.Empty);
             }
-            this.OnPropertyChanged("SelectedSection");
+            this.OnPropertyChanged("SelectedPage");
         }
 
-        public event EventHandler SelectedSectionChanged;
+        public event EventHandler SelectedPageChanged;
 
         private string _Filter { get; set; }
 
@@ -116,8 +117,8 @@ namespace FoxTunes.ViewModel
             get
             {
                 return new Command(
-                    () => this.SelectedSection.Reset(),
-                    () => this.Configuration != null && this.SelectedSection != null
+                    () => this.SelectedPage.Reset(),
+                    () => this.SelectedPage != null
                 );
             }
         }
@@ -146,7 +147,7 @@ namespace FoxTunes.ViewModel
         {
             return Windows.Invoke(() =>
             {
-                this.Sections.Clear();
+                this.Pages.Clear();
                 foreach (var section in this.Configuration.Sections.OrderBy(section => section.Id))
                 {
                     if (section.Flags.HasFlag(ConfigurationSectionFlags.System))
@@ -158,9 +159,14 @@ namespace FoxTunes.ViewModel
                     {
                         continue;
                     }
-                    this.Sections.Add(new ConfigurationSection(this, section));
+                    var elements = section.Elements.Where(
+                        element => this.MatchesFilter(element)
+                    );
+                    var page = new ComponentSettingsPage(section.Name, elements);
+                    page.InitializeComponent(this.Core);
+                    this.Pages.Add(page);
                 }
-                this.SelectedSection = this.Sections.FirstOrDefault();
+                this.SelectedPage = this.Pages.FirstOrDefault();
             });
         }
 
@@ -208,170 +214,6 @@ namespace FoxTunes.ViewModel
         protected override Freezable CreateInstanceCore()
         {
             return new Settings();
-        }
-    }
-
-    public class ConfigurationSection : ViewModelBase, ISelectable, IExpandable
-    {
-        private ConfigurationSection()
-        {
-            this.Elements = new ObservableCollection<ConfigurationElement>();
-            this.Children = new ObservableCollection<ConfigurationSection>();
-            this.IsExpanded = true;
-        }
-
-        public ConfigurationSection(ComponentSettings componentSettings, global::FoxTunes.ConfigurationSection section, string path = null) : this()
-        {
-            this.ComponentSettings = componentSettings;
-            this.Section = section;
-            this.Path = path;
-            if (string.IsNullOrEmpty(this.Path))
-            {
-                var elements = this.Section.Elements
-                    //Always put "Advanced" settings last.
-                    .OrderBy(element => string.IsNullOrEmpty(element.Path) || element.Path.Contains("Advanced", true))
-                    .ThenBy(element => element.Id);
-                foreach (var element in elements)
-                {
-                    if (!componentSettings.MatchesFilter(this.Section, false) && !componentSettings.MatchesFilter(element))
-                    {
-                        continue;
-                    }
-                    this.AddElement(element);
-                }
-            }
-        }
-
-        public ComponentSettings ComponentSettings { get; private set; }
-
-        public ObservableCollection<ConfigurationElement> Elements { get; private set; }
-
-        public ObservableCollection<ConfigurationSection> Children { get; private set; }
-
-        public global::FoxTunes.ConfigurationSection Section { get; private set; }
-
-        public string Path { get; private set; }
-
-        public string Name
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(this.Path))
-                {
-                    return this.Section.Name;
-                }
-                return this.Path;
-            }
-        }
-
-        private bool _IsExpanded { get; set; }
-
-        public bool IsExpanded
-        {
-            get
-            {
-                return this._IsExpanded;
-            }
-            set
-            {
-                this._IsExpanded = value;
-                this.OnIsExpandedChanged();
-            }
-        }
-
-        protected virtual void OnIsExpandedChanged()
-        {
-            if (this.IsExpandedChanged != null)
-            {
-                this.IsExpandedChanged(this, EventArgs.Empty);
-            }
-            this.OnPropertyChanged("IsExpanded");
-        }
-
-        public event EventHandler IsExpandedChanged;
-
-        private bool _IsSelected { get; set; }
-
-        public bool IsSelected
-        {
-            get
-            {
-                return this._IsSelected;
-            }
-            set
-            {
-                this._IsSelected = value;
-                this.OnIsSelectedChanged();
-            }
-        }
-
-        protected virtual void OnIsSelectedChanged()
-        {
-            if (this.IsSelectedChanged != null)
-            {
-                this.IsSelectedChanged(this, EventArgs.Empty);
-            }
-            this.OnPropertyChanged("IsSelected");
-        }
-
-        public event EventHandler IsSelectedChanged;
-
-        public bool HasElements
-        {
-            get
-            {
-                return this.Elements.Any();
-            }
-        }
-
-        protected virtual void AddElement(ConfigurationElement element)
-        {
-            if (string.IsNullOrEmpty(element.Path))
-            {
-                this.Elements.Add(element);
-                return;
-            }
-            var path = element.Path.Split(global::System.IO.Path.DirectorySeparatorChar, global::System.IO.Path.AltDirectorySeparatorChar);
-            this.GetSection(path).Elements.Add(element);
-        }
-
-        protected virtual ConfigurationSection GetSection(params string[] path)
-        {
-            var section = this;
-            foreach (var segment in path)
-            {
-                section = this.GetSection(section, segment);
-            }
-            return section;
-        }
-
-        protected virtual ConfigurationSection GetSection(ConfigurationSection section, string path)
-        {
-            foreach (var child in section.Children)
-            {
-                if (string.Equals(child.Path, path, StringComparison.OrdinalIgnoreCase))
-                {
-                    return child;
-                }
-            }
-            {
-                var child = new ConfigurationSection(this.ComponentSettings, this.Section, path);
-                section.Children.Add(child);
-                return child;
-            }
-        }
-
-        public void Reset()
-        {
-            foreach (var element in this.Elements)
-            {
-                element.Reset();
-            }
-        }
-
-        protected override Freezable CreateInstanceCore()
-        {
-            return new ConfigurationSection();
         }
     }
 }

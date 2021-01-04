@@ -6,6 +6,10 @@ namespace FoxTunes
 {
     public static class BassCrossfadeStreamInputConfiguration
     {
+        public const string SECTION = BassOutputConfiguration.SECTION;
+
+        public const string INPUT_ELEMENT = BassOutputConfiguration.INPUT_ELEMENT;
+
         public const string INPUT_CROSSFADE_OPTION = "BBBBFDE4-7361-456F-AB55-85364B51C2A2";
 
         public const string MODE_ELEMENT = "AAAA0393-436D-4500-9E4C-D7A3CAE8AC28";
@@ -42,18 +46,38 @@ namespace FoxTunes
 
         public static IEnumerable<ConfigurationSection> GetConfigurationSections()
         {
-            yield return new ConfigurationSection(BassOutputConfiguration.SECTION, "Output")
-                .WithElement(new SelectionConfigurationElement(BassOutputConfiguration.INPUT_ELEMENT, "Input")
+            yield return new ConfigurationSection(SECTION, "Output")
+                .WithElement(new SelectionConfigurationElement(INPUT_ELEMENT, "Input")
                     .WithOptions(new[] { new SelectionConfigurationOption(INPUT_CROSSFADE_OPTION, "Fading") }))
-                .WithElement(new SelectionConfigurationElement(MODE_ELEMENT, "Mode", path: "Fading").WithOptions(GetModeOptions()))
-                .WithElement(new IntegerConfigurationElement(PERIOD_IN_ELEMENT, "Fade In Period", path: "Fading").WithValue(100).WithValidationRule(new IntegerValidationRule(0, 5000, step: 100)))
-                .WithElement(new IntegerConfigurationElement(PERIOD_OUT_ELEMENT, "Fade Out Period", path: "Fading").WithValue(100).WithValidationRule(new IntegerValidationRule(0, 5000, step: 100)))
-                .WithElement(new SelectionConfigurationElement(TYPE_IN_ELEMENT, "Fade In Curve", path: "Fading").WithOptions(GetTypeOptions(TYPE_OUT_QUAD_OPTION)))
-                .WithElement(new SelectionConfigurationElement(TYPE_OUT_ELEMENT, "Fade Out Curve", path: "Fading").WithOptions(GetTypeOptions(TYPE_OUT_QUAD_OPTION)))
-                .WithElement(new BooleanConfigurationElement(MIX_ELEMENT, "Crossfade", path: "Fading").WithValue(false))
-                .WithElement(new BooleanConfigurationElement(START_ELEMENT, "Start", path: "Fading").WithValue(false))
-                .WithElement(new BooleanConfigurationElement(PAUSE_RESUME_ELEMENT, "Pause/Resume", path: "Fading").WithValue(false))
-                .WithElement(new BooleanConfigurationElement(STOP_ELEMENT, "Stop", path: "Fading").WithValue(false)
+                .WithElement(new SelectionConfigurationElement(MODE_ELEMENT, "Mode", path: "Fading")
+                    .WithOptions(GetModeOptions())
+                    .DependsOn(SECTION, INPUT_ELEMENT, INPUT_CROSSFADE_OPTION))
+                .WithElement(new IntegerConfigurationElement(PERIOD_IN_ELEMENT, "Fade In Period", path: "Fading")
+                    .WithValue(100)
+                    .WithValidationRule(new IntegerValidationRule(0, 5000, step: 100))
+                    .DependsOn(SECTION, INPUT_ELEMENT, INPUT_CROSSFADE_OPTION))
+                .WithElement(new IntegerConfigurationElement(PERIOD_OUT_ELEMENT, "Fade Out Period", path: "Fading")
+                    .WithValue(100)
+                    .WithValidationRule(new IntegerValidationRule(0, 5000, step: 100))
+                    .DependsOn(SECTION, INPUT_ELEMENT, INPUT_CROSSFADE_OPTION))
+                .WithElement(new SelectionConfigurationElement(TYPE_IN_ELEMENT, "Fade In Curve", path: "Fading")
+                    .WithOptions(GetTypeOptions(TYPE_OUT_QUAD_OPTION))
+                    .DependsOn(SECTION, INPUT_ELEMENT, INPUT_CROSSFADE_OPTION))
+                .WithElement(new SelectionConfigurationElement(TYPE_OUT_ELEMENT, "Fade Out Curve", path: "Fading")
+                    .WithOptions(GetTypeOptions(TYPE_OUT_QUAD_OPTION))
+                    .DependsOn(SECTION, INPUT_ELEMENT, INPUT_CROSSFADE_OPTION))
+                .WithElement(new BooleanConfigurationElement(MIX_ELEMENT, "Crossfade", path: "Fading")
+                    .WithValue(false)
+                    .DependsOn(SECTION, INPUT_ELEMENT, INPUT_CROSSFADE_OPTION))
+                .WithElement(new BooleanConfigurationElement(START_ELEMENT, "Start", path: "Fading")
+                    .WithValue(false)
+                    .DependsOn(SECTION, INPUT_ELEMENT, INPUT_CROSSFADE_OPTION))
+                .WithElement(new BooleanConfigurationElement(PAUSE_RESUME_ELEMENT, "Pause/Resume", path: "Fading")
+                    .WithValue(false)
+                    .DependsOn(SECTION, INPUT_ELEMENT, INPUT_CROSSFADE_OPTION))
+                .WithElement(new BooleanConfigurationElement(STOP_ELEMENT, "Stop", path: "Fading")
+                    .WithValue(false)
+                    .DependsOn(SECTION, INPUT_ELEMENT, INPUT_CROSSFADE_OPTION)
             );
         }
 

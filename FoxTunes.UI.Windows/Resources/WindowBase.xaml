@@ -6,7 +6,9 @@
     xmlns:ViewModel="clr-namespace:FoxTunes.ViewModel;assembly=FoxTunes.UI.Windows"
     TargetType="{x:Type Window}">
     <ControlTemplate.Resources>
-        <ViewModel:WindowBase x:Key="ViewModel" Core="{TemplateBinding DataContext}"></ViewModel:WindowBase>
+        <!-- We cannot set the Core property of ViewModel:WindowBase here. Tried {Binding}, {TemplateBinding DataContext} and {RelativeSource FindAncestor ... Window.DataContext}. -->
+        <!-- It seems only one instance of ViewModel:WindowBase is ever created so I'm not sure how a binding based on the current window would even work. -->
+        <ViewModel:WindowBase x:Key="ViewModel"></ViewModel:WindowBase>
     </ControlTemplate.Resources>
     <Grid Background="{DynamicResource NormalBrush}">
         <Grid.LayoutTransform>

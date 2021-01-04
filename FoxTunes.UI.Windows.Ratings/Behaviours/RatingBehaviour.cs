@@ -47,12 +47,7 @@ namespace FoxTunes
         {
             get
             {
-                using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(Resources.Rating)))
-                {
-                    var template = (DataTemplate)XamlReader.Load(stream);
-                    template.Seal();
-                    return template;
-                }
+                return TemplateFactory.Template;
             }
         }
 
@@ -282,6 +277,29 @@ namespace FoxTunes
 #endif
             }
             return this.RatingManager.SetRating(this.PlaylistManager.SelectedItems, rating);
+        }
+
+        private static class TemplateFactory
+        {
+            private static Lazy<DataTemplate> _Template = new Lazy<DataTemplate>(GetTemplate);
+
+            public static DataTemplate Template
+            {
+                get
+                {
+                    return _Template.Value;
+                }
+            }
+
+            private static DataTemplate GetTemplate()
+            {
+                using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(Resources.Rating)))
+                {
+                    var template = (DataTemplate)XamlReader.Load(stream);
+                    template.Seal();
+                    return template;
+                }
+            }
         }
     }
 }

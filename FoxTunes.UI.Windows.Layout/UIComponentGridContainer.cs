@@ -230,15 +230,12 @@ namespace FoxTunes
 
         public override Task InvokeAsync(IInvocationComponent component)
         {
-            switch (component.Id)
-            {
-                case ADD:
-                    return this.Add();
-            }
             if (component.Source is UIComponentContainer container)
             {
                 switch (component.Id)
                 {
+                    case ADD:
+                        return this.Add(container);
                     case REMOVE:
                         return this.Remove(container);
                     case MOVE_LEFT:
@@ -253,6 +250,14 @@ namespace FoxTunes
                         return this.SetAlignment(container, AlignRight);
                 }
             }
+            else
+            {
+                switch (component.Id)
+                {
+                    case ADD:
+                        return this.Add();
+                }
+            }
             return base.InvokeAsync(component);
         }
 
@@ -261,6 +266,22 @@ namespace FoxTunes
             return Windows.Invoke(() =>
             {
                 this.Component.Children.Add(new UIComponentConfiguration());
+                this.UpdateChildren();
+            });
+        }
+
+        public Task Add(UIComponentContainer container)
+        {
+            return Windows.Invoke(() =>
+            {
+                var component = new UIComponentConfiguration();
+                var index = this.Component.Children.IndexOf(container.Component);
+                var alignment = default(string);
+                if (container.Component.MetaData.TryGetValue(Alignment, out alignment))
+                {
+                    component.MetaData.TryAdd(Alignment, alignment);
+                }
+                this.Component.Children.Insert(index + 1, component);
                 this.UpdateChildren();
             });
         }

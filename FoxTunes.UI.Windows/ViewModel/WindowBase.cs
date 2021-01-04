@@ -6,6 +6,16 @@ namespace FoxTunes.ViewModel
 {
     public class WindowBase : ViewModelBase
     {
+        public WindowBase()
+        {
+            //Normally we would bind this property to the DataContext but this doesn't seem to be possible with ControlTemplates.
+            var windowsUserInterface = ComponentRegistry.Instance.GetComponent<WindowsUserInterface>();
+            if (windowsUserInterface != null)
+            {
+                this.Core = windowsUserInterface.Core;
+            }
+        }
+
         public IConfiguration Configuration { get; private set; }
 
         private DoubleConfigurationElement _ScalingFactor { get; set; }
