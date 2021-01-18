@@ -38,6 +38,8 @@
 
         IPlaylistCache PlaylistCache { get; }
 
+        IPlaylistQueue PlaylistQueue { get; }
+
         IFilterParser FilterParser { get; }
 
         ISortParser SortParser { get; }

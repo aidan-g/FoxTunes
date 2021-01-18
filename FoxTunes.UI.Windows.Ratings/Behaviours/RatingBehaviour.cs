@@ -17,7 +17,7 @@ namespace FoxTunes
     {
         public const string SET_LIBRARY_RATING = "AAAE";
 
-        public const string SET_PLAYLIST_RATING = "AAAD";
+        public const string SET_PLAYLIST_RATING = "CCCC";
 
         public string Id
         {

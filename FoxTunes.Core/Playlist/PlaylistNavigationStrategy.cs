@@ -12,6 +12,8 @@ namespace FoxTunes
 {
     public abstract class PlaylistNavigationStrategy : BaseComponent
     {
+        public PlaylistQueue PlaylistQueue { get; private set; }
+
         public IPlaylistBrowser PlaylistBrowser { get; private set; }
 
         public IPlaylistManager PlaylistManager { get; private set; }
@@ -27,12 +29,36 @@ namespace FoxTunes
             return this.PlaylistBrowser.GetPlaylist(playlistItem) ?? this.PlaylistManager.SelectedPlaylist;
         }
 
-        public abstract PlaylistItem GetNext(PlaylistItem playlistItem);
+        public PlaylistItem GetNext(PlaylistItem playlistItem)
+        {
+            var playlist = this.GetPlaylist(playlistItem);
+            if (playlist == null)
+            {
+                return null;
+            }
+            return
+                this.PlaylistQueue.GetNext(playlistItem) ??
+                this.GetNext(playlist, playlistItem);
+        }
 
-        public abstract PlaylistItem GetPrevious(PlaylistItem playlistItem);
+        protected abstract PlaylistItem GetNext(Playlist playlist, PlaylistItem playlistItem);
+
+        public PlaylistItem GetPrevious(PlaylistItem playlistItem)
+        {
+            var playlist = this.GetPlaylist(playlistItem);
+            if (playlist == null)
+            {
+                return null;
+            }
+            return
+                this.GetPrevious(playlist, playlistItem);
+        }
+
+        protected abstract PlaylistItem GetPrevious(Playlist playlist, PlaylistItem playlistItem);
 
         public override void InitializeComponent(ICore core)
         {
+            this.PlaylistQueue = ComponentRegistry.Instance.GetComponent<PlaylistQueue>();
             this.PlaylistBrowser = core.Components.PlaylistBrowser;
             this.PlaylistManager = core.Managers.Playlist;
             this.DatabaseFactory = core.Factories.Database;
@@ -49,13 +75,8 @@ namespace FoxTunes
 
         public ConcurrentDictionary<Tuple<QueryOperator, OrderByDirection>, IDatabaseQuery> SequenceQueries { get; private set; }
 
-        public override PlaylistItem GetNext(PlaylistItem playlistItem)
+        protected override PlaylistItem GetNext(Playlist playlist, PlaylistItem playlistItem)
         {
-            var playlist = this.GetPlaylist(playlistItem);
-            if (playlist == null)
-            {
-                return null;
-            }
             if (playlistItem == null)
             {
                 return this.PlaylistBrowser.GetFirstItem(playlist);
@@ -76,13 +97,8 @@ namespace FoxTunes
             return playlistItem;
         }
 
-        public override PlaylistItem GetPrevious(PlaylistItem playlistItem)
+        protected override PlaylistItem GetPrevious(Playlist playlist, PlaylistItem playlistItem)
         {
-            var playlist = this.GetPlaylist(playlistItem);
-            if (playlist == null)
-            {
-                return null;
-            }
             if (playlistItem == null)
             {
                 return this.PlaylistBrowser.GetLastItem(playlist);
@@ -230,103 +246,120 @@ namespace FoxTunes
 
         protected virtual void Refresh(Playlist playlist)
         {
-            this.Playlist = playlist;
-            this.Sequences.Clear();
-            if (this.Selector == null)
+            //TODO: We should use WaitAsync for >NET40.
+            this.Semaphore.Wait();
+            try
             {
-                this.Sequences.AddRange(
-                    this.PlaylistBrowser.GetItems(playlist).Select(
-                        playlistItem => playlistItem.Sequence
-                    )
-                );
-                this.Sequences.Shuffle();
-            }
-            else
-            {
-                var groups = this.PlaylistBrowser.GetItems(playlist).GroupBy(
-                    playlistItem => this.Selector(playlistItem)
-                );
-                foreach (var group in groups)
+                this.Playlist = playlist;
+                this.Sequences.Clear();
+                if (this.Selector == null)
                 {
-                    var sequences = group.Select(
-                        playlistItem => playlistItem.Sequence
-                    ).ToList();
-                    sequences.Shuffle();
-                    this.Sequences.AddRange(sequences);
+                    this.Sequences.AddRange(
+                        this.PlaylistBrowser.GetItems(playlist).Select(
+                            playlistItem => playlistItem.Sequence
+                        )
+                    );
+                    this.Sequences.Shuffle();
                 }
+                else
+                {
+                    var groups = this.PlaylistBrowser.GetItems(playlist).GroupBy(
+                        playlistItem => this.Selector(playlistItem)
+                    );
+                    foreach (var group in groups)
+                    {
+                        var sequences = group.Select(
+                            playlistItem => playlistItem.Sequence
+                        ).ToList();
+                        sequences.Shuffle();
+                        this.Sequences.AddRange(sequences);
+                    }
+                }
+            }
+            finally
+            {
+                this.Semaphore.Release();
             }
         }
 
-        public override PlaylistItem GetNext(PlaylistItem playlistItem)
+        protected override PlaylistItem GetNext(Playlist playlist, PlaylistItem playlistItem)
         {
-            var playlist = this.GetPlaylist(playlistItem);
-            if (playlist == null)
-            {
-                return null;
-            }
             if (this.Playlist == null || this.Playlist != playlist)
             {
                 this.Refresh(playlist);
             }
-            if (this.Sequences.Count == 0)
+            //TODO: We should use WaitAsync for >NET40.
+            this.Semaphore.Wait();
+            try
             {
-                return default(PlaylistItem);
-            }
-            var position = default(int);
-            if (playlistItem != null)
-            {
-                position = this.Sequences.IndexOf(playlistItem.Sequence);
-                if (position >= this.Sequences.Count - 1)
+                if (this.Sequences.Count == 0)
+                {
+                    return default(PlaylistItem);
+                }
+                var position = default(int);
+                if (playlistItem != null)
+                {
+                    position = this.Sequences.IndexOf(playlistItem.Sequence);
+                    if (position >= this.Sequences.Count - 1)
+                    {
+                        position = 0;
+                    }
+                    else
+                    {
+                        position++;
+                    }
+                }
+                else
                 {
                     position = 0;
                 }
-                else
-                {
-                    position++;
-                }
+                var sequence = this.Sequences[position];
+                return this.PlaylistBrowser.GetItemBySequence(playlist, sequence);
             }
-            else
+            finally
             {
-                position = 0;
+                this.Semaphore.Release();
             }
-            var sequence = this.Sequences[position];
-            return this.PlaylistBrowser.GetItemBySequence(playlist, sequence);
         }
 
-        public override PlaylistItem GetPrevious(PlaylistItem playlistItem)
+        protected override PlaylistItem GetPrevious(Playlist playlist, PlaylistItem playlistItem)
         {
-            var playlist = this.GetPlaylist(playlistItem);
-            if (playlist == null)
-            {
-                return null;
-            }
             if (this.Playlist == null || this.Playlist != playlist)
             {
                 this.Refresh(playlist);
             }
-            if (this.Sequences.Count == 0)
+            //TODO: We should use WaitAsync for >NET40.
+            this.Semaphore.Wait();
+            try
             {
-                return default(PlaylistItem);
-            }
-            var position = default(int);
-            if (playlistItem != null)
-            {
-                position = this.Sequences.IndexOf(playlistItem.Sequence);
-                if (position == 0)
+                if (this.Sequences.Count == 0)
                 {
-                    position = this.Sequences.Count - 1;
+                    return default(PlaylistItem);
+                }
+                var position = default(int);
+                if (playlistItem != null)
+                {
+                    position = this.Sequences.IndexOf(playlistItem.Sequence);
+                    if (position == 0)
+                    {
+                        position = this.Sequences.Count - 1;
+                    }
+                    else
+                    {
+                        position--;
+                    }
                 }
                 else
                 {
-                    position--;
+                    position = this.Sequences.Count - 1;
                 }
+                var sequence = this.Sequences[position];
+                return this.PlaylistBrowser.GetItemBySequence(playlist, sequence);
             }
-            else
+            finally
             {
-                position = this.Sequences.Count - 1;
+                this.Semaphore.Release();
             }
-            var sequence = this.Sequences[position];
-            return this.PlaylistBrowser.GetItemBySequence(playlist, sequence);
         }
     }
 }

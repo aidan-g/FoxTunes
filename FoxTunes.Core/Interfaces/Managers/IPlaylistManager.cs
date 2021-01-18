@@ -64,4 +64,11 @@ namespace FoxTunes.Interfaces
 
         event EventHandler SelectedItemsChanged;
     }
+
+    public enum PlaylistQueueFlags : byte
+    {
+        None,
+        Next,
+        Reset
+    }
 }

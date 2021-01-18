@@ -8,5 +8,25 @@
     <UserControl.Resources>
         <ViewModel:PlaybackState x:Key="ViewModel" PlaylistItem="{Binding}"></ViewModel:PlaybackState>
     </UserControl.Resources>
-    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Caption, Mode=OneWay, Source={StaticResource ViewModel}}" FontFamily="Webdings" FontSize="16" Foreground="{DynamicResource TextBrush}"></TextBlock>
+    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextBrush}">
+        <TextBlock.Style>
+            <Style TargetType="{x:Type TextBlock}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsPlaying, Source={StaticResource ViewModel}}" Value="True">
+                        <Setter Property="FontFamily" Value="Webdings"></Setter>
+                        <Setter Property="FontSize" Value="16"></Setter>
+                        <Setter Property="Text" Value="4"></Setter>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding IsPaused, Source={StaticResource ViewModel}}" Value="True">
+                        <Setter Property="FontFamily" Value="Webdings"></Setter>
+                        <Setter Property="FontSize" Value="16"></Setter>
+                        <Setter Property="Text" Value=";"></Setter>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding IsQueued, Source={StaticResource ViewModel}}" Value="True">
+                        <Setter Property="Text" Value="{Binding QueuePosition, Source={StaticResource ViewModel}, StringFormat=(\{0\})}"></Setter>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </TextBlock.Style>
+    </TextBlock>
 </UserControl>

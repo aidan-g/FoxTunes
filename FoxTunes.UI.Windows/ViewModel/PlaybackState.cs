@@ -8,6 +8,8 @@ namespace FoxTunes.ViewModel
     {
         public static readonly IPlaybackManager PlaybackManager = ComponentRegistry.Instance.GetComponent<IPlaybackManager>();
 
+        public static readonly IPlaylistQueue PlaylistQueue = ComponentRegistry.Instance.GetComponent<IPlaylistQueue>();
+
         public static readonly DependencyProperty PlaylistItemProperty = DependencyProperty.Register(
             "PlaylistItem",
             typeof(PlaylistItem),
@@ -116,32 +118,57 @@ namespace FoxTunes.ViewModel
 
         public event EventHandler IsPausedChanged;
 
-        public string Caption
+        private bool _IsQueued { get; set; }
+
+        public bool IsQueued
         {
             get
             {
-                if (this.IsPaused)
-                {
-                    return ";";
-                }
-                if (this.IsPlaying)
-                {
-                    return "4";
-                }
-                return string.Empty;
+                return this._IsQueued;
             }
-        }
-
-        protected virtual void OnCaptionChanged()
-        {
-            if (this.CaptionChanged != null)
+            set
             {
-                this.CaptionChanged(this, EventArgs.Empty);
+                this._IsQueued = value;
+                this.OnIsQueuedChanged();
             }
-            this.OnPropertyChanged("Caption");
         }
 
-        public event EventHandler CaptionChanged;
+        protected virtual void OnIsQueuedChanged()
+        {
+            if (this.IsQueuedChanged != null)
+            {
+                this.IsQueuedChanged(this, EventArgs.Empty);
+            }
+            this.OnPropertyChanged("IsQueued");
+        }
+
+        public event EventHandler IsQueuedChanged;
+
+        private int _QueuePosition { get; set; }
+
+        public int QueuePosition
+        {
+            get
+            {
+                return this._QueuePosition;
+            }
+            set
+            {
+                this._QueuePosition = value;
+                this.OnQueuePositionChanged();
+            }
+        }
+
+        protected virtual void OnQueuePositionChanged()
+        {
+            if (this.QueuePositionChanged != null)
+            {
+                this.QueuePositionChanged(this, EventArgs.Empty);
+            }
+            this.OnPropertyChanged("QueuePosition");
+        }
+
+        public event EventHandler QueuePositionChanged;
 
         protected virtual void OnNotify(object sender, EventArgs e)
         {
@@ -157,10 +184,10 @@ namespace FoxTunes.ViewModel
 
         protected virtual void Refresh()
         {
-            var isPlaying = default(bool);
-            var isPaused = default(bool);
             if (PlaybackManager != null && this.PlaylistItem != null)
             {
+                var isPlaying = default(bool);
+                var isPaused = default(bool);
                 var currentStream = PlaybackManager.CurrentStream;
                 if (currentStream != null)
                 {
@@ -170,21 +197,27 @@ namespace FoxTunes.ViewModel
                         isPaused = currentStream.IsPaused;
                     }
                 }
+                if (this.IsPlaying != isPlaying)
+                {
+                    this.IsPlaying = isPlaying;
+                }
+                if (this.IsPaused != isPaused)
+                {
+                    this.IsPaused = isPaused;
+                }
             }
-            var refresh = default(bool);
-            if (this.IsPlaying != isPlaying)
+            if (PlaylistQueue != null && this.PlaylistItem != null)
             {
-                this.IsPlaying = isPlaying;
-                refresh = true;
-            }
-            if (this.IsPaused != isPaused)
-            {
-                this.IsPaused = isPaused;
-                refresh = true;
-            }
-            if (refresh)
-            {
-                this.OnCaptionChanged();
+                var queuePosition = PlaylistQueue.GetPosition(this.PlaylistItem) + 1;
+                var isQueued = queuePosition > 0;
+                if (this.IsQueued != isQueued)
+                {
+                    this.IsQueued = isQueued;
+                }
+                if (this.QueuePosition != queuePosition)
+                {
+                    this.QueuePosition = queuePosition;
+                }
             }
         }
 

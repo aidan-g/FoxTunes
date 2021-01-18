@@ -153,6 +153,14 @@ namespace FoxTunes
             }
         }
 
+        public IPlaylistQueue PlaylistQueue
+        {
+            get
+            {
+                return ComponentRegistry.Instance.GetComponent<IPlaylistQueue>();
+            }
+        }
+
         public IFilterParser FilterParser
         {
             get

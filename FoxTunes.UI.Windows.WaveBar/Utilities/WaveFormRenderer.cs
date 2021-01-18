@@ -384,6 +384,8 @@ namespace FoxTunes
 
                     value /= factor;
 
+                    value = Math.Min(value, 1);
+
                     y = Convert.ToInt32(center - (value * center));
                     height = Convert.ToInt32((center - y) + (value * center));
 
@@ -476,6 +478,8 @@ namespace FoxTunes
                         value /= (valuesPerElement * generatorData.Channels);
 
                         value /= factor;
+
+                        value = Math.Min(value, 1);
 
                         y = Convert.ToInt32(waveCenter - (value * (waveHeight / 2)));
                         height = Convert.ToInt32((waveCenter - y) + (value * (waveHeight / 2)));
