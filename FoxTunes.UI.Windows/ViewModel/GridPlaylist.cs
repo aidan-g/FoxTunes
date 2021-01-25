@@ -15,6 +15,8 @@ namespace FoxTunes.ViewModel
 {
     public abstract class GridPlaylist : PlaylistBase
     {
+        public Playlist CurrentPlaylist { get; private set; }
+
         public PlaylistColumn SortColumn { get; private set; }
 
         public IFileActionHandlerManager FileActionHandlerManager { get; private set; }
@@ -535,6 +537,7 @@ namespace FoxTunes.ViewModel
 
         public virtual async Task Refresh()
         {
+            this.CurrentPlaylist = await this.GetPlaylist().ConfigureAwait(false);
             await this.RefreshItems().ConfigureAwait(false);
             await this.RefreshSelectedItems().ConfigureAwait(false);
             await this.RefreshColumns(null).ConfigureAwait(false);

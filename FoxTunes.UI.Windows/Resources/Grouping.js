@@ -1,6 +1,9 @@
 ﻿(function () {
     var parts = [];
-    if (tag.artist) {
+    if (tag.__ft_variousartists) {
+        parts.push("Various Artists");
+    }
+    else if (tag.artist) {
         parts.push(tag.artist);
     }
     if (tag.year) {

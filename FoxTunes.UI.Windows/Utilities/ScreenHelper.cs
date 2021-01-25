@@ -6,11 +6,13 @@ namespace FoxTunes
 {
     public static class ScreenHelper
     {
+        public const int MARGIN = 10;
+
         public static bool WindowBoundsVisible(Rect bounds)
         {
             var rect = new Rectangle(
-                Convert.ToInt32(bounds.X),
-                Convert.ToInt32(bounds.Y),
+                Convert.ToInt32(bounds.X) - MARGIN,
+                Convert.ToInt32(bounds.Y) - MARGIN,
                 Convert.ToInt32(bounds.Width),
                 Convert.ToInt32(bounds.Height)
             );

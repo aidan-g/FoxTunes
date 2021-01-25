@@ -18,20 +18,20 @@ namespace FoxTunes
 
         public static IEnumerable<ConfigurationSection> GetConfigurationSections()
         {
-            yield return new ConfigurationSection(SECTION, "Keyboard Shortcuts")
+            yield return new ConfigurationSection(SECTION, Strings.InputManagerConfiguration_Section)
                 .WithElement(
-                    new BooleanConfigurationElement(ENABLED_ELEMENT, "Enabled", path: "Global Hotkeys").WithValue(false))
+                    new BooleanConfigurationElement(ENABLED_ELEMENT, Strings.InputManagerConfiguration_Enabled, path: Strings.InputManagerConfiguration_Path_GlobalHotkeys).WithValue(false))
                 .WithElement(
-                    new TextConfigurationElement(PLAY_ELEMENT, "Play", path: "Global Hotkeys")
+                    new TextConfigurationElement(PLAY_ELEMENT, Strings.InputManagerConfiguration_Play, path: Strings.InputManagerConfiguration_Path_GlobalHotkeys)
                         .WithValue("MediaPlayPause").DependsOn(SECTION, ENABLED_ELEMENT))
                 .WithElement(
-                    new TextConfigurationElement(PREVIOUS_ELEMENT, "Previous", path: "Global Hotkeys")
+                    new TextConfigurationElement(PREVIOUS_ELEMENT, Strings.InputManagerConfiguration_Previous, path: Strings.InputManagerConfiguration_Path_GlobalHotkeys)
                         .WithValue("MediaPreviousTrack").DependsOn(SECTION, ENABLED_ELEMENT))
                  .WithElement(
-                    new TextConfigurationElement(NEXT_ELEMENT, "Next", path: "Global Hotkeys")
+                    new TextConfigurationElement(NEXT_ELEMENT, Strings.InputManagerConfiguration_Next, path: Strings.InputManagerConfiguration_Path_GlobalHotkeys)
                         .WithValue("MediaNextTrack").DependsOn(SECTION, ENABLED_ELEMENT))
                 .WithElement(
-                    new TextConfigurationElement(STOP_ELEMENT, "Stop", path: "Global Hotkeys")
+                    new TextConfigurationElement(STOP_ELEMENT, Strings.InputManagerConfiguration_Stop, path: Strings.InputManagerConfiguration_Path_GlobalHotkeys)
                         .WithValue("MediaStop").DependsOn(SECTION, ENABLED_ELEMENT)
             );
         }

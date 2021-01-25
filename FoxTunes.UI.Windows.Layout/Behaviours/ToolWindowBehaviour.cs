@@ -78,6 +78,12 @@ namespace FoxTunes
         {
             try
             {
+                if (!ScreenHelper.WindowBoundsVisible(new Rect(config.Left, config.Top, config.Width, config.Height)))
+                {
+                    //Prevent window from opening off screen.
+                    config.Left = 0;
+                    config.Top = 0;
+                }
                 var window = default(ToolWindow);
                 await global::FoxTunes.Windows.Invoke(() =>
                 {

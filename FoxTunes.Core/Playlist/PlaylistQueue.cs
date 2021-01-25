@@ -35,6 +35,10 @@ namespace FoxTunes
 
         public ISignalEmitter SignalEmitter { get; private set; }
 
+        public IConfiguration Configuration { get; private set; }
+
+        public BooleanConfigurationElement Enabled { get; private set; }
+
         protected virtual Playlist GetPlaylist(PlaylistItem playlistItem)
         {
             if (playlistItem == null)
@@ -52,6 +56,11 @@ namespace FoxTunes
             this.PlaylistBrowser = core.Components.PlaylistBrowser;
             this.SignalEmitter = core.Components.SignalEmitter;
             this.SignalEmitter.Signal += this.OnSignal;
+            this.Configuration = core.Components.Configuration;
+            this.Enabled = this.Configuration.GetElement<BooleanConfigurationElement>(
+                PlaylistBehaviourConfiguration.SECTION,
+                PlaylistBehaviourConfiguration.QUEUE_ELEMENT
+            );
         }
 
         protected virtual void OnCurrentStreamChanged(object sender, EventArgs e)
@@ -62,13 +71,16 @@ namespace FoxTunes
 
         public virtual Task Refresh()
         {
-            var outputStream = this.PlaybackManager.CurrentStream;
-            if (outputStream != null)
+            if (this.Queue.Count > 0)
             {
-                var playlistItem = outputStream.PlaylistItem;
-                if (playlistItem != null)
+                var outputStream = this.PlaybackManager.CurrentStream;
+                if (outputStream != null)
                 {
-                    this.Enqueue(playlistItem, PlaylistQueueFlags.Reset);
+                    var playlistItem = outputStream.PlaylistItem;
+                    if (playlistItem != null)
+                    {
+                        this.Enqueue(playlistItem, PlaylistQueueFlags.Reset);
+                    }
                 }
             }
 #if NET40
@@ -108,7 +120,7 @@ namespace FoxTunes
         {
             get
             {
-                if (this.PlaylistManager.SelectedItems != null && this.PlaylistManager.SelectedItems.Any())
+                if (this.Enabled.Value && this.PlaylistManager.SelectedItems != null && this.PlaylistManager.SelectedItems.Any())
                 {
                     yield return new InvocationComponent(InvocationComponent.CATEGORY_PLAYLIST, QUEUE_LAST, "Add", path: "Queue", attributes: InvocationComponent.ATTRIBUTE_SEPARATOR);
                     yield return new InvocationComponent(InvocationComponent.CATEGORY_PLAYLIST, QUEUE_NEXT, "Add (Next)", path: "Queue");

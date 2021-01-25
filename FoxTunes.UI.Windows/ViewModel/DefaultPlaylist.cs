@@ -9,10 +9,11 @@ namespace FoxTunes.ViewModel
     {
         protected override Task<Playlist> GetPlaylist()
         {
+            var playlist = this.PlaylistManager.CurrentPlaylist ?? this.PlaylistManager.SelectedPlaylist;
 #if NET40
-            return TaskEx.FromResult(this.PlaylistManager.CurrentPlaylist ?? this.PlaylistManager.SelectedPlaylist);
+            return TaskEx.FromResult(playlist);
 #else
-            return Task.FromResult(this.PlaylistManager.CurrentPlaylist ?? this.PlaylistManager.SelectedPlaylist);
+            return Task.FromResult(playlist);
 #endif
         }
 
@@ -26,16 +27,26 @@ namespace FoxTunes.ViewModel
 
         protected virtual void OnCurrentPlaylistChanged(object sender, EventArgs e)
         {
-            var task = this.Refresh();
+            var task = this.RefreshIfRequired();
         }
 
         protected virtual void OnSelectedPlaylistChanged(object sender, EventArgs e)
         {
-            if (this.PlaylistManager.CurrentPlaylist != null)
+            var task = this.RefreshIfRequired();
+        }
+
+        protected virtual Task RefreshIfRequired()
+        {
+            var playlist = this.PlaylistManager.CurrentPlaylist ?? this.PlaylistManager.SelectedPlaylist;
+            if (object.ReferenceEquals(this.CurrentPlaylist, playlist))
             {
-                return;
+#if NET40
+                return TaskEx.FromResult(false);
+#else
+                return Task.CompletedTask;
+#endif
             }
-            var task = this.Refresh();
+            return this.Refresh();
         }
 
         protected override void OnDisposing()

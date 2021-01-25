@@ -1,5 +1,7 @@
 ﻿using FoxTunes.Interfaces;
 using System;
+using System.Globalization;
+using System.Threading;
 
 namespace FoxTunes.Launcher
 {
@@ -15,9 +17,31 @@ namespace FoxTunes.Launcher
             AssemblyResolver.Instance.EnableReflectionOnly();
         }
 
+#if DEBUG
+
+        private static void SetCulture(string name)
+        {
+            var culture = CultureInfo.CreateSpecificCulture(name);
+
+            Thread.CurrentThread.CurrentUICulture = culture;
+            Thread.CurrentThread.CurrentCulture = culture;
+
+#if NET40
+
+#else
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+#endif
+        }
+
+#endif
+
         [STAThread]
         public static void Main(string[] args)
         {
+#if DEBUG
+            //SetCulture("fr");
+#endif
             using (var server = new Server())
             {
                 if (server.IsDisposed)

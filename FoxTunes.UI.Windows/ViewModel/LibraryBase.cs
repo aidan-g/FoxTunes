@@ -30,7 +30,7 @@ namespace FoxTunes.ViewModel
         {
             get
             {
-                return "Add to collection by dropping files here.";
+                return Strings.LibraryBase_Add;
             }
         }
 
