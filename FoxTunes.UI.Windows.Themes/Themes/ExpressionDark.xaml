@@ -1760,6 +1760,7 @@
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
         <Setter Property="ScrollViewer.CanContentScroll" Value="true" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="AlternationCount" Value="2" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListView}">
@@ -1836,13 +1837,19 @@
                             <!-- This empty textblock ensures that the item height is initially correct. -->
                             <!-- This prevents re-measuring as the list data is "hydrated". -->
                             <TextBlock/>
-                            <Rectangle x:Name="Background" Opacity="0.25" Fill="{DynamicResource NormalBrush}" RadiusX="1" RadiusY="1"/>
+                            <Rectangle x:Name="Background" Opacity="0.25" RadiusX="1" RadiusY="1"/>
                             <Rectangle x:Name="HoverRectangle" IsHitTestVisible="False" Opacity="0" Fill="{DynamicResource NormalBrush}" RadiusX="1" RadiusY="1"/>
                             <Rectangle x:Name="SelectedRectangle" IsHitTestVisible="False" Opacity="0" Fill="{DynamicResource SelectedBackgroundBrush}" RadiusX="1" RadiusY="1"/>
                             <GridViewRowPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Margin="0,2,0,2" VerticalAlignment="Stretch" />
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                            <Setter TargetName="Background" Property="Fill" Value="{DynamicResource NormalBrush}"></Setter>
+                        </Trigger>
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                            <Setter TargetName="Background" Property="Fill" Value="Transparent"></Setter>
+                        </Trigger>
                         <Trigger Property="IsSelected" Value="true">
                             <Trigger.ExitActions>
                                 <BeginStoryboard Storyboard="{StaticResource SelectedOff}" x:Name="SelectedOff_BeginStoryboard"/>
