@@ -11,11 +11,6 @@ namespace FoxTunes
     [Component("BA77B392-1900-4931-B720-16206B23DDA1", ComponentSlots.Configuration, priority: ComponentAttribute.PRIORITY_HIGH)]
     public class Configuration : StandardComponent, IConfiguration, IDisposable
     {
-        private static readonly string ConfigurationFileName = Path.Combine(
-            Publication.StoragePath,
-            "Settings.xml"
-        );
-
         const int TIMEOUT = 1000;
 
         public Configuration()
@@ -45,6 +40,30 @@ namespace FoxTunes
                 return ReleaseType.Default;
             }
         });
+
+        public IEnumerable<string> AvailableProfiles
+        {
+            get
+            {
+                return Profiles.AvailableProfiles;
+            }
+        }
+
+        public string Profile
+        {
+            get
+            {
+                return Profiles.Profile;
+            }
+        }
+
+        public bool IsDefaultProfile
+        {
+            get
+            {
+                return string.Equals(this.Profile, Strings.Profiles_Default, StringComparison.OrdinalIgnoreCase);
+            }
+        }
 
         public ReleaseType ReleaseType
         {
@@ -89,19 +108,29 @@ namespace FoxTunes
 
         public void Load()
         {
+            this.Load(this.Profile);
+        }
+
+        public void Load(string profile)
+        {
             foreach (var section in this.Sections)
             {
+                if (section.IsInitialized)
+                {
+                    continue;
+                }
                 section.InitializeComponent();
             }
-            if (!File.Exists(ConfigurationFileName))
+            var fileName = Profiles.GetFileName(profile);
+            if (!File.Exists(fileName))
             {
-                Logger.Write(this, LogLevel.Debug, "Configuration file \"{0}\" does not exist.", ConfigurationFileName);
+                Logger.Write(this, LogLevel.Debug, "Configuration file \"{0}\" does not exist.", fileName);
                 return;
             }
-            Logger.Write(this, LogLevel.Debug, "Loading configuration from file \"{0}\".", ConfigurationFileName);
+            Logger.Write(this, LogLevel.Debug, "Loading configuration from file \"{0}\".", fileName);
             try
             {
-                using (var stream = File.OpenRead(ConfigurationFileName))
+                using (var stream = File.OpenRead(fileName))
                 {
                     var sections = Serializer.Load(stream);
                     foreach (var section in sections)
@@ -125,6 +154,7 @@ namespace FoxTunes
                         }
                     }
                 }
+                Profiles.Profile = profile;
             }
             catch (Exception e)
             {
@@ -150,12 +180,18 @@ namespace FoxTunes
 
         public void Save()
         {
+            this.Save(this.Profile);
+        }
+
+        public void Save(string profile)
+        {
+            var fileName = Profiles.GetFileName(profile);
             this.Debouncer.Exec(() =>
             {
-                Logger.Write(this, LogLevel.Debug, "Saving configuration to file \"{0}\".", ConfigurationFileName);
+                Logger.Write(this, LogLevel.Debug, "Saving configuration to file \"{0}\".", fileName);
                 try
                 {
-                    using (var stream = File.Create(ConfigurationFileName))
+                    using (var stream = File.Create(fileName))
                     {
                         Serializer.Save(stream, this.Sections);
                     }
@@ -165,6 +201,20 @@ namespace FoxTunes
                     Logger.Write(this, LogLevel.Warn, "Failed to save configuration: {0}", e.Message);
                 }
             });
+            Profiles.Profile = profile;
+        }
+
+        public void Delete()
+        {
+            this.Delete(this.Profile);
+        }
+
+        public void Delete(string profile)
+        {
+            var fileName = Profiles.GetFileName(profile);
+            Profiles.Delete(profile);
+            File.Delete(fileName);
+            this.Load();
         }
 
         public void Wait()

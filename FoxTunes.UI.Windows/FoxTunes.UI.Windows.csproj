@@ -56,7 +56,7 @@
 
   <ItemGroup>
     <EmbeddedResource Update="Properties\Strings.resx">
-    <Generator>ResXFileCodeGenerator</Generator>
+    <Generator>PublicResXFileCodeGenerator</Generator>
     <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     <CustomToolNamespace>FoxTunes</CustomToolNamespace>
   </EmbeddedResource>

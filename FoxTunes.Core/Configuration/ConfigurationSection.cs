@@ -38,6 +38,8 @@ namespace FoxTunes
 
         public ObservableCollection<ConfigurationElement> Elements { get; private set; }
 
+        public bool IsInitialized { get; private set; }
+
         public ConfigurationSection WithElement(ConfigurationElement element)
         {
             if (this.Contains(element.Id))
@@ -94,6 +96,7 @@ namespace FoxTunes
             {
                 element.InitializeComponent();
             }
+            this.IsInitialized = true;
         }
 
         public void Update(ConfigurationSection section)

@@ -19,6 +19,8 @@ namespace FoxTunes
 
         public abstract bool Confirm(string message);
 
+        public abstract string Prompt(string message);
+
         public abstract void Restart();
 
         protected virtual void OnWindowCreated(IUserInterfaceWindow window)

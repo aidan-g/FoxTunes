@@ -22,7 +22,7 @@ namespace FoxTunes {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Strings {
+    public class Strings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace FoxTunes {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("FoxTunes.UI.Windows.Properties.Strings", typeof(Strings).Assembly);
@@ -51,7 +51,7 @@ namespace FoxTunes {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,11 +61,83 @@ namespace FoxTunes {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string General_Cancel {
+            get {
+                return ResourceManager.GetString("General.Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OK.
+        /// </summary>
+        public static string General_OK {
+            get {
+                return ResourceManager.GetString("General.OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add to collection by dropping files here..
         /// </summary>
-        internal static string LibraryBase_Add {
+        public static string LibraryBase_Add {
             get {
                 return ResourceManager.GetString("LibraryBase.Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string ProfilesBehaviour_Delete {
+            get {
+                return ResourceManager.GetString("ProfilesBehaviour.Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New.
+        /// </summary>
+        public static string ProfilesBehaviour_New {
+            get {
+                return ResourceManager.GetString("ProfilesBehaviour.New", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Profile Name.
+        /// </summary>
+        public static string ProfilesBehaviour_New_Prompt {
+            get {
+                return ResourceManager.GetString("ProfilesBehaviour.New.Prompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Profiles.
+        /// </summary>
+        public static string ProfilesBehaviour_Path {
+            get {
+                return ResourceManager.GetString("ProfilesBehaviour.Path", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enabled.
+        /// </summary>
+        public static string ProfilesBehaviourConfiguration_Enabled {
+            get {
+                return ResourceManager.GetString("ProfilesBehaviourConfiguration.Enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Profiles.
+        /// </summary>
+        public static string ProfilesBehaviourConfiguration_Section {
+            get {
+                return ResourceManager.GetString("ProfilesBehaviourConfiguration.Section", resourceCulture);
             }
         }
     }
