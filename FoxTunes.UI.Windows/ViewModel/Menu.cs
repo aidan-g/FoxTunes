@@ -250,7 +250,12 @@ namespace FoxTunes.ViewModel
                         continue;
                     }
                     var path = invocation.Path.Split(global::System.IO.Path.DirectorySeparatorChar, global::System.IO.Path.AltDirectorySeparatorChar);
-                    this.GetItem(items, invocation, path).Children.Add(item);
+                    var children = this.GetItem(items, invocation, path).Children;
+                    if (item.Separator)
+                    {
+                        children.Add(null);
+                    }
+                    children.Add(item);
                 }
             }
             return items;
