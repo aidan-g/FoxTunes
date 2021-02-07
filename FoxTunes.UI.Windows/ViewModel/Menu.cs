@@ -399,7 +399,14 @@ namespace FoxTunes.ViewModel
             }
             if (this.Children != null)
             {
-                this.Children.ForEach(child => child.Dispose());
+                this.Children.ForEach(child =>
+                {
+                    if (child == null)
+                    {
+                        return;
+                    }
+                    child.Dispose();
+                });
             }
             base.OnDisposing();
         }

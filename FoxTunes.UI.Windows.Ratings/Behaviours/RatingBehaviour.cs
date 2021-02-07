@@ -124,36 +124,48 @@ namespace FoxTunes
                     if (this.LibraryManager.SelectedItem != null)
                     {
                         var invocationComponents = new Dictionary<byte, InvocationComponent>();
-                        for (var a = 0; a <= 5; a++)
+                        for (var a = 1; a <= 5; a++)
                         {
                             var invocationComponent = new InvocationComponent(
                                 InvocationComponent.CATEGORY_LIBRARY,
                                 SET_LIBRARY_RATING,
-                                a == 0 ? "None" : string.Format("{0} Stars", a),
-                                path: "Set Rating",
-                                attributes: InvocationComponent.ATTRIBUTE_SEPARATOR
+                                string.Format("{0} Stars", a),
+                                path: "Set Rating"
                             );
                             invocationComponents.Add((byte)a, invocationComponent);
                             yield return invocationComponent;
                         }
+                        yield return new InvocationComponent(
+                            InvocationComponent.CATEGORY_LIBRARY,
+                            SET_LIBRARY_RATING,
+                            "Reset",
+                            path: "Set Rating",
+                            attributes: InvocationComponent.ATTRIBUTE_SEPARATOR
+                        );
                         //Don't block the menu from opening while we fetch ratings.
                         this.Dispatch(() => this.GetRating(this.LibraryManager.SelectedItem, invocationComponents));
                     }
                     if (this.PlaylistManager.SelectedItems != null && this.PlaylistManager.SelectedItems.Any())
                     {
                         var invocationComponents = new Dictionary<byte, InvocationComponent>();
-                        for (var a = 0; a <= 5; a++)
+                        for (var a = 1; a <= 5; a++)
                         {
                             var invocationComponent = new InvocationComponent(
                                 InvocationComponent.CATEGORY_PLAYLIST,
                                 SET_PLAYLIST_RATING,
-                                a == 0 ? "None" : string.Format("{0} Stars", a),
-                                path: "Set Rating",
-                                attributes: InvocationComponent.ATTRIBUTE_SEPARATOR
+                                string.Format("{0} Stars", a),
+                                path: "Set Rating"
                             );
                             invocationComponents.Add((byte)a, invocationComponent);
                             yield return invocationComponent;
                         }
+                        yield return new InvocationComponent(
+                            InvocationComponent.CATEGORY_PLAYLIST,
+                            SET_PLAYLIST_RATING,
+                            "Reset",
+                            path: "Set Rating",
+                            attributes: InvocationComponent.ATTRIBUTE_SEPARATOR
+                        );
                         //Don't block the menu from opening while we fetch ratings.
                         this.Dispatch(() => this.GetRating(this.PlaylistManager.SelectedItems, invocationComponents));
                     }
@@ -246,7 +258,7 @@ namespace FoxTunes
         protected virtual Task SetLibraryRating(string name)
         {
             var rating = default(byte);
-            if (string.Equals(name, "None", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(name, "Reset", StringComparison.OrdinalIgnoreCase))
             {
                 rating = 0;
             }
@@ -264,7 +276,7 @@ namespace FoxTunes
         protected virtual Task SetPlaylistRating(string name)
         {
             var rating = default(byte);
-            if (string.Equals(name, "None", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(name, "Reset", StringComparison.OrdinalIgnoreCase))
             {
                 rating = 0;
             }

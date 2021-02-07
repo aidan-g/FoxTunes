@@ -66,13 +66,13 @@ namespace FoxTunes
                     {
                         yield return new InvocationComponent(InvocationComponent.CATEGORY_LIBRARY, SCAN_TRACKS, "Scan Tracks", path: "Replay Gain");
                         yield return new InvocationComponent(InvocationComponent.CATEGORY_LIBRARY, SCAN_ALBUMS, "Scan Albums", path: "Replay Gain");
-                        yield return new InvocationComponent(InvocationComponent.CATEGORY_LIBRARY, CLEAR, "Clear Data", path: "Replay Gain");
+                        yield return new InvocationComponent(InvocationComponent.CATEGORY_LIBRARY, CLEAR, "Clear Data", path: "Replay Gain", attributes: InvocationComponent.ATTRIBUTE_SEPARATOR);
                     }
                     if (this.PlaylistManager.SelectedItems != null && this.PlaylistManager.SelectedItems.Any())
                     {
                         yield return new InvocationComponent(InvocationComponent.CATEGORY_PLAYLIST, SCAN_TRACKS, "Scan Tracks", path: "Replay Gain");
                         yield return new InvocationComponent(InvocationComponent.CATEGORY_PLAYLIST, SCAN_ALBUMS, "Scan Albums", path: "Replay Gain");
-                        yield return new InvocationComponent(InvocationComponent.CATEGORY_PLAYLIST, CLEAR, "Clear Data", path: "Replay Gain");
+                        yield return new InvocationComponent(InvocationComponent.CATEGORY_PLAYLIST, CLEAR, "Clear Data", path: "Replay Gain", attributes: InvocationComponent.ATTRIBUTE_SEPARATOR);
                     }
                 }
             }
