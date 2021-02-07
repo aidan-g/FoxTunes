@@ -155,13 +155,16 @@ namespace FoxTunes.ViewModel
                         //System config should not be presented to the user.
                         continue;
                     }
-                    if (!this.MatchesFilter(section, true))
+                    var sectionMatches = this.MatchesFilter(section);
+                    var elements = default(IEnumerable<ConfigurationElement>);
+                    if (sectionMatches)
+                    {
+                        elements = section.Elements;
+                    }
+                    else if (!this.MatchesFilter(section.Elements, out elements))
                     {
                         continue;
                     }
-                    var elements = section.Elements.Where(
-                        element => this.MatchesFilter(element)
-                    );
                     var page = new ComponentSettingsPage(section.Name, elements);
                     page.InitializeComponent(this.Core);
                     this.Pages.Add(page);
@@ -170,7 +173,7 @@ namespace FoxTunes.ViewModel
             });
         }
 
-        public virtual bool MatchesFilter(global::FoxTunes.ConfigurationSection section, bool elements)
+        public virtual bool MatchesFilter(global::FoxTunes.ConfigurationSection section)
         {
             if (string.IsNullOrEmpty(this.Filter))
             {
@@ -184,14 +187,12 @@ namespace FoxTunes.ViewModel
                     return true;
                 }
             }
-            if (elements)
-            {
-                return section.Elements.Any(element => this.MatchesFilter(element));
-            }
-            else
-            {
-                return false;
-            }
+            return false;
+        }
+
+        public virtual bool MatchesFilter(IEnumerable<ConfigurationElement> inputElements, out IEnumerable<ConfigurationElement> outputElements)
+        {
+            return (outputElements = inputElements.Where(element => this.MatchesFilter(element))).Any();
         }
 
         public virtual bool MatchesFilter(global::FoxTunes.ConfigurationElement element)
