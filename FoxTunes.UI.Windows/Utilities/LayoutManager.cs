@@ -47,6 +47,10 @@ namespace FoxTunes
             }
             set
             {
+                if (object.ReferenceEquals(this.Provider, value))
+                {
+                    return;
+                }
                 this._Provider = value;
                 this.OnProviderChanged();
             }
@@ -97,16 +101,18 @@ namespace FoxTunes
 
         protected virtual void UpdateProvider()
         {
+            var provider = default(IUILayoutProvider);
             if (this.Layout != null && this.Layout.Value != null)
             {
-                this.Provider = this.Providers.FirstOrDefault(
-                    provider => string.Equals(provider.Id, this.Layout.Value.Id, StringComparison.OrdinalIgnoreCase)
+                provider = this.Providers.FirstOrDefault(
+                    _provider => string.Equals(_provider.Id, this.Layout.Value.Id, StringComparison.OrdinalIgnoreCase)
                 );
             }
-            if (this.Provider == null)
+            if (provider == null)
             {
-                this.Provider = this.Providers.FirstOrDefault();
+                provider = this.Providers.FirstOrDefault();
             }
+            this.Provider = provider;
         }
 
         public UIComponent GetComponent(string id)

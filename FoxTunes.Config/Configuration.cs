@@ -130,6 +130,8 @@ namespace FoxTunes
             Logger.Write(this, LogLevel.Debug, "Loading configuration from file \"{0}\".", fileName);
             try
             {
+                var modifiedElements = this.GetModifiedElements();
+                var restoredElements = new List<ConfigurationElement>();
                 using (var stream = File.OpenRead(fileName))
                 {
                     var sections = Serializer.Load(stream);
@@ -146,13 +148,22 @@ namespace FoxTunes
                         try
                         {
                             Logger.Write(this, LogLevel.Debug, "Loading configuration section \"{0}\".", section.Key);
-                            this.Load(existing, section.Value);
+                            restoredElements.AddRange(this.Load(existing, section.Value));
                         }
                         catch (Exception e)
                         {
                             Logger.Write(this, LogLevel.Warn, "Failed to load configuration section \"{0}\": {1}", existing.Id, e.Message);
                         }
                     }
+                }
+                foreach (var modifiedElement in modifiedElements)
+                {
+                    if (restoredElements.Contains(modifiedElement))
+                    {
+                        continue;
+                    }
+                    Logger.Write(this, LogLevel.Debug, "Resetting configuration element: \"{0}\".", modifiedElement.Id);
+                    modifiedElement.Reset();
                 }
                 Profiles.Profile = profile;
             }
@@ -162,8 +173,9 @@ namespace FoxTunes
             }
         }
 
-        protected virtual void Load(ConfigurationSection section, IEnumerable<KeyValuePair<string, string>> elements)
+        protected virtual IEnumerable<ConfigurationElement> Load(ConfigurationSection section, IEnumerable<KeyValuePair<string, string>> elements)
         {
+            var restoredElements = new List<ConfigurationElement>();
             foreach (var element in elements)
             {
                 if (!section.Contains(element.Key))
@@ -173,9 +185,12 @@ namespace FoxTunes
                     Logger.Write(this, LogLevel.Warn, "Configuration element \"{0}\" no longer exists.", element.Key);
                     continue;
                 }
+                Logger.Write(this, LogLevel.Debug, "Loading configuration element: \"{0}\".", element.Key);
                 var existing = section.GetElement(element.Key);
                 existing.SetPersistentValue(element.Value);
+                restoredElements.Add(existing);
             }
+            return restoredElements;
         }
 
         public void Save()
@@ -267,6 +282,26 @@ namespace FoxTunes
                 pair.Key.AddHandler(pair.Value, handler);
             }
             handler(typeof(Configuration), EventArgs.Empty);
+        }
+
+        protected virtual IEnumerable<ConfigurationElement> GetModifiedElements()
+        {
+            var elements = new List<ConfigurationElement>();
+            if (!string.IsNullOrEmpty(this.Profile))
+            {
+                foreach (var section in this.Sections)
+                {
+                    foreach (var element in section.Elements)
+                    {
+                        if (!element.IsModified)
+                        {
+                            continue;
+                        }
+                        elements.Add(element);
+                    }
+                }
+            }
+            return elements;
         }
 
         public ConfigurationSection GetSection(string sectionId)
