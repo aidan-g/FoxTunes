@@ -114,6 +114,14 @@ namespace FoxTunes
             return MessageBox.Show(message, "Confirm", MessageBoxButton.OKCancel, MessageBoxImage.Question) == MessageBoxResult.OK;
         }
 
+        public override string Prompt(string message)
+        {
+            var result = default(string);
+            //TODO: Bad .Wait().
+            global::FoxTunes.Windows.Invoke(() => result = InputBox.ShowDialog(message)).Wait();
+            return result;
+        }
+
         public override void Restart()
         {
             MessageBox.Show("Restart is required.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);

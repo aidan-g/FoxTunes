@@ -177,6 +177,11 @@ namespace FoxTunes
             {
                 return;
             }
+            if (!this.Windows.Keys.Any())
+            {
+                this.Element.Value = null;
+                return;
+            }
             try
             {
                 using (var stream = new MemoryStream())

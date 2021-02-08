@@ -18,6 +18,8 @@ namespace FoxTunes.Interfaces
 
         bool Confirm(string message);
 
+        string Prompt(string message);
+
         void Restart();
 
         event UserInterfaceWindowEventHandler WindowCreated;

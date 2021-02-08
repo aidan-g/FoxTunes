@@ -1,9 +1,16 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace FoxTunes.Interfaces
 {
     public interface IConfiguration : IStandardComponent
     {
+        IEnumerable<string> AvailableProfiles { get; }
+
+        string Profile { get; }
+
+        bool IsDefaultProfile { get; }
+
         ReleaseType ReleaseType { get; }
 
         ObservableCollection<ConfigurationSection> Sections { get; }
@@ -12,7 +19,15 @@ namespace FoxTunes.Interfaces
 
         void Load();
 
+        void Load(string profile);
+
         void Save();
+
+        void Save(string profile);
+
+        void Delete();
+
+        void Delete(string profile);
 
         void Wait();
 

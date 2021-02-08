@@ -1,0 +1,25 @@
+﻿<Windows:WindowBase
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:Core="clr-namespace:FoxTunes;assembly=FoxTunes.Core" 
+        xmlns:Windows="clr-namespace:FoxTunes" 
+        x:Class="FoxTunes.InputBox"
+        mc:Ignorable="d" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterOwner" d:DataContext="{d:DesignInstance Core:Core, IsDesignTimeCreatable=False}" 
+        Title="Fox Tunes"
+        FocusManager.FocusedElement="{Binding ElementName=Result}">
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" x:Name="Prompt" Foreground="{DynamicResource TextBrush}"></TextBlock>
+        <TextBox Grid.Row="1" x:Name="Result" Width="200" Margin="0,7,0,0"></TextBox>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Width="70" Height="30" Margin="7,7,0,0" Click="OnOKClick" Content="{x:Static Windows:Strings.General_OK}"></Button>
+            <Button Width="70" Height="30" Margin="7,7,0,0" Click="OnCancelClick" Content="{x:Static Windows:Strings.General_Cancel}"></Button>
+        </StackPanel>
+    </Grid>
+</Windows:WindowBase>

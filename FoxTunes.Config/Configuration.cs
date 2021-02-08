@@ -11,11 +11,6 @@ namespace FoxTunes
     [Component("BA77B392-1900-4931-B720-16206B23DDA1", ComponentSlots.Configuration, priority: ComponentAttribute.PRIORITY_HIGH)]
     public class Configuration : StandardComponent, IConfiguration, IDisposable
     {
-        private static readonly string ConfigurationFileName = Path.Combine(
-            Publication.StoragePath,
-            "Settings.xml"
-        );
-
         const int TIMEOUT = 1000;
 
         public Configuration()
@@ -45,6 +40,30 @@ namespace FoxTunes
                 return ReleaseType.Default;
             }
         });
+
+        public IEnumerable<string> AvailableProfiles
+        {
+            get
+            {
+                return Profiles.AvailableProfiles;
+            }
+        }
+
+        public string Profile
+        {
+            get
+            {
+                return Profiles.Profile;
+            }
+        }
+
+        public bool IsDefaultProfile
+        {
+            get
+            {
+                return string.Equals(this.Profile, Strings.Profiles_Default, StringComparison.OrdinalIgnoreCase);
+            }
+        }
 
         public ReleaseType ReleaseType
         {
@@ -89,19 +108,31 @@ namespace FoxTunes
 
         public void Load()
         {
+            this.Load(this.Profile);
+        }
+
+        public void Load(string profile)
+        {
             foreach (var section in this.Sections)
             {
+                if (section.IsInitialized)
+                {
+                    continue;
+                }
                 section.InitializeComponent();
             }
-            if (!File.Exists(ConfigurationFileName))
+            var fileName = Profiles.GetFileName(profile);
+            if (!File.Exists(fileName))
             {
-                Logger.Write(this, LogLevel.Debug, "Configuration file \"{0}\" does not exist.", ConfigurationFileName);
+                Logger.Write(this, LogLevel.Debug, "Configuration file \"{0}\" does not exist.", fileName);
                 return;
             }
-            Logger.Write(this, LogLevel.Debug, "Loading configuration from file \"{0}\".", ConfigurationFileName);
+            Logger.Write(this, LogLevel.Debug, "Loading configuration from file \"{0}\".", fileName);
             try
             {
-                using (var stream = File.OpenRead(ConfigurationFileName))
+                var modifiedElements = this.GetModifiedElements();
+                var restoredElements = new List<ConfigurationElement>();
+                using (var stream = File.OpenRead(fileName))
                 {
                     var sections = Serializer.Load(stream);
                     foreach (var section in sections)
@@ -117,7 +148,7 @@ namespace FoxTunes
                         try
                         {
                             Logger.Write(this, LogLevel.Debug, "Loading configuration section \"{0}\".", section.Key);
-                            this.Load(existing, section.Value);
+                            restoredElements.AddRange(this.Load(existing, section.Value));
                         }
                         catch (Exception e)
                         {
@@ -125,6 +156,16 @@ namespace FoxTunes
                         }
                     }
                 }
+                foreach (var modifiedElement in modifiedElements)
+                {
+                    if (restoredElements.Contains(modifiedElement))
+                    {
+                        continue;
+                    }
+                    Logger.Write(this, LogLevel.Debug, "Resetting configuration element: \"{0}\".", modifiedElement.Id);
+                    modifiedElement.Reset();
+                }
+                Profiles.Profile = profile;
             }
             catch (Exception e)
             {
@@ -132,8 +173,9 @@ namespace FoxTunes
             }
         }
 
-        protected virtual void Load(ConfigurationSection section, IEnumerable<KeyValuePair<string, string>> elements)
+        protected virtual IEnumerable<ConfigurationElement> Load(ConfigurationSection section, IEnumerable<KeyValuePair<string, string>> elements)
         {
+            var restoredElements = new List<ConfigurationElement>();
             foreach (var element in elements)
             {
                 if (!section.Contains(element.Key))
@@ -143,19 +185,28 @@ namespace FoxTunes
                     Logger.Write(this, LogLevel.Warn, "Configuration element \"{0}\" no longer exists.", element.Key);
                     continue;
                 }
+                Logger.Write(this, LogLevel.Debug, "Loading configuration element: \"{0}\".", element.Key);
                 var existing = section.GetElement(element.Key);
                 existing.SetPersistentValue(element.Value);
+                restoredElements.Add(existing);
             }
+            return restoredElements;
         }
 
         public void Save()
         {
+            this.Save(this.Profile);
+        }
+
+        public void Save(string profile)
+        {
+            var fileName = Profiles.GetFileName(profile);
             this.Debouncer.Exec(() =>
             {
-                Logger.Write(this, LogLevel.Debug, "Saving configuration to file \"{0}\".", ConfigurationFileName);
+                Logger.Write(this, LogLevel.Debug, "Saving configuration to file \"{0}\".", fileName);
                 try
                 {
-                    using (var stream = File.Create(ConfigurationFileName))
+                    using (var stream = File.Create(fileName))
                     {
                         Serializer.Save(stream, this.Sections);
                     }
@@ -165,6 +216,20 @@ namespace FoxTunes
                     Logger.Write(this, LogLevel.Warn, "Failed to save configuration: {0}", e.Message);
                 }
             });
+            Profiles.Profile = profile;
+        }
+
+        public void Delete()
+        {
+            this.Delete(this.Profile);
+        }
+
+        public void Delete(string profile)
+        {
+            var fileName = Profiles.GetFileName(profile);
+            Profiles.Delete(profile);
+            File.Delete(fileName);
+            this.Load();
         }
 
         public void Wait()
@@ -217,6 +282,26 @@ namespace FoxTunes
                 pair.Key.AddHandler(pair.Value, handler);
             }
             handler(typeof(Configuration), EventArgs.Empty);
+        }
+
+        protected virtual IEnumerable<ConfigurationElement> GetModifiedElements()
+        {
+            var elements = new List<ConfigurationElement>();
+            if (!string.IsNullOrEmpty(this.Profile))
+            {
+                foreach (var section in this.Sections)
+                {
+                    foreach (var element in section.Elements)
+                    {
+                        if (!element.IsModified)
+                        {
+                            continue;
+                        }
+                        elements.Add(element);
+                    }
+                }
+            }
+            return elements;
         }
 
         public ConfigurationSection GetSection(string sectionId)
