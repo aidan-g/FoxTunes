@@ -75,7 +75,7 @@ namespace FoxTunes
 
         public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            return value;
         }
 
         public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

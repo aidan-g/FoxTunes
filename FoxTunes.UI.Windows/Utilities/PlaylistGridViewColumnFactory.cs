@@ -61,7 +61,8 @@ namespace FoxTunes
                     {
                         gridViewColumn.DisplayMemberBinding = new PlaylistMetaDataBinding()
                         {
-                            Name = column.Tag
+                            Name = column.Tag,
+                            Format = column.Format
                         };
                     }
                     break;

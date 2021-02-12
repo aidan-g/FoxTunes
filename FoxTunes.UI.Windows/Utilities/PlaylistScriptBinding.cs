@@ -21,7 +21,12 @@ namespace FoxTunes
             {
                 return null;
             }
-            return this.ExecuteScript(playlistItem, this.Script);
+            return base.Convert(
+                this.ExecuteScript(playlistItem, this.Script),
+                targetType,
+                parameter,
+                culture
+            );
         }
 
         private object ExecuteScript(PlaylistItem playlistItem, string script)

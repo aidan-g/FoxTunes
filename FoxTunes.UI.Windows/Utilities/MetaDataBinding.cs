@@ -19,7 +19,10 @@ namespace FoxTunes
         protected MetaDataBinding()
         {
             this.Converter = this;
+            this.Formatter = new Lazy<FormatterFactory.FormatterBase>(() => FormatterFactory.Create(this.Format));
         }
+
+        public Lazy<FormatterFactory.FormatterBase> Formatter { get; private set; }
 
         private string _Name { get; set; }
 
@@ -47,9 +50,35 @@ namespace FoxTunes
 
         public event EventHandler NameChanged;
 
+        private string _Format { get; set; }
+
+        public string Format
+        {
+            get
+            {
+                return this._Format;
+            }
+            set
+            {
+                this._Format = value;
+                this.OnFormatChanged();
+            }
+        }
+
+        protected virtual void OnFormatChanged()
+        {
+            if (this.FormatChanged != null)
+            {
+                this.FormatChanged(this, EventArgs.Empty);
+            }
+            this.OnPropertyChanged("Format");
+        }
+
+        public event EventHandler FormatChanged;
+
         public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            return this.Formatter.Value.GetValue(value);
         }
 
         public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
