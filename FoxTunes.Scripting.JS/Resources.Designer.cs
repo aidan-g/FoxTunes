@@ -90,15 +90,6 @@ namespace FoxTunes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to tag.beatsperminute.
-        /// </summary>
-        internal static string BPM {
-            get {
-                return ResourceManager.GetString("BPM", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to (extension(file) || &quot;&quot;).toUpperCase();.
         /// </summary>
         internal static string Codec {
@@ -147,15 +138,6 @@ namespace FoxTunes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to tag.initialkey.
-        /// </summary>
-        internal static string Initial_Key {
-            get {
-                return ResourceManager.GetString("Initial_Key", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to (function () {
         ///    var lastplayed = tag.lastplayed;
         ///    if (!lastplayed) {
@@ -182,15 +164,6 @@ namespace FoxTunes {
         internal static string PlayCount {
             get {
                 return ResourceManager.GetString("PlayCount", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to playing ? &quot;\u2022&quot; : &quot;&quot;.
-        /// </summary>
-        internal static string Playing {
-            get {
-                return ResourceManager.GetString("Playing", resourceCulture);
             }
         }
         

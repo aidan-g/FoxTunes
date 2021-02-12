@@ -56,6 +56,15 @@ namespace FoxTunes
                         }
                     }
                     break;
+                case PlaylistColumnType.Tag:
+                    if (!string.IsNullOrEmpty(column.Tag))
+                    {
+                        gridViewColumn.DisplayMemberBinding = new PlaylistMetaDataBinding()
+                        {
+                            Name = column.Tag
+                        };
+                    }
+                    break;
             }
             BindingHelper.Create(
                 gridViewColumn,

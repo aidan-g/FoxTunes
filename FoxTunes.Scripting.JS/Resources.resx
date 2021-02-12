@@ -124,9 +124,6 @@
   <data name="Artist_Album" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>resources\artist_album.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="BPM" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\bpm.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
   <data name="Codec" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>resources\codec.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
@@ -139,17 +136,11 @@
   <data name="Genre" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>resources\genre.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="Initial_Key" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\initialkey.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
   <data name="LastPlayed" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>resources\lastplayed.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="PlayCount" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>resources\playcount.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="Playing" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\playing.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="ReplayGainAlbumGain" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>resources\replaygainalbumgain.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>

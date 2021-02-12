@@ -52,14 +52,6 @@ namespace FoxTunes
             }
         }
 
-        public string Playing
-        {
-            get
-            {
-                return Resources.Playing;
-            }
-        }
-
         public string Title_Performer
         {
             get
@@ -81,22 +73,6 @@ namespace FoxTunes
             get
             {
                 return Resources.Year_Album;
-            }
-        }
-
-        public string BPM
-        {
-            get
-            {
-                return Resources.BPM;
-            }
-        }
-
-        public string InitialKey
-        {
-            get
-            {
-                return Resources.Initial_Key;
             }
         }
 

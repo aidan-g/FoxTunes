@@ -14,17 +14,11 @@
 
         string Genre { get; }
 
-        string Playing { get; }
-
         string Title_Performer { get; }
 
         string Track { get; }
 
         string Year_Album { get; }
-
-        string BPM { get; }
-
-        string InitialKey { get; }
 
         string ReplayGainAlbumGain { get; }
 
