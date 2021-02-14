@@ -5,6 +5,8 @@ namespace FoxTunes.Interfaces
 {
     public interface IPlaylistCache : IStandardComponent
     {
+        PlaylistColumn[] GetColumns(Func<IEnumerable<PlaylistColumn>> factory);
+
         Playlist[] GetPlaylists(Func<IEnumerable<Playlist>> factory);
 
         PlaylistItem[] GetItems(Playlist playlist, Func<IEnumerable<PlaylistItem>> factory);

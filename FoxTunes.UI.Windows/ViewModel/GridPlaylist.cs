@@ -516,23 +516,14 @@ namespace FoxTunes.ViewModel
 
         protected virtual IEnumerable<PlaylistGridViewColumn> GetGridColumns()
         {
-            if (this.DatabaseFactory != null && this.GridViewColumnFactory != null)
+            if (this.PlaylistBrowser != null)
             {
-                using (var database = this.DatabaseFactory.Create())
-                {
-                    using (var transaction = database.BeginTransaction(database.PreferredIsolationLevel))
-                    {
-                        var set = database.Set<PlaylistColumn>(transaction);
-                        set.Fetch.Filter.AddColumn(
-                            set.Table.GetColumn(ColumnConfig.By("Enabled", ColumnFlags.None))
-                        ).With(filter => filter.Right = filter.CreateConstant(1));
-                        foreach (var column in set)
-                        {
-                            yield return this.GridViewColumnFactory.Create(column);
-                        }
-                    }
-                }
+                return this.PlaylistBrowser.GetColumns()
+                    .Where(column => column.Enabled)
+                    .Select(column => this.GridViewColumnFactory.Create(column))
+                    .ToArray();
             }
+            return new PlaylistGridViewColumn[] { };
         }
 
         public virtual async Task Refresh()
@@ -595,8 +586,9 @@ namespace FoxTunes.ViewModel
 
         protected virtual Task ReloadColumns()
         {
-            var columns = this.GetGridColumns();
-            return Windows.Invoke(() => this.GridColumns = new ObservableCollection<PlaylistGridViewColumn>(columns));
+            return Windows.Invoke(
+                () => this.GridColumns = new ObservableCollection<PlaylistGridViewColumn>(this.GetGridColumns())
+            );
         }
 
         public async Task Sort(PlaylistColumn playlistColumn)

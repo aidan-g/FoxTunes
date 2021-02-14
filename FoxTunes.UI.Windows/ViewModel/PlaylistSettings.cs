@@ -1,7 +1,6 @@
 ﻿using FoxDb;
 using FoxTunes.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +12,8 @@ namespace FoxTunes.ViewModel
     public class PlaylistSettings : ViewModelBase
     {
         public PlaylistColumnProviderManager PlaylistColumnProviderManager { get; private set; }
+
+        public IPlaylistBrowser PlaylistBrowser { get; private set; }
 
         public IPlaylistManager PlaylistManager { get; private set; }
 
@@ -169,7 +170,6 @@ namespace FoxTunes.ViewModel
                     await task.Run().ConfigureAwait(false);
                 }
             }
-            await this.Refresh().ConfigureAwait(false);
             await this.SignalEmitter.Send(new Signal(this, CommonSignals.PlaylistUpdated)).ConfigureAwait(false);
             await this.SignalEmitter.Send(new Signal(this, CommonSignals.PlaylistColumnsUpdated)).ConfigureAwait(false);
         }
@@ -178,6 +178,7 @@ namespace FoxTunes.ViewModel
         {
             global::FoxTunes.BackgroundTask.ActiveChanged += this.OnActiveChanged;
             this.PlaylistColumnProviderManager = ComponentRegistry.Instance.GetComponent<PlaylistColumnProviderManager>();
+            this.PlaylistBrowser = this.Core.Components.PlaylistBrowser;
             this.PlaylistManager = this.Core.Managers.Playlist;
             this.DatabaseFactory = this.Core.Factories.Database;
             this.SignalEmitter = this.Core.Components.SignalEmitter;
@@ -221,6 +222,7 @@ namespace FoxTunes.ViewModel
             switch (signal.Name)
             {
                 case CommonSignals.SettingsUpdated:
+                case CommonSignals.PlaylistColumnsUpdated:
                     return this.Refresh();
             }
 #if NET40
@@ -234,15 +236,9 @@ namespace FoxTunes.ViewModel
         {
             return Windows.Invoke(() =>
             {
-                using (var database = this.DatabaseFactory.Create())
-                {
-                    using (var transaction = database.BeginTransaction(database.PreferredIsolationLevel))
-                    {
-                        this.PlaylistColumns.ItemsSource = new ObservableCollection<PlaylistColumn>(
-                            database.Set<PlaylistColumn>(transaction)
-                        );
-                    }
-                }
+                this.PlaylistColumns.ItemsSource = new ObservableCollection<PlaylistColumn>(
+                    this.PlaylistBrowser.GetColumns()
+                );
             });
         }
 
