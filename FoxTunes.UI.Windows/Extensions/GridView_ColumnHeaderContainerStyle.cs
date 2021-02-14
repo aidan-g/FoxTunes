@@ -80,18 +80,10 @@ namespace FoxTunes
                     return;
                 }
                 Windows.ActiveWindowChanged -= this.OnActiveWindowChanged;
-                try
-                {
-                    this.GridView.ColumnHeaderContainerStyle = this.CreateStyle(
-                        GetColumnHeaderContainerStyle(this.GridView),
-                        (Style)Windows.ActiveWindow.TryFindResource(typeof(GridViewColumnHeader))
-                    );
-                }
-                catch (Exception e)
-                {
-                    //Seems to happen when changing themes, some unserializable data in the style.
-                    Logger.Write(typeof(ColumnHeaderContainerStyleBehaviour), LogLevel.Warn, "Failed to apply column header style: {0}", e.Message);
-                }
+                this.GridView.ColumnHeaderContainerStyle = this.CreateStyle(
+                    GetColumnHeaderContainerStyle(this.GridView),
+                    (Style)Windows.ActiveWindow.TryFindResource(typeof(GridViewColumnHeader))
+                );
             }
 
             protected override void OnDisposing()
