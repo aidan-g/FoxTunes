@@ -59,7 +59,16 @@ namespace FoxTunes
                     }
                     break;
                 case CommonSignals.PlaylistColumnsUpdated:
-                    this.Columns = null;
+                    var columns = signal.State as IEnumerable<PlaylistColumn>;
+                    if (columns != null && columns.Any())
+                    {
+                        //Nothing to do for indivudual column change.
+                    }
+                    else
+                    {
+                        Logger.Write(this, LogLevel.Debug, "Columns were updated, resetting cache.");
+                        this.Columns = null;
+                    }
                     break;
             }
 #if NET40

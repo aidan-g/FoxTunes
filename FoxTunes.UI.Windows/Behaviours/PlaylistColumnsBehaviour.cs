@@ -65,7 +65,7 @@ namespace FoxTunes
                     transaction.Commit();
                 }
             }
-            await this.SignalEmitter.Send(new Signal(this, CommonSignals.PlaylistColumnsUpdated)).ConfigureAwait(false);
+            await this.SignalEmitter.Send(new Signal(this, CommonSignals.PlaylistColumnsUpdated, new[] { column })).ConfigureAwait(false);
         }
     }
 }

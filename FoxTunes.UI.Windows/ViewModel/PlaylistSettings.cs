@@ -1,6 +1,7 @@
 ﻿using FoxDb;
 using FoxTunes.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -222,8 +223,18 @@ namespace FoxTunes.ViewModel
             switch (signal.Name)
             {
                 case CommonSignals.SettingsUpdated:
-                case CommonSignals.PlaylistColumnsUpdated:
                     return this.Refresh();
+                case CommonSignals.PlaylistColumnsUpdated:
+                    var columns = signal.State as IEnumerable<PlaylistColumn>;
+                    if (columns != null && columns.Any())
+                    {
+                        this.PlaylistColumns.Refresh();
+                    }
+                    else
+                    {
+                        return this.Refresh();
+                    }
+                    break;
             }
 #if NET40
             return TaskEx.FromResult(false);
