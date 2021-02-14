@@ -67,17 +67,17 @@ namespace FoxTunes
                 lock (libraryItem.MetaDatas)
                 {
                     var metaDataItem = libraryItem.MetaDatas.FirstOrDefault(
-                        _metaDataItem => string.Equals(_metaDataItem.Name, CommonMetaData.Rating, StringComparison.OrdinalIgnoreCase)
+                        _metaDataItem => string.Equals(_metaDataItem.Name, CommonStatistics.Rating, StringComparison.OrdinalIgnoreCase)
                     );
                     if (metaDataItem == null)
                     {
-                        metaDataItem = new MetaDataItem(CommonMetaData.Rating, MetaDataItemType.Tag);
+                        metaDataItem = new MetaDataItem(CommonStatistics.Rating, MetaDataItemType.Tag);
                         libraryItem.MetaDatas.Add(metaDataItem);
                     }
                     metaDataItem.Value = Convert.ToString(this.Rating);
                 }
             }
-            await this.MetaDataManager.Save(libraryItems, true, false, CommonMetaData.Rating).ConfigureAwait(false);
+            await this.MetaDataManager.Save(libraryItems, true, false, CommonStatistics.Rating).ConfigureAwait(false);
         }
     }
 }

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:System="clr-namespace:System;assembly=mscorlib"
              xmlns:Core="clr-namespace:FoxTunes;assembly=FoxTunes.Core" 
              xmlns:Windows="clr-namespace:FoxTunes"
@@ -17,6 +18,14 @@
                 <x:Type TypeName="Core:PlaylistColumnType"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
+        <CollectionViewSource x:Key="MetaDataElements" Source="{x:Static ViewModel:MetaDataSelector.Elements}">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Name"></scm:SortDescription>
+            </CollectionViewSource.SortDescriptions>
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="Type"></PropertyGroupDescription>
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -154,9 +163,24 @@
                                 <RowDefinition Height="Auto"></RowDefinition>
                             </Grid.RowDefinitions>
                             <Label Grid.Column="0" Grid.Row="0">Tag</Label>
-                            <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Tag}" Margin="0,0,0,5"></TextBox>
+                            <ComboBox Grid.Column="1" Grid.Row="0" ItemsSource="{Binding Source={StaticResource MetaDataElements}}" Text="{Binding Tag}" Margin="0,0,0,5" IsEditable="True">
+                                <ComboBox.GroupStyle>
+                                    <GroupStyle>
+                                        <GroupStyle.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Name}" Foreground="{DynamicResource TextBrush}"></TextBlock>
+                                            </DataTemplate>
+                                        </GroupStyle.HeaderTemplate>
+                                    </GroupStyle>
+                                </ComboBox.GroupStyle>
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" Foreground="{DynamicResource TextBrush}"></TextBlock>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
                             <Label Grid.Column="0" Grid.Row="1">Format</Label>
-                            <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Format}"></TextBox>
+                            <ComboBox Grid.Column="1" Grid.Row="1" ItemsSource="{x:Static ViewModel:MetaDataSelector.Formats}" Text="{Binding Format}" IsEditable="True"></ComboBox>
                         </Grid>
                     </Grid>
                 </Grid>

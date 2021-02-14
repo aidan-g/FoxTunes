@@ -96,7 +96,7 @@ namespace FoxTunes.Mpeg4
 
         public static bool CanExport(MetaDataItem metaDataItem)
         {
-            if (string.Equals(metaDataItem.Name, CommonMetaData.Rating, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(metaDataItem.Name, CommonStatistics.Rating, StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
@@ -107,7 +107,7 @@ namespace FoxTunes.Mpeg4
         {
             if (string.Equals(this.Name, SharedUserRating, StringComparison.OrdinalIgnoreCase))
             {
-                return new MetaDataItem(CommonMetaData.Rating, MetaDataItemType.Tag)
+                return new MetaDataItem(CommonStatistics.Rating, MetaDataItemType.Tag)
                 {
                     Value = Convert.ToString(GetRatingStars(BitConverter.ToUInt64(this.Parts[0].Content, 0)))
                 };
@@ -117,7 +117,7 @@ namespace FoxTunes.Mpeg4
 
         public static XtraTag FromMetaDataItem(MetaDataItem metaDataItem)
         {
-            if (string.Equals(metaDataItem.Name, CommonMetaData.Rating, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(metaDataItem.Name, CommonStatistics.Rating, StringComparison.OrdinalIgnoreCase))
             {
                 return new XtraTag(
                     SharedUserRating,

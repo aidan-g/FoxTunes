@@ -22,17 +22,17 @@ namespace FoxTunes
         public PlaylistGridViewColumnFactory(IScriptingRuntime scriptingRuntime)
         {
             this.ScriptingRuntime = scriptingRuntime;
+            this.ScriptingContext = new Lazy<IScriptingContext>(scriptingRuntime.CreateContext);
         }
 
         public bool Suspended { get; private set; }
 
         public IScriptingRuntime ScriptingRuntime { get; private set; }
 
-        public IScriptingContext ScriptingContext { get; private set; }
+        public Lazy<IScriptingContext> ScriptingContext { get; private set; }
 
         public PlaylistGridViewColumn Create(PlaylistColumn column)
         {
-            this.EnsureScriptingContext();
             var gridViewColumn = new PlaylistGridViewColumn(column);
             switch (column.Type)
             {
@@ -41,7 +41,7 @@ namespace FoxTunes
                     {
                         gridViewColumn.DisplayMemberBinding = new PlaylistScriptBinding()
                         {
-                            ScriptingContext = this.ScriptingContext,
+                            ScriptingContext = this.ScriptingContext.Value,
                             Script = column.Script
                         };
                     }
@@ -152,15 +152,6 @@ namespace FoxTunes
             }
         }
 
-        protected virtual void EnsureScriptingContext()
-        {
-            if (this.ScriptingContext != null)
-            {
-                return;
-            }
-            this.ScriptingContext = this.ScriptingRuntime.CreateContext();
-        }
-
         public bool IsDisposed { get; private set; }
 
         public void Dispose()
@@ -181,9 +172,9 @@ namespace FoxTunes
 
         protected virtual void OnDisposing()
         {
-            if (this.ScriptingContext != null)
+            if (this.ScriptingContext.IsValueCreated)
             {
-                this.ScriptingContext.Dispose();
+                this.ScriptingContext.Value.Dispose();
             }
         }
 

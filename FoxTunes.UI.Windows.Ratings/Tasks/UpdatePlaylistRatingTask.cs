@@ -38,17 +38,17 @@ namespace FoxTunes
                 lock (playlistItem.MetaDatas)
                 {
                     var metaDataItem = playlistItem.MetaDatas.FirstOrDefault(
-                        _metaDataItem => string.Equals(_metaDataItem.Name, CommonMetaData.Rating, StringComparison.OrdinalIgnoreCase)
+                        _metaDataItem => string.Equals(_metaDataItem.Name, CommonStatistics.Rating, StringComparison.OrdinalIgnoreCase)
                     );
                     if (metaDataItem == null)
                     {
-                        metaDataItem = new MetaDataItem(CommonMetaData.Rating, MetaDataItemType.Tag);
+                        metaDataItem = new MetaDataItem(CommonStatistics.Rating, MetaDataItemType.Tag);
                         playlistItem.MetaDatas.Add(metaDataItem);
                     }
                     metaDataItem.Value = Convert.ToString(this.Rating);
                 }
             }
-            await this.MetaDataManager.Save(this.PlaylistItems, true, false, CommonMetaData.Rating).ConfigureAwait(false);
+            await this.MetaDataManager.Save(this.PlaylistItems, true, false, CommonStatistics.Rating).ConfigureAwait(false);
         }
     }
 }

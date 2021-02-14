@@ -552,7 +552,7 @@ namespace FoxTunes
             {
                 this.Try(() => tag.Genres = new[] { metaDataItem.Value }, this.ErrorHandler);
             }
-            else if (string.Equals(metaDataItem.Name, CommonMetaData.LastPlayed, StringComparison.OrdinalIgnoreCase))
+            else if (string.Equals(metaDataItem.Name, CommonStatistics.LastPlayed, StringComparison.OrdinalIgnoreCase))
             {
                 if (this.Popularimeter.Value && MetaDataBehaviourConfiguration.GetWriteBehaviour(this.Write.Value).HasFlag(WriteBehaviour.Statistics))
                 {
@@ -563,14 +563,14 @@ namespace FoxTunes
             {
                 this.Try(() => tag.Performers = new[] { metaDataItem.Value }, this.ErrorHandler);
             }
-            else if (string.Equals(metaDataItem.Name, CommonMetaData.PlayCount, StringComparison.OrdinalIgnoreCase))
+            else if (string.Equals(metaDataItem.Name, CommonStatistics.PlayCount, StringComparison.OrdinalIgnoreCase))
             {
                 if (this.Popularimeter.Value && MetaDataBehaviourConfiguration.GetWriteBehaviour(this.Write.Value).HasFlag(WriteBehaviour.Statistics))
                 {
                     this.Try(() => PopularimeterManager.Write(this, metaDataItem, file), this.ErrorHandler);
                 }
             }
-            else if (string.Equals(metaDataItem.Name, CommonMetaData.Rating, StringComparison.OrdinalIgnoreCase))
+            else if (string.Equals(metaDataItem.Name, CommonStatistics.Rating, StringComparison.OrdinalIgnoreCase))
             {
                 if (this.Popularimeter.Value)
                 {
@@ -921,42 +921,42 @@ namespace FoxTunes
                     }
                 }
                 //If we didn't find a popularimeter frame then attempt to read the rating from a custom tag.
-                if (!result.ContainsKey(CommonMetaData.Rating))
+                if (!result.ContainsKey(CommonStatistics.Rating))
                 {
-                    var rating = ReadCustomTag(CommonMetaData.Rating, file);
+                    var rating = ReadCustomTag(CommonStatistics.Rating, file);
                     if (!string.IsNullOrEmpty(rating))
                     {
-                        result.Add(CommonMetaData.Rating, Convert.ToString(GetRatingStars(rating)));
+                        result.Add(CommonStatistics.Rating, Convert.ToString(GetRatingStars(rating)));
                     }
                     else
                     {
-                        result.Add(CommonMetaData.Rating, string.Empty);
+                        result.Add(CommonStatistics.Rating, string.Empty);
                     }
                 }
                 //If we didn't find a popularimeter frame then attempt to read the play count from a custom tag.
-                if (!result.ContainsKey(CommonMetaData.PlayCount))
+                if (!result.ContainsKey(CommonStatistics.PlayCount))
                 {
-                    var playCount = ReadCustomTag(CommonMetaData.PlayCount, file);
+                    var playCount = ReadCustomTag(CommonStatistics.PlayCount, file);
                     if (!string.IsNullOrEmpty(playCount))
                     {
-                        result.Add(CommonMetaData.PlayCount, playCount);
+                        result.Add(CommonStatistics.PlayCount, playCount);
                     }
                     else
                     {
-                        result.Add(CommonMetaData.PlayCount, "0");
+                        result.Add(CommonStatistics.PlayCount, "0");
                     }
                 }
                 //Popularimeter frame does not support last played, attempt to read the play count from a custom tag.
                 //if (!result.ContainsKey(CommonMetaData.LastPlayed))
                 {
-                    var lastPlayed = ReadCustomTag(CommonMetaData.LastPlayed, file);
+                    var lastPlayed = ReadCustomTag(CommonStatistics.LastPlayed, file);
                     if (!string.IsNullOrEmpty(lastPlayed))
                     {
-                        result.Add(CommonMetaData.LastPlayed, lastPlayed);
+                        result.Add(CommonStatistics.LastPlayed, lastPlayed);
                     }
                     else
                     {
-                        result.Add(CommonMetaData.LastPlayed, string.Empty);
+                        result.Add(CommonStatistics.LastPlayed, string.Empty);
                     }
                 }
                 //Copy our informations back to the meta data collection.
@@ -971,17 +971,17 @@ namespace FoxTunes
             {
                 if (frame.Rating > 0)
                 {
-                    result.Add(CommonMetaData.Rating, Convert.ToString(GetRatingStars(frame.Rating)));
+                    result.Add(CommonStatistics.Rating, Convert.ToString(GetRatingStars(frame.Rating)));
                 }
                 if (frame.PlayCount > 0)
                 {
-                    result.Add(CommonMetaData.PlayCount, Convert.ToString(frame.PlayCount));
+                    result.Add(CommonStatistics.PlayCount, Convert.ToString(frame.PlayCount));
                 }
             }
 
             public static void Write(TagLibMetaDataSource source, MetaDataItem metaDataItem, File file)
             {
-                if (file.TagTypes.HasFlag(TagTypes.Id3v2) && (new[] { CommonMetaData.Rating, CommonMetaData.PlayCount }).Contains(metaDataItem.Name, true))
+                if (file.TagTypes.HasFlag(TagTypes.Id3v2) && (new[] { CommonStatistics.Rating, CommonStatistics.PlayCount }).Contains(metaDataItem.Name, true))
                 {
                     var tag = GetTag<global::TagLib.Id3v2.Tag>(file, TagTypes.Id3v2);
                     var frames = tag.GetFrames<global::TagLib.Id3v2.PopularimeterFrame>();
@@ -999,7 +999,7 @@ namespace FoxTunes
                         tag.AddFrame(frame);
                     }
                 }
-                else if (string.Equals(metaDataItem.Name, CommonMetaData.Rating, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(metaDataItem.Name, CommonStatistics.Rating, StringComparison.OrdinalIgnoreCase))
                 {
                     WriteCustomTag(metaDataItem.Name, Convert.ToString(GetRatingMask(metaDataItem.Value)), file);
                 }
@@ -1011,11 +1011,11 @@ namespace FoxTunes
 
             private static void WritePopularimeterFrame(global::TagLib.Id3v2.PopularimeterFrame frame, MetaDataItem metaDataItem)
             {
-                if (string.Equals(metaDataItem.Name, CommonMetaData.Rating, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(metaDataItem.Name, CommonStatistics.Rating, StringComparison.OrdinalIgnoreCase))
                 {
                     frame.Rating = GetRatingMask(metaDataItem.Value);
                 }
-                else if (string.Equals(metaDataItem.Name, CommonMetaData.PlayCount, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(metaDataItem.Name, CommonStatistics.PlayCount, StringComparison.OrdinalIgnoreCase))
                 {
                     frame.PlayCount = Convert.ToUInt64(metaDataItem.Value);
                 }
@@ -1130,12 +1130,12 @@ namespace FoxTunes
 
         private static string GetCustomTagName(string name)
         {
-            if (string.Equals(name, CommonMetaData.LastPlayed, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(name, CommonStatistics.LastPlayed, StringComparison.OrdinalIgnoreCase))
             {
                 //TODO: I can't work out what the standard is for this value.
                 return "last_played_timestamp";
             }
-            else if (string.Equals(name, CommonMetaData.PlayCount, StringComparison.OrdinalIgnoreCase))
+            else if (string.Equals(name, CommonStatistics.PlayCount, StringComparison.OrdinalIgnoreCase))
             {
                 return "play_count";
             }

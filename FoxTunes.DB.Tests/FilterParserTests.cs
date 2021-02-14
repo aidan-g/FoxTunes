@@ -116,7 +116,7 @@ namespace FoxTunes
                     new FilterParserResultGroup(
                         new[]
                         {
-                            new FilterParserResultEntry(CommonMetaData.Rating, FilterParserEntryOperator.Equal, "5"),
+                            new FilterParserResultEntry(CommonStatistics.Rating, FilterParserEntryOperator.Equal, "5"),
                         },
                         FilterParserGroupOperator.And
                     ),
