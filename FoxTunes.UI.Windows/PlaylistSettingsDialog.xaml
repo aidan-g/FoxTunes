@@ -163,12 +163,12 @@
                                 <RowDefinition Height="Auto"></RowDefinition>
                             </Grid.RowDefinitions>
                             <Label Grid.Column="0" Grid.Row="0">Tag</Label>
-                            <ComboBox Grid.Column="1" Grid.Row="0" ItemsSource="{Binding Source={StaticResource MetaDataElements}}" Text="{Binding Tag}" Margin="0,0,0,5" IsEditable="True">
+                            <ComboBox Grid.Column="1" Grid.Row="0" ItemsSource="{Binding Source={StaticResource MetaDataElements}}" SelectedValue="{Binding Tag}" SelectedValuePath="Name" Margin="0,0,0,5">
                                 <ComboBox.GroupStyle>
                                     <GroupStyle>
                                         <GroupStyle.HeaderTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding Name}" Foreground="{DynamicResource TextBrush}"></TextBlock>
+                                                <TextBlock Text="{Binding Name}" Foreground="{DynamicResource TextBrush}" Margin="4,0,0,0" TextDecorations="Underline"></TextBlock>
                                             </DataTemplate>
                                         </GroupStyle.HeaderTemplate>
                                     </GroupStyle>
@@ -180,7 +180,7 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                             <Label Grid.Column="0" Grid.Row="1">Format</Label>
-                            <ComboBox Grid.Column="1" Grid.Row="1" ItemsSource="{x:Static ViewModel:MetaDataSelector.Formats}" Text="{Binding Format}" IsEditable="True"></ComboBox>
+                            <ComboBox Grid.Column="1" Grid.Row="1" ItemsSource="{x:Static ViewModel:MetaDataSelector.Formats}" SelectedValue="{Binding Format}" IsEditable="True"></ComboBox>
                         </Grid>
                     </Grid>
                 </Grid>

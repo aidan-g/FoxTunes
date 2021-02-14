@@ -191,7 +191,7 @@ namespace FoxTunes.ViewModel
                         return database.Set<PlaylistColumn>().Create().With(playlistColumn =>
                         {
                             playlistColumn.Name = "New";
-                            playlistColumn.Type = PlaylistColumnType.Script;
+                            playlistColumn.Type = PlaylistColumnType.Tag;
                             playlistColumn.Script = "'New'";
                             playlistColumn.Enabled = true;
                         });

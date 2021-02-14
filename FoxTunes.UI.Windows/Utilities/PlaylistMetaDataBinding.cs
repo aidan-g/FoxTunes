@@ -26,12 +26,11 @@ namespace FoxTunes
                         {
                             continue;
                         }
-                        value = item.Value;
-                        break;
+                        return base.Convert(item.Value, targetType, parameter, culture);
                     }
                 }
             }
-            return base.Convert(value, targetType, parameter, culture);
+            return null;
         }
     }
 }
