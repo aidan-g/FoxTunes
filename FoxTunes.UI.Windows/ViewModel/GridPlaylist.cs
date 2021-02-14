@@ -298,7 +298,7 @@ namespace FoxTunes.ViewModel
                     var columns = signal.State as IEnumerable<PlaylistColumn>;
                     if (columns != null && columns.Any())
                     {
-                        //Nothing to do for indivudual column change.
+                        await this.RefreshColumns().ConfigureAwait(false);
                     }
                     else
                     {
@@ -604,6 +604,26 @@ namespace FoxTunes.ViewModel
         protected virtual Task ResizeColumn(PlaylistGridViewColumn column)
         {
             return Windows.Invoke(() => this.GridViewColumnFactory.Resize(column));
+        }
+
+        protected virtual Task RefreshColumns()
+        {
+            if (this.GridColumns != null)
+            {
+                var count = this.PlaylistBrowser.GetColumns()
+                    .Where(column => column.Enabled)
+                    .Count();
+                if (this.GridColumns.Count == count)
+                {
+                    //Nothing to do, we only handle add/remove columns.
+#if NET40
+                    return TaskEx.FromResult(false);
+#else
+                    return Task.CompletedTask;
+#endif
+                }
+            }
+            return this.ReloadColumns();
         }
 
         protected virtual Task ReloadColumns()
