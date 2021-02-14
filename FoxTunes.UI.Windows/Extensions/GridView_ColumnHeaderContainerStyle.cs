@@ -48,9 +48,19 @@ namespace FoxTunes
             }
         }
 
+        /// <summary>
+        /// TODO: This behaviour sucks. GridView is not a Visual so it doesn't support resource resolution.
+        /// TODO: We use Windows.ActiveWindow instead which means scope is ignored.
+        /// TODO: If Windows.ActiveWindow is null we need to wait for it (using Windows.ActiveWindowChanged).....
+        /// </summary>
         private class ColumnHeaderContainerStyleBehaviour : DynamicStyleBehaviour
         {
-            public ColumnHeaderContainerStyleBehaviour(GridView GridView)
+            private ColumnHeaderContainerStyleBehaviour()
+            {
+                Windows.ActiveWindowChanged += this.OnActiveWindowChanged;
+            }
+
+            public ColumnHeaderContainerStyleBehaviour(GridView GridView) : this()
             {
                 this.GridView = GridView;
                 this.Apply();
@@ -58,13 +68,22 @@ namespace FoxTunes
 
             public GridView GridView { get; private set; }
 
+            protected virtual void OnActiveWindowChanged(object sender, EventArgs e)
+            {
+                this.Apply();
+            }
+
             protected override void Apply()
             {
+                if (Windows.ActiveWindow == null)
+                {
+                    return;
+                }
+                Windows.ActiveWindowChanged -= this.OnActiveWindowChanged;
                 try
                 {
                     this.GridView.ColumnHeaderContainerStyle = this.CreateStyle(
                         GetColumnHeaderContainerStyle(this.GridView),
-                        //TODO: Ignoring scope of GridView.
                         (Style)Windows.ActiveWindow.TryFindResource(typeof(GridViewColumnHeader))
                     );
                 }
@@ -73,6 +92,12 @@ namespace FoxTunes
                     //Seems to happen when changing themes, some unserializable data in the style.
                     Logger.Write(typeof(ColumnHeaderContainerStyleBehaviour), LogLevel.Warn, "Failed to apply column header style: {0}", e.Message);
                 }
+            }
+
+            protected override void OnDisposing()
+            {
+                Windows.ActiveWindowChanged -= this.OnActiveWindowChanged;
+                base.OnDisposing();
             }
         }
     }
