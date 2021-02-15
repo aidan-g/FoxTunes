@@ -7,29 +7,24 @@ using System.Linq;
 
 namespace FoxTunes
 {
-    public class PlaylistGridViewColumnFactory : IDisposable
+    [ComponentDependency(Slot = ComponentSlots.UserInterface)]
+    public class PlaylistGridViewColumnFactory : StandardComponent, IDisposable
     {
-        protected static ILogger Logger
-        {
-            get
-            {
-                return LogManager.Logger;
-            }
-        }
-
-        public static PlaylistColumnProviderManager PlaylistColumnProviderManager = ComponentRegistry.Instance.GetComponent<PlaylistColumnProviderManager>();
-
-        public PlaylistGridViewColumnFactory(IScriptingRuntime scriptingRuntime)
-        {
-            this.ScriptingRuntime = scriptingRuntime;
-            this.ScriptingContext = new Lazy<IScriptingContext>(scriptingRuntime.CreateContext);
-        }
-
-        public bool Suspended { get; private set; }
+        public PlaylistColumnProviderManager PlaylistColumnProviderManager { get; private set; }
 
         public IScriptingRuntime ScriptingRuntime { get; private set; }
 
         public Lazy<IScriptingContext> ScriptingContext { get; private set; }
+
+        public bool Suspended { get; private set; }
+
+        public override void InitializeComponent(ICore core)
+        {
+            this.PlaylistColumnProviderManager = ComponentRegistry.Instance.GetComponent<PlaylistColumnProviderManager>();
+            this.ScriptingRuntime = core.Components.ScriptingRuntime;
+            this.ScriptingContext = new Lazy<IScriptingContext>(this.ScriptingRuntime.CreateContext);
+            base.InitializeComponent(core);
+        }
 
         public PlaylistGridViewColumn Create(PlaylistColumn column)
         {
@@ -135,7 +130,7 @@ namespace FoxTunes
             return true;
         }
 
-        public void Resize(PlaylistGridViewColumn column)
+        public void Resize(GridViewColumn column)
         {
             this.Suspended = true;
             try
@@ -172,7 +167,7 @@ namespace FoxTunes
 
         protected virtual void OnDisposing()
         {
-            if (this.ScriptingContext.IsValueCreated)
+            if (this.ScriptingContext != null && this.ScriptingContext.IsValueCreated)
             {
                 this.ScriptingContext.Value.Dispose();
             }
