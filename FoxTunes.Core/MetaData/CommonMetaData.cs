@@ -19,7 +19,6 @@ namespace FoxTunes
         public const string Genre = "Genre";
         public const string Grouping = "Grouping";
         public const string InitialKey = "InitialKey";
-        public const string LastPlayed = "LastPlayed";
         public const string Lyrics = "Lyrics";
         public const string MusicBrainzArtistId = "MusicBrainzArtistId";
         public const string MusicBrainzDiscId = "MusicBrainzDiscId";
@@ -32,8 +31,6 @@ namespace FoxTunes
         public const string MusicIpId = "MusicIpId";
         public const string Performer = "Performer";
         public const string Pictures = "Pictures";
-        public const string PlayCount = "PlayCount";
-        public const string Rating = "Rating";
         public const string ReplayGainAlbumGain = "ReplayGainAlbumGain";
         public const string ReplayGainAlbumPeak = "ReplayGainAlbumPeak";
         public const string ReplayGainTrackGain = "ReplayGainTrackGain";

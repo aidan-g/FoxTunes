@@ -64,6 +64,32 @@ namespace FoxTunes
             base.InitializeComponent(core);
         }
 
+        public PlaylistColumn[] GetColumns()
+        {
+            return this.PlaylistCache.GetColumns(this.GetColumnsCore);
+        }
+
+        private IEnumerable<PlaylistColumn> GetColumnsCore()
+        {
+            using (var database = this.DatabaseFactory.Create())
+            {
+                using (var transaction = database.BeginTransaction(database.PreferredIsolationLevel))
+                {
+                    var set = database.Set<PlaylistColumn>(transaction);
+                    //It's easier to just filter enabled/disabled in memory, there isn't much data.
+                    //set.Fetch.Filter.AddColumn(
+                    //    set.Table.GetColumn(ColumnConfig.By("Enabled", ColumnFlags.None))
+                    //).With(filter => filter.Right = filter.CreateConstant(1));
+                    set.Fetch.Sort.Expressions.Clear();
+                    set.Fetch.Sort.AddColumn(set.Table.GetColumn(ColumnConfig.By("Sequence", ColumnFlags.None)));
+                    foreach (var element in set)
+                    {
+                        yield return element;
+                    }
+                }
+            }
+        }
+
         public Playlist[] GetPlaylists()
         {
             return this.PlaylistCache.GetPlaylists(this.GetPlaylistsCore);

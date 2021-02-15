@@ -36,7 +36,7 @@ namespace FoxTunes.MetaData.TagLib.Tests
             var metaData = await metaDataSource.GetMetaData(fileName).ConfigureAwait(false);
             foreach (var metaDataItem in metaData)
             {
-                if (string.Equals(metaDataItem.Name, CommonMetaData.Rating, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(metaDataItem.Name, CommonStatistics.Rating, StringComparison.OrdinalIgnoreCase))
                 {
                     Assert.AreEqual(rating, metaDataItem.Value);
                     return;
@@ -58,7 +58,7 @@ namespace FoxTunes.MetaData.TagLib.Tests
             var metaDataSource = this.Core.Factories.MetaDataSource.Create();
             var metaData = new[]
             {
-                new MetaDataItem(CommonMetaData.Rating, MetaDataItemType.Tag)
+                new MetaDataItem(CommonStatistics.Rating, MetaDataItemType.Tag)
                 {
                     Value = rating
                 }

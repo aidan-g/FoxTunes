@@ -53,17 +53,17 @@ namespace FoxTunes
                 new[] { this.PlaylistItem },
                 write,
                 false,
-                CommonMetaData.PlayCount,
-                CommonMetaData.LastPlayed
+                CommonStatistics.PlayCount,
+                CommonStatistics.LastPlayed
             ).ConfigureAwait(false);
         }
 
         protected virtual void UpdatePlayCount(IDictionary<string, MetaDataItem> metaDatas)
         {
             var metaDataItem = default(MetaDataItem);
-            if (!metaDatas.TryGetValue(CommonMetaData.PlayCount, out metaDataItem))
+            if (!metaDatas.TryGetValue(CommonStatistics.PlayCount, out metaDataItem))
             {
-                metaDataItem = new MetaDataItem(CommonMetaData.PlayCount, MetaDataItemType.Tag);
+                metaDataItem = new MetaDataItem(CommonStatistics.PlayCount, MetaDataItemType.Tag);
                 this.PlaylistItem.MetaDatas.Add(metaDataItem);
             }
             var playCount = default(int);
@@ -80,9 +80,9 @@ namespace FoxTunes
         protected virtual void UpdateLastPlayed(IDictionary<string, MetaDataItem> metaDatas)
         {
             var metaDataItem = default(MetaDataItem);
-            if (!metaDatas.TryGetValue(CommonMetaData.LastPlayed, out metaDataItem))
+            if (!metaDatas.TryGetValue(CommonStatistics.LastPlayed, out metaDataItem))
             {
-                metaDataItem = new MetaDataItem(CommonMetaData.LastPlayed, MetaDataItemType.Tag);
+                metaDataItem = new MetaDataItem(CommonStatistics.LastPlayed, MetaDataItemType.Tag);
                 this.PlaylistItem.MetaDatas.Add(metaDataItem);
             }
             //TODO: I can't work out what the standard is for this value.

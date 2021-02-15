@@ -238,7 +238,7 @@ namespace FoxTunes
                 var rating = match.Groups[RATING];
                 if (rating != null)
                 {
-                    entries.Add(new FilterParserResultEntry(CommonMetaData.Rating, FilterParserEntryOperator.Equal, rating.Value));
+                    entries.Add(new FilterParserResultEntry(CommonStatistics.Rating, FilterParserEntryOperator.Equal, rating.Value));
                 }
                 return new FilterParserResultGroup(entries, FilterParserGroupOperator.And);
             }

@@ -217,8 +217,8 @@ namespace FoxTunes.ViewModel
             base.InitializeComponent(core);
             this.PlaylistManager.SelectedItemsChanged += this.OnSelectedItemsChanged;
             this.GridViewColumnFactory = new PlaylistGridViewColumnFactory(this.ScriptingRuntime);
-            this.GridViewColumnFactory.PositionChanged += this.OnColumnChanged;
-            this.GridViewColumnFactory.WidthChanged += this.OnColumnChanged;
+            this.GridViewColumnFactory.PositionChanged += this.OnColumnPositionChanged;
+            this.GridViewColumnFactory.WidthChanged += this.OnColumnWidthChanged;
             this.FileActionHandlerManager = core.Managers.FileActionHandler;
             this.Configuration = core.Components.Configuration;
 #if NET40
@@ -244,7 +244,17 @@ namespace FoxTunes.ViewModel
             var task = Windows.Invoke(this.OnSelectedItemsChanged);
         }
 
-        protected virtual void OnColumnChanged(object sender, PlaylistColumn e)
+        protected virtual void OnColumnPositionChanged(object sender, PlaylistColumn playlistColumn)
+        {
+            this.UpdateColumn(playlistColumn, true);
+        }
+
+        protected virtual void OnColumnWidthChanged(object sender, PlaylistColumn playlistColumn)
+        {
+            this.UpdateColumn(playlistColumn, false);
+        }
+
+        protected virtual void UpdateColumn(PlaylistColumn playlistColumn, bool raiseEvent)
         {
             if (this.DatabaseFactory != null)
             {
@@ -253,9 +263,13 @@ namespace FoxTunes.ViewModel
                     using (var transaction = database.BeginTransaction(database.PreferredIsolationLevel))
                     {
                         var set = database.Set<PlaylistColumn>(transaction);
-                        set.AddOrUpdate(e);
+                        set.AddOrUpdate(playlistColumn);
                         transaction.Commit();
                     }
+                }
+                if (raiseEvent)
+                {
+                    var task = this.SignalEmitter.Send(new Signal(this, CommonSignals.PlaylistColumnsUpdated, new[] { playlistColumn }));
                 }
             }
         }
@@ -281,7 +295,15 @@ namespace FoxTunes.ViewModel
                     }
                     break;
                 case CommonSignals.PlaylistColumnsUpdated:
-                    await this.ReloadColumns().ConfigureAwait(false);
+                    var columns = signal.State as IEnumerable<PlaylistColumn>;
+                    if (columns != null && columns.Any())
+                    {
+                        await this.RefreshColumns().ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await this.ReloadColumns().ConfigureAwait(false);
+                    }
                     break;
                 case CommonSignals.MetaDataUpdated:
                     var names = signal.State as IEnumerable<string>;
@@ -516,23 +538,14 @@ namespace FoxTunes.ViewModel
 
         protected virtual IEnumerable<PlaylistGridViewColumn> GetGridColumns()
         {
-            if (this.DatabaseFactory != null && this.GridViewColumnFactory != null)
+            if (this.PlaylistBrowser != null)
             {
-                using (var database = this.DatabaseFactory.Create())
-                {
-                    using (var transaction = database.BeginTransaction(database.PreferredIsolationLevel))
-                    {
-                        var set = database.Set<PlaylistColumn>(transaction);
-                        set.Fetch.Filter.AddColumn(
-                            set.Table.GetColumn(ColumnConfig.By("Enabled", ColumnFlags.None))
-                        ).With(filter => filter.Right = filter.CreateConstant(1));
-                        foreach (var column in set)
-                        {
-                            yield return this.GridViewColumnFactory.Create(column);
-                        }
-                    }
-                }
+                return this.PlaylistBrowser.GetColumns()
+                    .Where(column => column.Enabled)
+                    .Select(column => this.GridViewColumnFactory.Create(column))
+                    .ToArray();
             }
+            return new PlaylistGridViewColumn[] { };
         }
 
         public virtual async Task Refresh()
@@ -593,10 +606,31 @@ namespace FoxTunes.ViewModel
             return Windows.Invoke(() => this.GridViewColumnFactory.Resize(column));
         }
 
+        protected virtual Task RefreshColumns()
+        {
+            if (this.GridColumns != null)
+            {
+                var count = this.PlaylistBrowser.GetColumns()
+                    .Where(column => column.Enabled)
+                    .Count();
+                if (this.GridColumns.Count == count)
+                {
+                    //Nothing to do, we only handle add/remove columns.
+#if NET40
+                    return TaskEx.FromResult(false);
+#else
+                    return Task.CompletedTask;
+#endif
+                }
+            }
+            return this.ReloadColumns();
+        }
+
         protected virtual Task ReloadColumns()
         {
-            var columns = this.GetGridColumns();
-            return Windows.Invoke(() => this.GridColumns = new ObservableCollection<PlaylistGridViewColumn>(columns));
+            return Windows.Invoke(
+                () => this.GridColumns = new ObservableCollection<PlaylistGridViewColumn>(this.GetGridColumns())
+            );
         }
 
         public async Task Sort(PlaylistColumn playlistColumn)
@@ -624,8 +658,8 @@ namespace FoxTunes.ViewModel
         {
             if (this.GridViewColumnFactory != null)
             {
-                this.GridViewColumnFactory.PositionChanged -= this.OnColumnChanged;
-                this.GridViewColumnFactory.WidthChanged -= this.OnColumnChanged;
+                this.GridViewColumnFactory.PositionChanged -= this.OnColumnPositionChanged;
+                this.GridViewColumnFactory.WidthChanged -= this.OnColumnWidthChanged;
                 this.GridViewColumnFactory.Dispose();
             }
             base.OnDisposing();

@@ -41,6 +41,9 @@
                   VirtualizingStackPanel.VirtualizationMode="Recycling"
                   GridViewColumnHeader.Click="OnHeaderClick"
                   SelectionChanged="OnSelectionChanged">
+            <ListView.Resources>
+                <Windows:Menu x:Key="ColumnHeaderMenu" Category="{Binding Source={x:Static Core:InvocationComponent.CATEGORY_PLAYLIST_HEADER}}"></Windows:Menu>
+            </ListView.Resources>
             <ListView.InputBindings>
                 <KeyBinding Key="Delete" Command="{Binding RemovePlaylistItemsCommand, Source={StaticResource ViewModel}}"></KeyBinding>
             </ListView.InputBindings>
@@ -56,7 +59,13 @@
                 <Windows:Menu Category="{Binding Source={x:Static Core:InvocationComponent.CATEGORY_PLAYLIST}}"></Windows:Menu>
             </ListView.ContextMenu>
             <ListView.View>
-                <GridView Windows:GridViewExtensions.ColumnsSource="{Binding GridColumns, Source={StaticResource ViewModel}}"></GridView>
+                <GridView Windows:GridViewExtensions.ColumnsSource="{Binding GridColumns, Source={StaticResource ViewModel}}">
+                    <Windows:GridViewExtensions.ColumnHeaderContainerStyle>
+                        <Style TargetType="{x:Type GridViewColumnHeader}">
+                            <Setter Property="ContextMenu" Value="{DynamicResource ColumnHeaderMenu}"></Setter>
+                        </Style>
+                    </Windows:GridViewExtensions.ColumnHeaderContainerStyle>
+                </GridView>
             </ListView.View>
             <Windows:ListViewExtensions.GroupHeaderTemplate>
                 <DataTemplate DataType="{x:Type CollectionViewGroup}">

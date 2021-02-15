@@ -170,6 +170,32 @@ namespace FoxTunes
 
         public event EventHandler PluginChanged;
 
+        private string _Format { get; set; }
+
+        public string Format
+        {
+            get
+            {
+                return this._Format;
+            }
+            set
+            {
+                this._Format = value;
+                this.OnFormatChanged();
+            }
+        }
+
+        protected virtual void OnFormatChanged()
+        {
+            if (this.FormatChanged != null)
+            {
+                this.FormatChanged(this, EventArgs.Empty);
+            }
+            this.OnPropertyChanged("Format");
+        }
+
+        public event EventHandler FormatChanged;
+
         private double? _Width { get; set; }
 
         public double? Width

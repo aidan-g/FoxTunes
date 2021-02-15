@@ -8,6 +8,8 @@ namespace FoxTunes.Interfaces
 
         event EventHandler StateChanged;
 
+        PlaylistColumn[] GetColumns();
+
         Playlist[] GetPlaylists();
 
         Playlist GetPlaylist(PlaylistItem playlistItem);

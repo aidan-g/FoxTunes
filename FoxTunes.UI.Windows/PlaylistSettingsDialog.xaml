@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:System="clr-namespace:System;assembly=mscorlib"
              xmlns:Core="clr-namespace:FoxTunes;assembly=FoxTunes.Core" 
              xmlns:Windows="clr-namespace:FoxTunes"
@@ -17,6 +18,14 @@
                 <x:Type TypeName="Core:PlaylistColumnType"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
+        <CollectionViewSource x:Key="MetaDataElements" Source="{x:Static ViewModel:MetaDataSelector.Elements}">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Name"></scm:SortDescription>
+            </CollectionViewSource.SortDescriptions>
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="Type"></PropertyGroupDescription>
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -84,50 +93,95 @@
                     <Grid Grid.Row="1">
                         <Grid.Style>
                             <Style TargetType="{x:Type Grid}">
-                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                <Setter Property="IsEnabled" Value="True"></Setter>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding}" Value="{x:Null}">
                                         <Setter Property="IsEnabled" Value="False"></Setter>
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding Type}" Value="{x:Static Core:PlaylistColumnType.Script}">
-                                        <Setter Property="Visibility" Value="Visible"></Setter>
-                                    </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Grid.Style>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Label"></ColumnDefinition>
-                            <ColumnDefinition></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <Label Grid.Column="0">Script</Label>
-                        <TextBox Grid.Column="1" AcceptsReturn="True" AcceptsTab="True" SpellCheck.IsEnabled="False" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" Text="{Binding Script}"></TextBox>
-                    </Grid>
-                    <Grid Grid.Row="1">
-                        <Grid.Style>
-                            <Style TargetType="{x:Type Grid}">
-                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding}" Value="{x:Null}">
-                                        <Setter Property="IsEnabled" Value="False"></Setter>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding Type}" Value="{x:Static Core:PlaylistColumnType.Plugin}">
-                                        <Setter Property="Visibility" Value="Visible"></Setter>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Grid.Style>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Label"></ColumnDefinition>
-                            <ColumnDefinition></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <Label Grid.Column="0">Plugin</Label>
-                        <ComboBox Grid.Column="1" Grid.Row="1" SelectedValue="{Binding Plugin}" ItemsSource="{Binding PlaylistColumnProviders, Source={StaticResource ViewModel}}" DisplayMemberPath="Name" SelectedValuePath="Id"></ComboBox>
+                        <Grid >
+                            <Grid.Style>
+                                <Style TargetType="{x:Type Grid}">
+                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Type}" Value="{x:Static Core:PlaylistColumnType.Script}">
+                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="Label"></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Label Grid.Column="0">Script</Label>
+                            <TextBox Grid.Column="1" AcceptsReturn="True" AcceptsTab="True" SpellCheck.IsEnabled="False" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" Text="{Binding Script}"></TextBox>
+                        </Grid>
+                        <Grid >
+                            <Grid.Style>
+                                <Style TargetType="{x:Type Grid}">
+                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Type}" Value="{x:Static Core:PlaylistColumnType.Plugin}">
+                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="Label"></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Label Grid.Column="0">Plugin</Label>
+                            <ComboBox Grid.Column="1" Grid.Row="1" SelectedValue="{Binding Plugin}" ItemsSource="{Binding PlaylistColumnProviders, Source={StaticResource ViewModel}}" DisplayMemberPath="Name" SelectedValuePath="Id"></ComboBox>
+                        </Grid>
+                        <Grid>
+                            <Grid.Style>
+                                <Style TargetType="{x:Type Grid}">
+                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Type}" Value="{x:Static Core:PlaylistColumnType.Tag}">
+                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="Label"></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Label Grid.Column="0" Grid.Row="0">Tag</Label>
+                            <ComboBox Grid.Column="1" Grid.Row="0" ItemsSource="{Binding Source={StaticResource MetaDataElements}}" SelectedValue="{Binding Tag}" SelectedValuePath="Name" Margin="0,0,0,5">
+                                <ComboBox.GroupStyle>
+                                    <GroupStyle>
+                                        <GroupStyle.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Name}" Foreground="{DynamicResource TextBrush}" Margin="4,0,0,0" TextDecorations="Underline"></TextBlock>
+                                            </DataTemplate>
+                                        </GroupStyle.HeaderTemplate>
+                                    </GroupStyle>
+                                </ComboBox.GroupStyle>
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" Foreground="{DynamicResource TextBrush}"></TextBlock>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <Label Grid.Column="0" Grid.Row="1">Format</Label>
+                            <ComboBox Grid.Column="1" Grid.Row="1" ItemsSource="{x:Static ViewModel:MetaDataSelector.Formats}" SelectedValue="{Binding Format}" IsEditable="True"></ComboBox>
+                        </Grid>
                     </Grid>
                 </Grid>
             </Grid>

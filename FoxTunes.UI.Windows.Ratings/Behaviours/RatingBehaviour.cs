@@ -193,7 +193,7 @@ namespace FoxTunes
         {
             Logger.Write(this, LogLevel.Debug, "Determining rating for library hierarchy node: {0}", libraryHierarchyNode.Id);
             var rating = default(byte);
-            var ratings = await this.MetaDataBrowser.GetMetaDatasAsync(libraryHierarchyNode, MetaDataItemType.Tag, CommonMetaData.Rating).ConfigureAwait(false);
+            var ratings = await this.MetaDataBrowser.GetMetaDatasAsync(libraryHierarchyNode, MetaDataItemType.Tag, CommonStatistics.Rating).ConfigureAwait(false);
             switch (ratings.Length)
             {
                 case 0:
@@ -230,7 +230,7 @@ namespace FoxTunes
                 return;
             }
             var rating = default(byte);
-            var ratings = await this.MetaDataBrowser.GetMetaDatasAsync(playlistItems, MetaDataItemType.Tag, CommonMetaData.Rating).ConfigureAwait(false);
+            var ratings = await this.MetaDataBrowser.GetMetaDatasAsync(playlistItems, MetaDataItemType.Tag, CommonStatistics.Rating).ConfigureAwait(false);
             switch (ratings.Length)
             {
                 case 0:

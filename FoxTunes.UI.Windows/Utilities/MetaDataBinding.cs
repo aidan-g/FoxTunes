@@ -6,7 +6,7 @@ using System.Windows.Data;
 
 namespace FoxTunes
 {
-    public abstract class ScriptBinding : Binding, INotifyPropertyChanged, IValueConverter
+    public abstract class MetaDataBinding : Binding, INotifyPropertyChanged, IValueConverter
     {
         protected static ILogger Logger
         {
@@ -16,66 +16,69 @@ namespace FoxTunes
             }
         }
 
-        protected ScriptBinding()
+        protected MetaDataBinding()
         {
             this.Converter = this;
+            this.Formatter = new Lazy<FormatterFactory.FormatterBase>(() => FormatterFactory.Create(this.Format));
         }
 
-        private IScriptingContext _ScriptingContext { get; set; }
+        public Lazy<FormatterFactory.FormatterBase> Formatter { get; private set; }
 
-        public IScriptingContext ScriptingContext
+        private string _Name { get; set; }
+
+        public string Name
         {
             get
             {
-                return this._ScriptingContext;
+                return this._Name;
             }
             set
             {
-                this._ScriptingContext = value;
-                this.OnScriptingContextChanged();
+                this._Name = value;
+                this.OnNameChanged();
             }
         }
 
-        protected virtual void OnScriptingContextChanged()
+        protected virtual void OnNameChanged()
         {
-            if (this.ScriptingContextChanged != null)
+            if (this.NameChanged != null)
             {
-                this.ScriptingContextChanged(this, EventArgs.Empty);
+                this.NameChanged(this, EventArgs.Empty);
             }
-            this.OnPropertyChanged("ScriptingContext");
+            this.OnPropertyChanged("Name");
         }
 
-        public event EventHandler ScriptingContextChanged;
+        public event EventHandler NameChanged;
 
-        private string _Script { get; set; }
+        private string _Format { get; set; }
 
-        public string Script
+        public string Format
         {
             get
             {
-                return this._Script;
+                return this._Format;
             }
             set
             {
-                this._Script = value;
-                this.OnScriptChanged();
+                this._Format = value;
+                this.OnFormatChanged();
             }
         }
 
-        protected virtual void OnScriptChanged()
+        protected virtual void OnFormatChanged()
         {
-            if (this.ScriptChanged != null)
+            if (this.FormatChanged != null)
             {
-                this.ScriptChanged(this, EventArgs.Empty);
+                this.FormatChanged(this, EventArgs.Empty);
             }
-            this.OnPropertyChanged("Script");
+            this.OnPropertyChanged("Format");
         }
 
-        public event EventHandler ScriptChanged;
+        public event EventHandler FormatChanged;
 
         public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value;
+            return this.Formatter.Value.GetValue(value);
         }
 
         public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -12,6 +12,8 @@ namespace FoxTunes
     [Component("AF71D00F-5D47-4740-BC14-1B3E4513A1A3", ComponentSlots.None, priority: ComponentAttribute.PRIORITY_HIGH)]
     public class PlaylistCache : StandardComponent, IPlaylistCache, IDisposable
     {
+        public Lazy<PlaylistColumn[]> Columns { get; private set; }
+
         public Lazy<Playlist[]> Playlists { get; private set; }
 
         public ConcurrentDictionary<Playlist, Lazy<IndexedArray<PlaylistItem>>> Items { get; private set; }
@@ -56,12 +58,33 @@ namespace FoxTunes
                         this.Reset();
                     }
                     break;
+                case CommonSignals.PlaylistColumnsUpdated:
+                    var columns = signal.State as IEnumerable<PlaylistColumn>;
+                    if (columns != null && columns.Any())
+                    {
+                        //Nothing to do for indivudual column change.
+                    }
+                    else
+                    {
+                        Logger.Write(this, LogLevel.Debug, "Columns were updated, resetting cache.");
+                        this.Columns = null;
+                    }
+                    break;
             }
 #if NET40
             return TaskEx.FromResult(false);
 #else
             return Task.CompletedTask;
 #endif
+        }
+
+        public PlaylistColumn[] GetColumns(Func<IEnumerable<PlaylistColumn>> factory)
+        {
+            if (this.Columns == null)
+            {
+                this.Columns = new Lazy<PlaylistColumn[]>(() => factory().ToArray());
+            }
+            return this.Columns.Value;
         }
 
         public Playlist[] GetPlaylists(Func<IEnumerable<Playlist>> factory)

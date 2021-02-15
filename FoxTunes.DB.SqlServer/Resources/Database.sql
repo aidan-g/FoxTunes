@@ -70,6 +70,8 @@ CREATE TABLE [PlaylistColumns] (
   [Type] bigint NOT NULL,
   [Script] nvarchar(max) NULL, 
   [Plugin] nvarchar(4000) NULL, 
+  [Tag] nvarchar(4000) NULL, 
+  [Format] nvarchar(4000) NULL, 
   [Width] numeric(38,0) NULL,
   [Enabled] bit NOT NULL);
 

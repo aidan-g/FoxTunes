@@ -490,7 +490,7 @@ namespace FoxTunes.ViewModel
                     CommonMetaData.Title,
                     CommonMetaData.Genre,
                     CommonMetaData.Year,
-                    CommonMetaData.Rating,
+                    CommonStatistics.Rating,
                     CommonImageTypes.FrontCover
                 }).Any())
                 {
