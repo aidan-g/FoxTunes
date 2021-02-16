@@ -78,18 +78,18 @@ namespace FoxTunes
             }
         }
 
-        private bool _Buffer { get; set; }
+        private bool _DoubleBuffer { get; set; }
 
-        public bool Buffer
+        public bool DoubleBuffer
         {
             get
             {
-                return this._Buffer;
+                return this._DoubleBuffer;
             }
             private set
             {
-                this._Buffer = value;
-                Logger.Write(this, LogLevel.Debug, "Buffer = {0}", this.Buffer);
+                this._DoubleBuffer = value;
+                Logger.Write(this, LogLevel.Debug, "DoubleBuffer = {0}", this.DoubleBuffer);
                 //TODO: Bad .Wait().
                 this.Output.Shutdown().Wait();
             }
@@ -146,6 +146,23 @@ namespace FoxTunes
             }
         }
 
+        private float _BufferLength { get; set; }
+
+        public float BufferLength
+        {
+            get
+            {
+                return this._BufferLength;
+            }
+            private set
+            {
+                this._BufferLength = value;
+                Logger.Write(this, LogLevel.Debug, "BufferLength = {0}", this.BufferLength);
+                //TODO: Bad .Wait().
+                this.Output.Shutdown().Wait();
+            }
+        }
+
         public override void InitializeComponent(ICore core)
         {
             this.Core = core;
@@ -178,9 +195,13 @@ namespace FoxTunes
                 BassWasapiStreamOutputConfiguration.MIXER_ELEMENT
             ).ConnectValue(value => this.Mixer = value);
             this.Configuration.GetElement<BooleanConfigurationElement>(
-            BassOutputConfiguration.SECTION,
-            BassWasapiStreamOutputConfiguration.BUFFER_ELEMENT
-        ).ConnectValue(value => this.Buffer = value);
+                BassOutputConfiguration.SECTION,
+                BassWasapiStreamOutputConfiguration.DOUBLE_BUFFER_ELEMENT
+            ).ConnectValue(value => this.DoubleBuffer = value);
+            this.Configuration.GetElement<DoubleConfigurationElement>(
+                BassOutputConfiguration.SECTION,
+                BassWasapiStreamOutputConfiguration.BUFFER_LENGTH_ELEMENT
+            ).ConnectValue(value => this.BufferLength = Convert.ToSingle(value));
             this.BassStreamPipelineFactory = ComponentRegistry.Instance.GetComponent<IBassStreamPipelineFactory>();
             if (this.BassStreamPipelineFactory != null)
             {
@@ -204,7 +225,7 @@ namespace FoxTunes
             //Always detect device for now.
             //if (BassWasapiDevice.Info != null && BassWasapiDevice.Info.Device != this.WasapiDevice)
             {
-                BassWasapiDevice.Detect(this.WasapiDevice, this.Exclusive, this.AutoFormat, this.Buffer, this.EventDriven, this.Dither);
+                BassWasapiDevice.Detect(this.WasapiDevice, this.Exclusive, this.AutoFormat, this.BufferLength, this.DoubleBuffer, this.EventDriven, this.Dither);
             }
             Logger.Write(this, LogLevel.Debug, "BASS (No Sound) Initialized.");
         }

@@ -162,7 +162,12 @@ namespace FoxTunes
         private static string GetMessage(Errors error)
         {
             //TODO: Create a message based on the error code.
-            return Enum.GetName(typeof(Errors), error);
+            var message = Enum.GetName(typeof(Errors), error);
+            if (!string.IsNullOrEmpty(message))
+            {
+                return message;
+            }
+            return string.Format("Error code {0}", Convert.ToInt32(error));
         }
     }
 }

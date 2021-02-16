@@ -1,5 +1,4 @@
 ﻿using FoxTunes.Interfaces;
-using ManagedBass;
 using ManagedBass.Wasapi;
 using System;
 using System.Collections.Generic;
@@ -17,6 +16,12 @@ namespace FoxTunes
                 return LogManager.Logger;
             }
         }
+
+        public const float MIN_BUFFER_LENGTH = 0.1f;
+
+        public const float MAX_BUFFER_LENGTH = 1.0f;
+
+        public const float DEFAULT_BUFFER_LENGTH = 0.5f;
 
         static BassWasapiDevice()
         {
@@ -43,7 +48,7 @@ namespace FoxTunes
             }
         }
 
-        public static void Init(int device, bool exclusive, bool autoFormat, bool buffer, bool eventDriven, bool dither, int frequency, int channels, BassFlags flags)
+        public static void Init(int device, bool exclusive, bool autoFormat, float bufferLength, bool doubleBuffer, bool eventDriven, bool dither, int frequency, int channels)
         {
             if (IsInitialized)
             {
@@ -52,20 +57,22 @@ namespace FoxTunes
 
             IsInitialized = true;
 
-            LogManager.Logger.Write(typeof(BassWasapiDevice), LogLevel.Debug, "Initializing BASS WASAPI.");
+            Logger.Write(typeof(BassWasapiDevice), LogLevel.Debug, "Initializing BASS WASAPI.");
 
             try
             {
+                var flags = GetFlags(exclusive, autoFormat, doubleBuffer, eventDriven, dither);
                 BassUtils.OK(
                     BassWasapiHandler.Init(
                         device,
                         frequency,
                         channels,
-                        GetFlags(exclusive, autoFormat, buffer, eventDriven, dither)
+                        flags,
+                        Buffer: bufferLength
                     )
                 );
 
-                LogManager.Logger.Write(typeof(BassWasapiDevice), LogLevel.Debug, "Initialized BASS WASAPI.");
+                Logger.Write(typeof(BassWasapiDevice), LogLevel.Debug, "Initialized BASS WASAPI.");
             }
             catch
             {
@@ -74,7 +81,7 @@ namespace FoxTunes
             }
         }
 
-        public static void Detect(int device, bool exclusive, bool autoFormat, bool buffer, bool eventDriven, bool dither)
+        public static void Detect(int device, bool exclusive, bool autoFormat, float bufferLength, bool doubleBuffer, bool eventDriven, bool dither)
         {
             if (IsInitialized)
             {
@@ -83,26 +90,30 @@ namespace FoxTunes
 
             IsInitialized = true;
 
-            LogManager.Logger.Write(typeof(BassWasapiDevice), LogLevel.Debug, "Detecting WASAPI device.");
+            Logger.Write(typeof(BassWasapiDevice), LogLevel.Debug, "Detecting WASAPI device.");
 
             try
             {
-                var flags = GetFlags(exclusive, autoFormat, buffer, eventDriven, dither);
+                var flags = GetFlags(exclusive, autoFormat, doubleBuffer, eventDriven, dither);
                 BassUtils.OK(
                     BassWasapiHandler.Init(
                         device,
                         0,
                         0,
-                        flags
+                        flags,
+                        Buffer: bufferLength
                     )
                 );
+                var info = default(WasapiInfo);
                 var deviceInfo = default(WasapiDeviceInfo);
+                BassUtils.OK(BassWasapi.GetInfo(out info));
                 BassUtils.OK(BassWasapi.GetDeviceInfo(BassWasapi.CurrentDevice, out deviceInfo));
                 Info = new BassWasapiDeviceInfo(
                     BassWasapi.CurrentDevice,
                     deviceInfo.MixFrequency,
                     0,
                     deviceInfo.MixChannels,
+                    info.BufferLength,
                     GetSupportedFormats(
                         BassWasapi.CurrentDevice,
                         flags
@@ -116,8 +127,8 @@ namespace FoxTunes
                     device == BassWasapi.DefaultDevice
                 );
 
-                LogManager.Logger.Write(typeof(BassWasapiDevice), LogLevel.Debug, "Detected WASAPI device: {0} => Inputs => {1}, Outputs = {2}, Rate = {3}, Format = {4}", BassWasapi.CurrentDevice, Info.Inputs, Info.Outputs, Info.Rate, Enum.GetName(typeof(WasapiFormat), Info.Format));
-                LogManager.Logger.Write(typeof(BassWasapiDevice), LogLevel.Debug, "Detected WASAPI device: {0} => Rates => {1}", BassWasapi.CurrentDevice, string.Join(", ", Info.SupportedRates));
+                Logger.Write(typeof(BassWasapiDevice), LogLevel.Debug, "Detected WASAPI device: {0} => Inputs => {1}, Outputs = {2}, Rate = {3}, Format = {4}", BassWasapi.CurrentDevice, Info.Inputs, Info.Outputs, Info.Rate, Enum.GetName(typeof(WasapiFormat), Info.Format));
+                Logger.Write(typeof(BassWasapiDevice), LogLevel.Debug, "Detected WASAPI device: {0} => Rates => {1}", BassWasapi.CurrentDevice, string.Join(", ", Info.SupportedRates));
             }
             finally
             {
@@ -177,7 +188,7 @@ namespace FoxTunes
             {
                 return;
             }
-            LogManager.Logger.Write(typeof(BassWasapiDevice), LogLevel.Debug, "Releasing BASS WASAPI.");
+            Logger.Write(typeof(BassWasapiDevice), LogLevel.Debug, "Releasing BASS WASAPI.");
             BassWasapi.Free();
             BassWasapiHandler.Free();
             IsInitialized = false;
@@ -187,12 +198,13 @@ namespace FoxTunes
 
         public class BassWasapiDeviceInfo
         {
-            public BassWasapiDeviceInfo(int device, int rate, int inputs, int outputs, IDictionary<int, WasapiFormat> supportedFormats, WasapiFormat format, bool isDefault)
+            public BassWasapiDeviceInfo(int device, int rate, int inputs, int outputs, int bufferLength, IDictionary<int, WasapiFormat> supportedFormats, WasapiFormat format, bool isDefault)
             {
                 this.Device = device;
                 this.Rate = rate;
                 this.Inputs = inputs;
                 this.Outputs = outputs;
+                this.BufferLength = bufferLength;
 #if NET40
                 this.SupportedFormats = new Dictionary<int, WasapiFormat>(supportedFormats);
 #else
@@ -209,6 +221,8 @@ namespace FoxTunes
             public int Inputs { get; private set; }
 
             public int Outputs { get; private set; }
+
+            public int BufferLength { get; private set; }
 
             public IEnumerable<int> SupportedRates
             {
