@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FoxTunes.Interfaces
@@ -17,28 +18,14 @@ namespace FoxTunes.Interfaces
         void Reset();
     }
 
-    public class MetaDataCacheKey : IEquatable<MetaDataCacheKey>
+    public abstract class MetaDataCacheKey : IEquatable<MetaDataCacheKey>
     {
-        private MetaDataCacheKey(MetaDataItemType? metaDataItemType, string metaDataItemName, string filter)
+        protected MetaDataCacheKey(MetaDataItemType? metaDataItemType, string metaDataItemName, string filter)
         {
             this.MetaDataItemType = metaDataItemType;
             this.MetaDataItemName = metaDataItemName;
             this.Filter = filter;
         }
-
-        public MetaDataCacheKey(LibraryHierarchyNode libraryHierarchyNode, MetaDataItemType? metaDataItemType, string metaDataItemName, string filter) : this(metaDataItemType, metaDataItemName, filter)
-        {
-            this.LibraryHierarchyNode = libraryHierarchyNode;
-        }
-
-        public MetaDataCacheKey(PlaylistItem[] playlistItems, MetaDataItemType? metaDataItemType, string metaDataItemName, string filter) : this(metaDataItemType, metaDataItemName, filter)
-        {
-            this.PlaylistItems = playlistItems;
-        }
-
-        public LibraryHierarchyNode LibraryHierarchyNode { get; private set; }
-
-        public PlaylistItem[] PlaylistItems { get; private set; }
 
         public MetaDataItemType? MetaDataItemType { get; private set; }
 
@@ -51,17 +38,6 @@ namespace FoxTunes.Interfaces
             var hashCode = default(int);
             unchecked
             {
-                if (this.LibraryHierarchyNode != null)
-                {
-                    hashCode += this.LibraryHierarchyNode.GetHashCode();
-                }
-                if (this.PlaylistItems != null)
-                {
-                    foreach (var playlistItem in this.PlaylistItems)
-                    {
-                        hashCode += playlistItem.GetHashCode();
-                    }
-                }
                 if (this.MetaDataItemType.HasValue)
                 {
                     hashCode += this.MetaDataItemType.Value.GetHashCode();
@@ -83,7 +59,7 @@ namespace FoxTunes.Interfaces
             return this.Equals(obj as MetaDataCacheKey);
         }
 
-        public bool Equals(MetaDataCacheKey other)
+        public virtual bool Equals(MetaDataCacheKey other)
         {
             if (other == null)
             {
@@ -92,10 +68,6 @@ namespace FoxTunes.Interfaces
             if (object.ReferenceEquals(this, other))
             {
                 return true;
-            }
-            if (!object.Equals(this.LibraryHierarchyNode, other.LibraryHierarchyNode))
-            {
-                return false;
             }
             if (!object.Equals(this.MetaDataItemType, other.MetaDataItemType))
             {
@@ -132,6 +104,91 @@ namespace FoxTunes.Interfaces
         public static bool operator !=(MetaDataCacheKey a, MetaDataCacheKey b)
         {
             return !(a == b);
+        }
+    }
+
+    public class LibraryMetaDataCacheKey : MetaDataCacheKey
+    {
+        public LibraryMetaDataCacheKey(LibraryHierarchyNode libraryHierarchyNode, MetaDataItemType? metaDataItemType, string metaDataItemName, string filter) : base(metaDataItemType, metaDataItemName, filter)
+        {
+            this.LibraryHierarchyNode = libraryHierarchyNode;
+        }
+
+        public LibraryHierarchyNode LibraryHierarchyNode { get; private set; }
+
+        public override int GetHashCode()
+        {
+            var hashCode = base.GetHashCode();
+            unchecked
+            {
+                if (this.LibraryHierarchyNode != null)
+                {
+                    hashCode += this.LibraryHierarchyNode.GetHashCode();
+                }
+            }
+            return hashCode;
+        }
+
+        public override bool Equals(MetaDataCacheKey other)
+        {
+            return this.Equals(other as LibraryMetaDataCacheKey);
+        }
+
+        public bool Equals(LibraryMetaDataCacheKey other)
+        {
+            if (!base.Equals(other))
+            {
+                return false;
+            }
+            if (!object.Equals(this.LibraryHierarchyNode, other.LibraryHierarchyNode))
+            {
+                return false;
+            }
+            return true;
+        }
+    }
+
+    public class PlaylistMetaDataCacheKey : MetaDataCacheKey
+    {
+        public PlaylistMetaDataCacheKey(PlaylistItem[] playlistItems, MetaDataItemType? metaDataItemType, string metaDataItemName, string filter) : base(metaDataItemType, metaDataItemName, filter)
+        {
+            this.PlaylistItems = playlistItems;
+        }
+
+        public PlaylistItem[] PlaylistItems { get; private set; }
+
+        public override int GetHashCode()
+        {
+            var hashCode = base.GetHashCode();
+            unchecked
+            {
+                if (this.PlaylistItems != null)
+                {
+                    foreach (var playlistItem in this.PlaylistItems)
+                    {
+                        hashCode += playlistItem.GetHashCode();
+                    }
+                }
+            }
+            return hashCode;
+        }
+
+        public override bool Equals(MetaDataCacheKey other)
+        {
+            return this.Equals(other as PlaylistMetaDataCacheKey);
+        }
+
+        public bool Equals(PlaylistMetaDataCacheKey other)
+        {
+            if (!base.Equals(other))
+            {
+                return false;
+            }
+            if (!Enumerable.SequenceEqual(this.PlaylistItems, other.PlaylistItems))
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

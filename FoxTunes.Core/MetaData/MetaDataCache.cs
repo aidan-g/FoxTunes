@@ -85,7 +85,7 @@ namespace FoxTunes
             {
                 return value.Value;
             }
-            using (KeyLock.Lock(key))
+            using (await KeyLock.LockAsync(key).ConfigureAwait(false))
             {
                 if (this.Values.TryGetValue(key, out value))
                 {

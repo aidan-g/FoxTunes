@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace FoxTunes
 {
@@ -69,6 +70,24 @@ namespace FoxTunes
             this.CreateOrIncrement(key).Wait();
             return new Releaser(this, key);
         }
+
+#if NET40
+
+        public Task<IDisposable> LockAsync(T key)
+        {
+            this.CreateOrIncrement(key).Wait();
+            return TaskEx.FromResult<IDisposable>(new Releaser(this, key));
+        }
+
+#else
+
+        public async Task<IDisposable> LockAsync (T key)
+        {
+            await this.CreateOrIncrement(key).WaitAsync().ConfigureAwait(false);
+            return new Releaser(this, key);
+        }
+
+#endif
 
         public class Counter : IDisposable
         {

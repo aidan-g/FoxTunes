@@ -468,7 +468,7 @@ namespace FoxTunes
             var result = default(string);
             if (overwrite || !FileMetaDataStore.Exists(prefix, id, out result))
             {
-                using (KeyLock.Lock(id))
+                using (await KeyLock.LockAsync(id).ConfigureAwait(false))
                 {
                     if (overwrite || !FileMetaDataStore.Exists(prefix, id, out result))
                     {
@@ -489,7 +489,7 @@ namespace FoxTunes
             var result = default(string);
             if (overwrite || !FileMetaDataStore.Exists(prefix, id, out result))
             {
-                using (KeyLock.Lock(id))
+                using (await KeyLock.LockAsync(id).ConfigureAwait(false))
                 {
                     if (overwrite || !FileMetaDataStore.Exists(prefix, id, out result))
                     {
