@@ -69,6 +69,11 @@ namespace FoxTunes
             }
             set
             {
+                if (string.Equals(Profile, value))
+                {
+                    //Profile is unchanged, nothing to do.
+                    return;
+                }
                 Add(value);
             }
         }
