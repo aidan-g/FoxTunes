@@ -71,8 +71,9 @@ namespace FoxTunes
                         Buffer: bufferLength
                     )
                 );
-
-                Logger.Write(typeof(BassWasapiDevice), LogLevel.Debug, "Initialized BASS WASAPI.");
+                Update(device, flags);
+                Logger.Write(typeof(BassWasapiDevice), LogLevel.Debug, "Initialized WASAPI device: {0} => Inputs => {1}, Outputs = {2}, Rate = {3}, Format = {4}", BassWasapi.CurrentDevice, Info.Inputs, Info.Outputs, Info.Rate, Enum.GetName(typeof(WasapiFormat), Info.Format));
+                Logger.Write(typeof(BassWasapiDevice), LogLevel.Debug, "Initialized WASAPI device: {0} => Rates => {1}", BassWasapi.CurrentDevice, string.Join(", ", Info.SupportedRates));
             }
             catch
             {
@@ -104,29 +105,7 @@ namespace FoxTunes
                         Buffer: bufferLength
                     )
                 );
-                var info = default(WasapiInfo);
-                var deviceInfo = default(WasapiDeviceInfo);
-                BassUtils.OK(BassWasapi.GetInfo(out info));
-                BassUtils.OK(BassWasapi.GetDeviceInfo(BassWasapi.CurrentDevice, out deviceInfo));
-                Info = new BassWasapiDeviceInfo(
-                    BassWasapi.CurrentDevice,
-                    deviceInfo.MixFrequency,
-                    0,
-                    deviceInfo.MixChannels,
-                    info.BufferLength,
-                    GetSupportedFormats(
-                        BassWasapi.CurrentDevice,
-                        flags
-                    ),
-                    BassWasapi.CheckFormat(
-                        BassWasapi.CurrentDevice,
-                        deviceInfo.MixFrequency,
-                        deviceInfo.MixChannels,
-                        flags
-                    ),
-                    device == BassWasapi.DefaultDevice
-                );
-
+                Update(device, flags);
                 Logger.Write(typeof(BassWasapiDevice), LogLevel.Debug, "Detected WASAPI device: {0} => Inputs => {1}, Outputs = {2}, Rate = {3}, Format = {4}", BassWasapi.CurrentDevice, Info.Inputs, Info.Outputs, Info.Rate, Enum.GetName(typeof(WasapiFormat), Info.Format));
                 Logger.Write(typeof(BassWasapiDevice), LogLevel.Debug, "Detected WASAPI device: {0} => Rates => {1}", BassWasapi.CurrentDevice, string.Join(", ", Info.SupportedRates));
             }
@@ -134,6 +113,32 @@ namespace FoxTunes
             {
                 Free();
             }
+        }
+
+        private static void Update(int device, WasapiInitFlags flags)
+        {
+            var info = default(WasapiInfo);
+            var deviceInfo = default(WasapiDeviceInfo);
+            BassUtils.OK(BassWasapi.GetInfo(out info));
+            BassUtils.OK(BassWasapi.GetDeviceInfo(BassWasapi.CurrentDevice, out deviceInfo));
+            Info = new BassWasapiDeviceInfo(
+                BassWasapi.CurrentDevice,
+                deviceInfo.MixFrequency,
+                0,
+                deviceInfo.MixChannels,
+                info.BufferLength,
+                GetSupportedFormats(
+                    BassWasapi.CurrentDevice,
+                    flags
+                ),
+                BassWasapi.CheckFormat(
+                    BassWasapi.CurrentDevice,
+                    deviceInfo.MixFrequency,
+                    deviceInfo.MixChannels,
+                    flags
+                ),
+                device == BassWasapi.DefaultDevice
+            );
         }
 
         public static void Reset()
