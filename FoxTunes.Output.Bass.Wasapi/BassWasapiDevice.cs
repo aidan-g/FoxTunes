@@ -48,7 +48,7 @@ namespace FoxTunes
             }
         }
 
-        public static void Init(int device, bool exclusive, bool autoFormat, float bufferLength, bool doubleBuffer, bool eventDriven, bool dither, int frequency, int channels)
+        public static void Init(int device, bool exclusive, bool autoFormat, float bufferLength, bool doubleBuffer, bool eventDriven, bool async, bool dither, int frequency, int channels)
         {
             if (IsInitialized)
             {
@@ -61,7 +61,7 @@ namespace FoxTunes
 
             try
             {
-                var flags = GetFlags(exclusive, autoFormat, doubleBuffer, eventDriven, dither);
+                var flags = GetFlags(exclusive, autoFormat, doubleBuffer, eventDriven, async, dither);
                 BassUtils.OK(
                     BassWasapiHandler.Init(
                         device,
@@ -82,7 +82,7 @@ namespace FoxTunes
             }
         }
 
-        public static void Detect(int device, bool exclusive, bool autoFormat, float bufferLength, bool doubleBuffer, bool eventDriven, bool dither)
+        public static void Detect(int device, bool exclusive, bool autoFormat, float bufferLength, bool doubleBuffer, bool eventDriven, bool async, bool dither)
         {
             if (IsInitialized)
             {
@@ -95,7 +95,7 @@ namespace FoxTunes
 
             try
             {
-                var flags = GetFlags(exclusive, autoFormat, doubleBuffer, eventDriven, dither);
+                var flags = GetFlags(exclusive, autoFormat, doubleBuffer, eventDriven, async, dither);
                 BassUtils.OK(
                     BassWasapiHandler.Init(
                         device,
@@ -146,7 +146,7 @@ namespace FoxTunes
             Info = null;
         }
 
-        private static WasapiInitFlags GetFlags(bool exclusive, bool autoFormat, bool buffer, bool eventDriven, bool dither)
+        private static WasapiInitFlags GetFlags(bool exclusive, bool autoFormat, bool buffer, bool eventDriven, bool async, bool dither)
         {
             var flags = WasapiInitFlags.Shared;
             if (exclusive)
@@ -164,6 +164,10 @@ namespace FoxTunes
             if (eventDriven)
             {
                 flags |= WasapiInitFlags.EventDriven;
+            }
+            if (async)
+            {
+                flags |= WasapiInitFlags.Async;
             }
             if (dither)
             {

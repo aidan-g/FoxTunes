@@ -130,6 +130,7 @@ namespace FoxTunes
                 this.Behaviour.BufferLength,
                 this.Behaviour.DoubleBuffer,
                 this.Behaviour.EventDriven,
+                this.Behaviour.Async,
                 this.Behaviour.Dither,
                 this.Rate,
                 this.Channels

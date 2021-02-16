@@ -112,6 +112,23 @@ namespace FoxTunes
             }
         }
 
+        private bool _Async { get; set; }
+
+        public bool Async
+        {
+            get
+            {
+                return this._Async;
+            }
+            private set
+            {
+                this._Async = value;
+                Logger.Write(this, LogLevel.Debug, "Async = {0}", this.Async);
+                //TODO: Bad .Wait().
+                this.Output.Shutdown().Wait();
+            }
+        }
+
         private bool _Dither { get; set; }
 
         public bool Dither
@@ -188,6 +205,10 @@ namespace FoxTunes
             ).ConnectValue(value => this.EventDriven = value);
             this.Configuration.GetElement<BooleanConfigurationElement>(
                 BassOutputConfiguration.SECTION,
+                BassWasapiStreamOutputConfiguration.ELEMENT_WASAPI_ASYNC
+            ).ConnectValue(value => this.Async = value);
+            this.Configuration.GetElement<BooleanConfigurationElement>(
+                BassOutputConfiguration.SECTION,
                 BassWasapiStreamOutputConfiguration.ELEMENT_WASAPI_DITHER
             ).ConnectValue(value => this.Dither = value);
             this.Configuration.GetElement<BooleanConfigurationElement>(
@@ -225,7 +246,7 @@ namespace FoxTunes
             //Always detect device for now.
             //if (BassWasapiDevice.Info != null && BassWasapiDevice.Info.Device != this.WasapiDevice)
             {
-                BassWasapiDevice.Detect(this.WasapiDevice, this.Exclusive, this.AutoFormat, this.BufferLength, this.DoubleBuffer, this.EventDriven, this.Dither);
+                BassWasapiDevice.Detect(this.WasapiDevice, this.Exclusive, this.AutoFormat, this.BufferLength, this.DoubleBuffer, this.EventDriven, this.Async, this.Dither);
             }
             Logger.Write(this, LogLevel.Debug, "BASS (No Sound) Initialized.");
         }

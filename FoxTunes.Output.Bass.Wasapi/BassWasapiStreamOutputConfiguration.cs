@@ -19,6 +19,8 @@ namespace FoxTunes
 
         public const string ELEMENT_WASAPI_EVENT = "DDDD16CF-03A5-4DDC-BE23-2C619D21F447";
 
+        public const string ELEMENT_WASAPI_ASYNC = "DDEEEC5F-D47E-4EE3-9B48-AEC33E056E26";
+
         public const string ELEMENT_WASAPI_DITHER = "EEEEBF20-7B2A-489F-9FBD-E6FE5458F6B5";
 
         public const string MIXER_ELEMENT = "FFFF34F9-BB72-4DB6-BDD0-F5C9BFD2F9EE";
@@ -44,6 +46,11 @@ namespace FoxTunes
                 .WithElement(new BooleanConfigurationElement(ELEMENT_WASAPI_EVENT, "Event", path: "WASAPI")
                     .WithValue(false)
                     .DependsOn(SECTION, OUTPUT_ELEMENT, OUTPUT_WASAPI_OPTION))
+                .WithElement(new BooleanConfigurationElement(ELEMENT_WASAPI_ASYNC, "Async", path: "WASAPI")
+                    .WithValue(false)
+                    .DependsOn(SECTION, OUTPUT_ELEMENT, OUTPUT_WASAPI_OPTION)
+                    .DependsOn(SECTION, ELEMENT_WASAPI_EXCLUSIVE)
+                    .DependsOn(SECTION, ELEMENT_WASAPI_EVENT))
                 .WithElement(new BooleanConfigurationElement(ELEMENT_WASAPI_DITHER, "Dither", path: "WASAPI")
                     .WithValue(false)
                     .DependsOn(SECTION, OUTPUT_ELEMENT, OUTPUT_WASAPI_OPTION))
