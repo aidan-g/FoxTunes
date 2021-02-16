@@ -132,6 +132,7 @@ namespace FoxTunes
                 this.Behaviour.EventDriven,
                 this.Behaviour.Async,
                 this.Behaviour.Dither,
+                this.Behaviour.Raw,
                 this.Rate,
                 this.Channels
             );

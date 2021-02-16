@@ -144,6 +144,9 @@
   <data name="BassWasapiStreamOutputConfiguration.Mode" xml:space="preserve">
     <value>Mode</value>
   </data>
+  <data name="BassWasapiStreamOutputConfiguration.Raw" xml:space="preserve">
+    <value>Raw</value>
+  </data>
   <data name="BassWasapiStreamOutputConfiguration.RefreshDevices" xml:space="preserve">
     <value>Refresh Devices</value>
   </data>

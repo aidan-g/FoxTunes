@@ -23,13 +23,15 @@ namespace FoxTunes
 
         public const string ELEMENT_WASAPI_DITHER = "EEEEBF20-7B2A-489F-9FBD-E6FE5458F6B5";
 
+        public const string ELEMENT_WASAPI_RAW = "EEFF5737-B44C-48BF-83A0-F7592FD101ED";
+
         public const string MIXER_ELEMENT = "FFFF34F9-BB72-4DB6-BDD0-F5C9BFD2F9EE";
 
         public const string DOUBLE_BUFFER_ELEMENT = "FFGGCB2C-0C9B-420A-8C74-862E9D9052B5";
 
         public const string BUFFER_LENGTH_ELEMENT = "FGGGD382-F6FD-485F-BB6E-40CA0B661D2B";
 
-        public const string ELEMENT_REFRESH = "GGGG5945-E6DA-48FD-B89C-F1F35C4822FB";
+        public const string ELEMENT_REFRESH = "ZZZZ5945-E6DA-48FD-B89C-F1F35C4822FB";
 
         public static IEnumerable<ConfigurationSection> GetConfigurationSections()
         {
@@ -63,6 +65,9 @@ namespace FoxTunes
                 .WithElement(new DoubleConfigurationElement(BUFFER_LENGTH_ELEMENT, Strings.BassWasapiStreamOutputConfiguration_BufferLength, path: Strings.WASAPI)
                     .WithValue(BassWasapiDevice.DEFAULT_BUFFER_LENGTH)
                     .WithValidationRule(new DoubleValidationRule(BassWasapiDevice.MIN_BUFFER_LENGTH, BassWasapiDevice.MAX_BUFFER_LENGTH, 0.1))
+                    .DependsOn(SECTION, OUTPUT_ELEMENT, OUTPUT_WASAPI_OPTION))
+                .WithElement(new BooleanConfigurationElement(ELEMENT_WASAPI_RAW, Strings.BassWasapiStreamOutputConfiguration_Raw, path: Strings.WASAPI)
+                    .WithValue(false)
                     .DependsOn(SECTION, OUTPUT_ELEMENT, OUTPUT_WASAPI_OPTION))
                 .WithElement(new CommandConfigurationElement(ELEMENT_REFRESH, Strings.BassWasapiStreamOutputConfiguration_RefreshDevices, path: Strings.WASAPI)
                     .WithHandler(() =>

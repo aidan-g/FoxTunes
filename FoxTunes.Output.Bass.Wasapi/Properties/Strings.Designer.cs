@@ -142,6 +142,15 @@ namespace FoxTunes {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Raw.
+        /// </summary>
+        internal static string BassWasapiStreamOutputConfiguration_Raw {
+            get {
+                return ResourceManager.GetString("BassWasapiStreamOutputConfiguration.Raw", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Refresh Devices.
         /// </summary>
         internal static string BassWasapiStreamOutputConfiguration_RefreshDevices {

@@ -180,6 +180,23 @@ namespace FoxTunes
             }
         }
 
+        private bool _Raw { get; set; }
+
+        public bool Raw
+        {
+            get
+            {
+                return this._Raw;
+            }
+            private set
+            {
+                this._Raw = value;
+                Logger.Write(this, LogLevel.Debug, "Raw = {0}", this.Raw);
+                //TODO: Bad .Wait().
+                this.Output.Shutdown().Wait();
+            }
+        }
+
         public override void InitializeComponent(ICore core)
         {
             this.Core = core;
@@ -223,6 +240,10 @@ namespace FoxTunes
                 BassOutputConfiguration.SECTION,
                 BassWasapiStreamOutputConfiguration.BUFFER_LENGTH_ELEMENT
             ).ConnectValue(value => this.BufferLength = Convert.ToSingle(value));
+            this.Configuration.GetElement<BooleanConfigurationElement>(
+                BassOutputConfiguration.SECTION,
+                BassWasapiStreamOutputConfiguration.ELEMENT_WASAPI_RAW
+            ).ConnectValue(value => this.Raw = value);
             this.BassStreamPipelineFactory = ComponentRegistry.Instance.GetComponent<IBassStreamPipelineFactory>();
             if (this.BassStreamPipelineFactory != null)
             {
@@ -246,7 +267,7 @@ namespace FoxTunes
             //Always detect device for now.
             //if (BassWasapiDevice.Info != null && BassWasapiDevice.Info.Device != this.WasapiDevice)
             {
-                BassWasapiDevice.Detect(this.WasapiDevice, this.Exclusive, this.AutoFormat, this.BufferLength, this.DoubleBuffer, this.EventDriven, this.Async, this.Dither);
+                BassWasapiDevice.Detect(this.WasapiDevice, this.Exclusive, this.AutoFormat, this.BufferLength, this.DoubleBuffer, this.EventDriven, this.Async, this.Dither, this.Raw);
             }
             Logger.Write(this, LogLevel.Debug, "BASS (No Sound) Initialized.");
         }
