@@ -25,13 +25,13 @@ namespace FoxTunes
 
         public MetaDataItem[] GetMetaDatas(LibraryHierarchyNode libraryHierarchyNode, MetaDataItemType? metaDataItemType, string metaDataItemName)
         {
-            var key = new MetaDataCacheKey(libraryHierarchyNode, metaDataItemType, metaDataItemName, this.LibraryHierarchyBrowser.Filter);
+            var key = new LibraryMetaDataCacheKey(libraryHierarchyNode, metaDataItemType, metaDataItemName, this.LibraryHierarchyBrowser.Filter);
             return this.MetaDataCache.GetMetaDatas(key, () => this.GetMetaDatasCore(libraryHierarchyNode, metaDataItemType, metaDataItemName));
         }
 
         public Task<MetaDataItem[]> GetMetaDatasAsync(LibraryHierarchyNode libraryHierarchyNode, MetaDataItemType? metaDataItemType, string metaDataItemName)
         {
-            var key = new MetaDataCacheKey(libraryHierarchyNode, metaDataItemType, metaDataItemName, this.LibraryHierarchyBrowser.Filter);
+            var key = new LibraryMetaDataCacheKey(libraryHierarchyNode, metaDataItemType, metaDataItemName, this.LibraryHierarchyBrowser.Filter);
             return this.MetaDataCache.GetMetaDatas(key, () => this.GetMetaDatasCoreAsync(libraryHierarchyNode, metaDataItemType, metaDataItemName));
         }
 
@@ -115,13 +115,13 @@ namespace FoxTunes
 
         public MetaDataItem[] GetMetaDatas(IEnumerable<PlaylistItem> playlistItems, MetaDataItemType? metaDataItemType, string metaDataItemName)
         {
-            var key = new MetaDataCacheKey(playlistItems.ToArray(), metaDataItemType, metaDataItemName, this.LibraryHierarchyBrowser.Filter);
+            var key = new PlaylistMetaDataCacheKey(playlistItems.ToArray(), metaDataItemType, metaDataItemName, this.LibraryHierarchyBrowser.Filter);
             return this.MetaDataCache.GetMetaDatas(key, () => this.GetMetaDatasCore(playlistItems, metaDataItemType, metaDataItemName));
         }
 
         public Task<MetaDataItem[]> GetMetaDatasAsync(IEnumerable<PlaylistItem> playlistItems, MetaDataItemType? metaDataItemType, string metaDataItemName)
         {
-            var key = new MetaDataCacheKey(playlistItems.ToArray(), metaDataItemType, metaDataItemName, this.LibraryHierarchyBrowser.Filter);
+            var key = new PlaylistMetaDataCacheKey(playlistItems.ToArray(), metaDataItemType, metaDataItemName, this.LibraryHierarchyBrowser.Filter);
             return this.MetaDataCache.GetMetaDatas(key, () => this.GetMetaDatasCoreAsync(playlistItems, metaDataItemType, metaDataItemName));
         }
 

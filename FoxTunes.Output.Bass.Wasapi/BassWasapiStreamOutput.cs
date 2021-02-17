@@ -127,12 +127,14 @@ namespace FoxTunes
                 this.Behaviour.WasapiDevice,
                 this.Behaviour.Exclusive,
                 this.Behaviour.AutoFormat,
-                this.Behaviour.Buffer,
+                this.Behaviour.BufferLength,
+                this.Behaviour.DoubleBuffer,
                 this.Behaviour.EventDriven,
+                this.Behaviour.Async,
                 this.Behaviour.Dither,
+                this.Behaviour.Raw,
                 this.Rate,
-                this.Channels,
-                this.Flags
+                this.Channels
             );
         }
 

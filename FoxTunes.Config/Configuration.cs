@@ -210,13 +210,13 @@ namespace FoxTunes
                     {
                         Serializer.Save(stream, this.Sections);
                     }
+                    Profiles.Profile = profile;
                 }
                 catch (Exception e)
                 {
                     Logger.Write(this, LogLevel.Warn, "Failed to save configuration: {0}", e.Message);
                 }
             });
-            Profiles.Profile = profile;
         }
 
         public void Delete()
