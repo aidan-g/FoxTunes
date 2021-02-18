@@ -15,6 +15,15 @@ namespace FoxTunes
 
         public const string EDIT = "AAAA";
 
+        public const string LOOKUP = "BBBB";
+
+        public LyricsBehaviour()
+        {
+            this.Providers = new List<LyricsProvider>();
+        }
+
+        public List<LyricsProvider> Providers { get; private set; }
+
         public IPlaybackManager PlaybackManager { get; private set; }
 
         public IMetaDataManager MetaDataManager { get; private set; }
@@ -66,6 +75,15 @@ namespace FoxTunes
                             EDIT,
                             "Edit"
                         );
+                        foreach (var provider in this.Providers)
+                        {
+                            yield return new InvocationComponent(
+                                CATEGORY,
+                                LOOKUP,
+                                provider.Name,
+                                path: "Lookup"
+                            );
+                        }
                     }
                     yield return new InvocationComponent(
                         CATEGORY,
@@ -89,6 +107,19 @@ namespace FoxTunes
             {
                 case EDIT:
                     return this.Edit();
+                case LOOKUP:
+                    var provider = this.Providers.FirstOrDefault(
+                        _provider => string.Equals(_provider.Name, component.Name, StringComparison.OrdinalIgnoreCase)
+                    );
+                    if (provider != null)
+                    {
+                        return this.Lookup(provider);
+                    }
+#if NET40
+                    return TaskEx.FromResult(false);
+#else
+                    return Task.CompletedTask;
+#endif
             }
             if (string.Equals(component.Id, this.AutoScroll.Id, StringComparison.OrdinalIgnoreCase))
             {
@@ -154,6 +185,47 @@ namespace FoxTunes
                 false,
                 CommonMetaData.Lyrics
             ).ConfigureAwait(false);
+        }
+
+        public async Task Lookup(LyricsProvider provider)
+        {
+            var outputStream = this.PlaybackManager.CurrentStream;
+            if (outputStream == null)
+            {
+                return;
+            }
+            var playlistItem = outputStream.PlaylistItem;
+            var result = await provider.Lookup(playlistItem).ConfigureAwait(false);
+            if (!result.Success)
+            {
+                return;
+            }
+            lock (playlistItem.MetaDatas)
+            {
+                var metaDataItem = playlistItem.MetaDatas.FirstOrDefault(
+                    element => string.Equals(element.Name, CommonMetaData.Lyrics, StringComparison.OrdinalIgnoreCase)
+                );
+                if (metaDataItem == null)
+                {
+                    metaDataItem = new MetaDataItem(CommonMetaData.Lyrics, MetaDataItemType.Tag);
+                    lock (playlistItem.MetaDatas)
+                    {
+                        playlistItem.MetaDatas.Add(metaDataItem);
+                    }
+                }
+                metaDataItem.Value = result.Lyrics;
+            }
+            await this.MetaDataManager.Save(
+                new[] { playlistItem },
+                true,
+                false,
+                CommonMetaData.Lyrics
+            ).ConfigureAwait(false);
+        }
+
+        public void Register(LyricsProvider provider)
+        {
+            this.Providers.Add(provider);
         }
 
         public IEnumerable<ConfigurationSection> GetConfigurationSections()

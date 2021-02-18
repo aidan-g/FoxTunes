@@ -76,6 +76,7 @@ namespace FoxTunes
             };
             if (!result.LibraryItem_Id.HasValue)
             {
+                //TODO: Synchronization.
                 result.MetaDatas = new List<MetaDataItem>(playlistItem.MetaDatas);
             }
             return result;

@@ -14,10 +14,10 @@ namespace FoxTunes
 
         public static IEnumerable<ConfigurationSection> GetConfigurationSections()
         {
-            yield return new ConfigurationSection(SECTION, "Lyrics")
-                .WithElement(new BooleanConfigurationElement(AUTO_SCROLL, "Auto Scroll").WithValue(true).DependsOn(MetaDataBehaviourConfiguration.SECTION, MetaDataBehaviourConfiguration.ENABLE_ELEMENT))
-                .WithElement(new BooleanConfigurationElement(AUTO_LOOKUP, "Auto Lookup").WithValue(false).DependsOn(MetaDataBehaviourConfiguration.SECTION, MetaDataBehaviourConfiguration.ENABLE_ELEMENT))
-                .WithElement(new TextConfigurationElement(EDITOR, "Editor").WithValue("notepad.exe").DependsOn(MetaDataBehaviourConfiguration.SECTION, MetaDataBehaviourConfiguration.ENABLE_ELEMENT)
+            yield return new ConfigurationSection(SECTION, Strings.LyricsBehaviourConfiguration_Section)
+                .WithElement(new BooleanConfigurationElement(AUTO_SCROLL, Strings.LyricsBehaviourConfiguration_AutoScroll).WithValue(true).DependsOn(MetaDataBehaviourConfiguration.SECTION, MetaDataBehaviourConfiguration.ENABLE_ELEMENT))
+                .WithElement(new BooleanConfigurationElement(AUTO_LOOKUP, Strings.LyricsBehaviourConfiguration_AutoLookup).WithValue(false).DependsOn(MetaDataBehaviourConfiguration.SECTION, MetaDataBehaviourConfiguration.ENABLE_ELEMENT))
+                .WithElement(new TextConfigurationElement(EDITOR, Strings.LyricsBehaviourConfiguration_Editor).WithValue("notepad.exe").DependsOn(MetaDataBehaviourConfiguration.SECTION, MetaDataBehaviourConfiguration.ENABLE_ELEMENT)
             );
         }
     }
