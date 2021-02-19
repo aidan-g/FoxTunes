@@ -123,6 +123,9 @@
   <data name="ChartLyricsProviderConfiguration.BaseUrl" xml:space="preserve">
     <value>Base Url</value>
   </data>
+  <data name="ChartLyricsProviderConfiguration.MinConfidence" xml:space="preserve">
+    <value>Minimum Confidence</value>
+  </data>
   <data name="LyricsBehaviourConfiguration.AutoLookup" xml:space="preserve">
     <value>Auto Lookup</value>
   </data>

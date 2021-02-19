@@ -79,6 +79,15 @@ namespace FoxTunes {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Minimum Confidence.
+        /// </summary>
+        internal static string ChartLyricsProviderConfiguration_MinConfidence {
+            get {
+                return ResourceManager.GetString("ChartLyricsProviderConfiguration.MinConfidence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Auto Lookup.
         /// </summary>
         internal static string LyricsBehaviourConfiguration_AutoLookup {

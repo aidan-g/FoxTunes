@@ -26,12 +26,18 @@ namespace FoxTunes
 
         public TextConfigurationElement BaseUrl { get; private set; }
 
+        public DoubleConfigurationElement MinConfidence { get; private set; }
+
         public override void InitializeComponent(ICore core)
         {
             this.Configuration = core.Components.Configuration;
             this.BaseUrl = this.Configuration.GetElement<TextConfigurationElement>(
                 ChartLyricsProviderConfiguration.SECTION,
                 ChartLyricsProviderConfiguration.BASE_URL
+            );
+            this.MinConfidence = this.Configuration.GetElement<DoubleConfigurationElement>(
+                ChartLyricsProviderConfiguration.SECTION,
+                ChartLyricsProviderConfiguration.MIN_CONFIDENCE
             );
             base.InitializeComponent(core);
         }
@@ -93,33 +99,34 @@ namespace FoxTunes
                 }
                 using (var stream = response.GetResponseStream())
                 {
-                    var results = Serializer.LoadSearchLyricResults(stream);
-                    return await this.Lookup(results).ConfigureAwait(false);
+                    var results = Serializer.LoadSearchLyricResults(stream).Where(
+                        result => result.Valid
+                    );
+                    return await this.Lookup(artist, song, results).ConfigureAwait(false);
                 }
             }
         }
 
-        protected virtual Task<SearchLyricResult> Lookup(IEnumerable<SearchLyricResult> searchResults)
+        protected virtual Task<SearchLyricResult> Lookup(string artist, string song, IEnumerable<SearchLyricResult> searchResults)
         {
-            var result = searchResults.Where(
-                searchResult => !string.IsNullOrEmpty(searchResult.LyricId) &&
-                                         !string.Equals(searchResult.LyricId, "0") &&
-                                         !string.IsNullOrEmpty(searchResult.LyricChecksum)
+            var searchResult = searchResults.ToDictionary(
+                //Map results to similarity
+                _searchResult => _searchResult,
+                _searchResult => _searchResult.Similarity(artist, song)
+            ).Where(
+                //Where they have the required confidence.
+                _pair => _pair.Value >= this.MinConfidence.Value
             ).OrderByDescending(
-                searchResult =>
-                {
-                    var songRank = default(int);
-                    if (!int.TryParse(searchResult.SongRank, out songRank))
-                    {
-                        songRank = 0;
-                    }
-                    return songRank;
-                }
+                //Order by highest confidence first.
+                _pair => _pair.Value
+            ).Select(
+                //Select result.
+                _pair => _pair.Key
             ).FirstOrDefault();
 #if NET40
-            return TaskEx.FromResult(result);
+            return TaskEx.FromResult(searchResult);
 #else
-            return Task.FromResult(result);
+            return Task.FromResult(searchResult);
 #endif
         }
 
@@ -193,14 +200,6 @@ namespace FoxTunes
 
         public static class Serializer
         {
-            private static ILogger Logger
-            {
-                get
-                {
-                    return LogManager.Logger;
-                }
-            }
-
             public static IEnumerable<SearchLyricResult> LoadSearchLyricResults(Stream stream)
             {
                 var results = new List<SearchLyricResult>();
@@ -390,6 +389,45 @@ namespace FoxTunes
             public string Song { get; set; }
 
             public string SongRank { get; set; }
+
+            public bool Valid
+            {
+                get
+                {
+                    var valid = true;
+                    //Required by GetLyric.
+                    if (string.IsNullOrEmpty(this.LyricChecksum))
+                    {
+                        valid = false;
+                    }
+                    else if (string.IsNullOrEmpty(this.LyricId))
+                    {
+                        valid = false;
+                    }
+                    else if (string.Equals(this.LyricId, "0", StringComparison.OrdinalIgnoreCase))
+                    {
+                        valid = false;
+                    }
+                    //Required by similarity check.
+                    else if (string.IsNullOrEmpty(this.Artist))
+                    {
+                        valid = false;
+                    }
+                    else if (string.IsNullOrEmpty(this.Song))
+                    {
+                        valid = false;
+                    }
+                    Logger.Write(typeof(ChartLyricsProvider), LogLevel.Trace, "Lyric search: LyricChecksum = {0}, LyricId = {1}, Artist = \"{2}\", Song = \"{3}\", Valid = {4}.", this.LyricChecksum, this.LyricId, this.Artist, this.Song, valid);
+                    return valid;
+                }
+            }
+
+            public float Similarity(string artist, string song)
+            {
+                var similarity = (this.Artist.Similarity(artist, true) + this.Song.Similarity(song, true)) / 2;
+                Logger.Write(typeof(ChartLyricsProvider), LogLevel.Trace, "Lyric search: LyricChecksum = {0}, LyricId = {1}, Confidence = {2}.", this.LyricChecksum, this.LyricId, similarity);
+                return similarity;
+            }
         }
 
         public class GetLyricResult
