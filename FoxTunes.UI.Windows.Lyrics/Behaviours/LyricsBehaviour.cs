@@ -15,7 +15,7 @@ namespace FoxTunes
 
         public const string EDIT = "AAAA";
 
-        public const string LOOKUP = "BBBB";
+        public const string LOOKUP = "AAAB";
 
         public LyricsBehaviour()
         {
@@ -36,6 +36,8 @@ namespace FoxTunes
 
         public BooleanConfigurationElement AutoLookup { get; private set; }
 
+        public SelectionConfigurationElement AutoLookupProvider { get; private set; }
+
         public TextConfigurationElement Editor { get; private set; }
 
         public override void InitializeComponent(ICore core)
@@ -55,11 +57,34 @@ namespace FoxTunes
                 LyricsBehaviourConfiguration.SECTION,
                 LyricsBehaviourConfiguration.AUTO_LOOKUP
             );
+            this.AutoLookup.ConnectValue(value =>
+            {
+                if (value)
+                {
+                    Logger.Write(this, LogLevel.Debug, "Enabling auto lookup.");
+                    this.PlaybackManager.CurrentStreamChanged += this.OnCurrentStreamChanged;
+                }
+                else
+                {
+                    Logger.Write(this, LogLevel.Debug, "Disabling auto lookup.");
+                    this.PlaybackManager.CurrentStreamChanged -= this.OnCurrentStreamChanged;
+                }
+            });
+            this.AutoLookupProvider = this.Configuration.GetElement<SelectionConfigurationElement>(
+                LyricsBehaviourConfiguration.SECTION,
+                LyricsBehaviourConfiguration.AUTO_LOOKUP_PROVIDER
+            );
             this.Editor = this.Configuration.GetElement<TextConfigurationElement>(
                 LyricsBehaviourConfiguration.SECTION,
                 LyricsBehaviourConfiguration.EDITOR
             );
             base.InitializeComponent(core);
+        }
+
+        protected virtual void OnCurrentStreamChanged(object sender, EventArgs e)
+        {
+            //Critical: Don't block in this event handler, it causes a deadlock.
+            this.Dispatch(this.Lookup);
         }
 
         public IEnumerable<IInvocationComponent> Invocations
@@ -187,6 +212,32 @@ namespace FoxTunes
             ).ConfigureAwait(false);
         }
 
+        public Task Lookup()
+        {
+            var provider = default(LyricsProvider);
+            if (this.AutoLookupProvider.Value != null)
+            {
+                provider = this.Providers.FirstOrDefault(
+                   _provider => string.Equals(_provider.Id, this.AutoLookupProvider.Value.Id, StringComparison.OrdinalIgnoreCase)
+               );
+            }
+            if (provider == null)
+            {
+                Logger.Write(this, LogLevel.Warn, "Failed to determine the preferred provider.");
+                provider = this.Providers.FirstOrDefault();
+                if (provider == null)
+                {
+                    Logger.Write(this, LogLevel.Warn, "No providers.");
+#if NET40
+                    return TaskEx.FromResult(false);
+#else
+                    return Task.CompletedTask;
+#endif
+                }
+            }
+            return this.Lookup(provider);
+        }
+
         public async Task Lookup(LyricsProvider provider)
         {
             var outputStream = this.PlaybackManager.CurrentStream;
@@ -195,11 +246,14 @@ namespace FoxTunes
                 return;
             }
             var playlistItem = outputStream.PlaylistItem;
+            Logger.Write(this, LogLevel.Debug, "Looking up lyrics for file \"{0}\"..", playlistItem.FileName);
             var result = await provider.Lookup(playlistItem).ConfigureAwait(false);
             if (!result.Success)
             {
+                Logger.Write(this, LogLevel.Warn, "Failed to look up lyrics for file \"{0}\".", playlistItem.FileName);
                 return;
             }
+            Logger.Write(this, LogLevel.Debug, "Looking up lyrics for file \"{0}\": OK, updating meta data.", playlistItem.FileName);
             lock (playlistItem.MetaDatas)
             {
                 var metaDataItem = playlistItem.MetaDatas.FirstOrDefault(

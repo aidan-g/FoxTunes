@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Linq;
 using System.Xml;
 
 namespace FoxTunes
@@ -38,20 +38,26 @@ namespace FoxTunes
 
         public override async Task<LyricsResult> Lookup(IFileData fileData)
         {
+            Logger.Write(this, LogLevel.Debug, "Getting track information for file \"{0}\"..", fileData.FileName);
             var artist = default(string);
             var song = default(string);
             if (!this.TryGetLookup(fileData, out artist, out song))
             {
+                Logger.Write(this, LogLevel.Warn, "Failed to get track information: The required meta data was not found.");
                 return LyricsResult.Fail;
             }
+            Logger.Write(this, LogLevel.Debug, "Got track information: Artist = \"{0}\", Song = \"{1}\".", artist, song);
             try
             {
+                Logger.Write(this, LogLevel.Debug, "Searching for match..");
                 var searchResult = await this.Lookup(artist, song).ConfigureAwait(false);
                 if (searchResult != null)
                 {
+                    Logger.Write(this, LogLevel.Debug, "Got match, fetching lyrics..");
                     var lyricsResult = await this.Lookup(searchResult).ConfigureAwait(false);
                     if (lyricsResult != null && !string.IsNullOrEmpty(lyricsResult.Lyric))
                     {
+                        Logger.Write(this, LogLevel.Debug, "Success.");
                         return new LyricsResult(lyricsResult.Lyric);
                     }
                 }
@@ -76,9 +82,15 @@ namespace FoxTunes
                 Uri.EscapeDataString(artist),
                 Uri.EscapeDataString(song)
             );
+            Logger.Write(this, LogLevel.Debug, "Querying the API: {0}", url);
             var request = WebRequest.Create(url);
-            using (var response = request.GetResponse())
+            using (var response = (HttpWebResponse)request.GetResponse())
             {
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    Logger.Write(this, LogLevel.Warn, "Status code does not indicate success.");
+                    return null;
+                }
                 using (var stream = response.GetResponseStream())
                 {
                     var results = Serializer.LoadSearchLyricResults(stream);
@@ -124,9 +136,19 @@ namespace FoxTunes
                 Uri.EscapeDataString(searchResult.LyricId),
                 Uri.EscapeDataString(searchResult.LyricChecksum)
             );
+            Logger.Write(this, LogLevel.Debug, "Querying the API: {0}", url);
             var request = WebRequest.Create(url);
-            using (var response = request.GetResponse())
+            using (var response = (HttpWebResponse)request.GetResponse())
             {
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    Logger.Write(this, LogLevel.Warn, "Status code does not indicate success.");
+#if NET40
+                    return TaskEx.FromResult(default(GetLyricResult));
+#else
+                    return Task.FromResult(default(GetLyricResult));
+#endif
+                }
                 using (var stream = response.GetResponseStream())
                 {
                     var result = Serializer.LoadGetLyricResult(stream);

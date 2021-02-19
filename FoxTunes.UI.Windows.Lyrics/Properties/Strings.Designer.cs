@@ -61,6 +61,15 @@ namespace FoxTunes {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Chart Lyrics.
+        /// </summary>
+        internal static string ChartLyrics {
+            get {
+                return ResourceManager.GetString("ChartLyrics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Base Url.
         /// </summary>
         internal static string ChartLyricsProviderConfiguration_BaseUrl {
@@ -70,20 +79,20 @@ namespace FoxTunes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Chart Lyrics.
-        /// </summary>
-        internal static string ChartLyricsProviderConfiguration_Path {
-            get {
-                return ResourceManager.GetString("ChartLyricsProviderConfiguration.Path", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Auto Lookup.
         /// </summary>
         internal static string LyricsBehaviourConfiguration_AutoLookup {
             get {
                 return ResourceManager.GetString("LyricsBehaviourConfiguration.AutoLookup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Auto Lookup Provider.
+        /// </summary>
+        internal static string LyricsBehaviourConfiguration_AutoLookupProvider {
+            get {
+                return ResourceManager.GetString("LyricsBehaviourConfiguration.AutoLookupProvider", resourceCulture);
             }
         }
         

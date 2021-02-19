@@ -117,14 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ChartLyrics" xml:space="preserve">
+    <value>Chart Lyrics</value>
+  </data>
   <data name="ChartLyricsProviderConfiguration.BaseUrl" xml:space="preserve">
     <value>Base Url</value>
   </data>
-  <data name="ChartLyricsProviderConfiguration.Path" xml:space="preserve">
-    <value>Chart Lyrics</value>
-  </data>
   <data name="LyricsBehaviourConfiguration.AutoLookup" xml:space="preserve">
     <value>Auto Lookup</value>
+  </data>
+  <data name="LyricsBehaviourConfiguration.AutoLookupProvider" xml:space="preserve">
+    <value>Auto Lookup Provider</value>
   </data>
   <data name="LyricsBehaviourConfiguration.AutoScroll" xml:space="preserve">
     <value>Auto Scroll</value>
