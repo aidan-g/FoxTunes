@@ -13,9 +13,9 @@ namespace FoxTunes
     {
         public const string CATEGORY = "BB46B834-5372-440F-B75B-57FF0E473BB4";
 
-        public const string EDIT = "AAAA";
+        public const string EDIT = "0000";
 
-        public const string LOOKUP = "AAAB";
+        public const string LOOKUP = "0001";
 
         public LyricsBehaviour()
         {
@@ -149,10 +149,12 @@ namespace FoxTunes
             if (string.Equals(component.Id, this.AutoScroll.Id, StringComparison.OrdinalIgnoreCase))
             {
                 this.AutoScroll.Toggle();
+                this.Configuration.Save();
             }
             else if (string.Equals(component.Id, this.AutoLookup.Id, StringComparison.OrdinalIgnoreCase))
             {
                 this.AutoLookup.Toggle();
+                this.Configuration.Save();
             }
 #if NET40
             return TaskEx.FromResult(false);
