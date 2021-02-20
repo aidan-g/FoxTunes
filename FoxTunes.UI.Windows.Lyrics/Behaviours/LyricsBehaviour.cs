@@ -216,6 +216,31 @@ namespace FoxTunes
 
         public Task Lookup()
         {
+            var outputStream = this.PlaybackManager.CurrentStream;
+            if (outputStream == null)
+            {
+#if NET40
+                return TaskEx.FromResult(false);
+#else
+                return Task.CompletedTask;
+#endif
+            }
+            var playlistItem = outputStream.PlaylistItem;
+            lock (playlistItem.MetaDatas)
+            {
+                var metaDataItem = playlistItem.MetaDatas.FirstOrDefault(
+                    element => string.Equals(element.Name, CommonMetaData.Lyrics, StringComparison.OrdinalIgnoreCase)
+                );
+                if (metaDataItem != null && !string.IsNullOrEmpty(metaDataItem.Value))
+                {
+                    Logger.Write(this, LogLevel.Debug, "Lyrics already defined for file \"{0}\", nothing to do.", playlistItem.FileName);
+#if NET40
+                    return TaskEx.FromResult(false);
+#else
+                    return Task.CompletedTask;
+#endif
+                }
+            }
             var provider = default(LyricsProvider);
             if (this.AutoLookupProvider.Value != null)
             {
@@ -240,14 +265,23 @@ namespace FoxTunes
             return this.Lookup(provider);
         }
 
-        public async Task Lookup(LyricsProvider provider)
+        public Task Lookup(LyricsProvider provider)
         {
             var outputStream = this.PlaybackManager.CurrentStream;
             if (outputStream == null)
             {
-                return;
+#if NET40
+                return TaskEx.FromResult(false);
+#else
+                return Task.CompletedTask;
+#endif
             }
             var playlistItem = outputStream.PlaylistItem;
+            return this.Lookup(provider, playlistItem);
+        }
+
+        public async Task Lookup(LyricsProvider provider, PlaylistItem playlistItem)
+        {
             Logger.Write(this, LogLevel.Debug, "Looking up lyrics for file \"{0}\"..", playlistItem.FileName);
             var result = await provider.Lookup(playlistItem).ConfigureAwait(false);
             if (!result.Success)
