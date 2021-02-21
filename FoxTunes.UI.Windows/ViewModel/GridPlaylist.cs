@@ -18,7 +18,7 @@ namespace FoxTunes.ViewModel
     {
         public Playlist CurrentPlaylist { get; private set; }
 
-        public PlaylistColumn SortColumn { get; private set; }
+        public PlaylistSortingBehaviour PlaylistSortingBehaviour { get; private set; }
 
         public PlaylistGridViewColumnFactory GridViewColumnFactory { get; private set; }
 
@@ -77,32 +77,6 @@ namespace FoxTunes.ViewModel
         }
 
         public event EventHandler GroupingScriptChanged;
-
-        private bool _SortingEnabled { get; set; }
-
-        public bool SortingEnabled
-        {
-            get
-            {
-                return this._SortingEnabled;
-            }
-            set
-            {
-                this._SortingEnabled = value;
-                this.OnSortingEnabledChanged();
-            }
-        }
-
-        protected virtual void OnSortingEnabledChanged()
-        {
-            if (this.SortingEnabledChanged != null)
-            {
-                this.SortingEnabledChanged(this, EventArgs.Empty);
-            }
-            this.OnPropertyChanged("SortingEnabled");
-        }
-
-        public event EventHandler SortingEnabledChanged;
 
         public IList SelectedItems
         {
@@ -217,6 +191,7 @@ namespace FoxTunes.ViewModel
         {
             base.InitializeComponent(core);
             this.PlaylistManager.SelectedItemsChanged += this.OnSelectedItemsChanged;
+            this.PlaylistSortingBehaviour = ComponentRegistry.Instance.GetComponent<PlaylistSortingBehaviour>();
             this.GridViewColumnFactory = ComponentRegistry.Instance.GetComponent<PlaylistGridViewColumnFactory>();
             this.FileActionHandlerManager = core.Managers.FileActionHandler;
             this.Configuration = core.Components.Configuration;
@@ -232,10 +207,6 @@ namespace FoxTunes.ViewModel
                 PlaylistGroupingBehaviourConfiguration.GROUP_SCRIPT_ELEMENT
             ).ConnectValue(value => this.GroupingScript = value);
 #endif
-            this.Configuration.GetElement<BooleanConfigurationElement>(
-                PlaylistBehaviourConfiguration.SECTION,
-                PlaylistSortingBehaviourConfiguration.SORT_ENABLED_ELEMENT
-            ).ConnectValue(value => this.SortingEnabled = value);
         }
 
         protected virtual void OnSelectedItemsChanged(object sender, EventArgs e)
@@ -604,23 +575,8 @@ namespace FoxTunes.ViewModel
 
         public async Task Sort(PlaylistColumn playlistColumn)
         {
-            if (!this.SortingEnabled)
-            {
-                Logger.Write(this, LogLevel.Warn, "Sorting is disabled.");
-                return;
-            }
             var playlist = await this.GetPlaylist().ConfigureAwait(false);
-            var descending = default(bool);
-            if (object.ReferenceEquals(this.SortColumn, playlistColumn))
-            {
-                this.SortColumn = null;
-                descending = true;
-            }
-            else
-            {
-                this.SortColumn = playlistColumn;
-            }
-            await this.PlaylistManager.Sort(playlist, playlistColumn, descending).ConfigureAwait(false);
+            await this.PlaylistSortingBehaviour.Sort(playlist, playlistColumn).ConfigureAwait(false);
         }
     }
 }
