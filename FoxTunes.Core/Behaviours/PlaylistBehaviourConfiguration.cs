@@ -18,8 +18,6 @@ namespace FoxTunes
 
         public const string PRE_SORT_ORDER_ELEMENT = "FA40F96B-D6B6-42FB-BF95-B01A1F466AB0";
 
-        public const string SORT_ENABLED_ELEMENT = "F2EB04ED-2E13-4B03-9866-D7D197CB8A98";
-
         public const string QUEUE_ELEMENT = "GGGG2428-0E44-4EB7-B8C3-383D839C19EC";
 
         public static IEnumerable<ConfigurationSection> GetConfigurationSections()
@@ -29,8 +27,6 @@ namespace FoxTunes
                     new SelectionConfigurationElement(ORDER_ELEMENT, "Order").WithOptions(GetOrderOptions()))
                 .WithElement(
                     new TextConfigurationElement(PRE_SORT_ORDER_ELEMENT, "Pre Sorting", path: "Advanced").WithValue(Resources.PlaylistSequence).WithFlags(ConfigurationElementFlags.MultiLine))
-                .WithElement(
-                    new BooleanConfigurationElement(SORT_ENABLED_ELEMENT, "Sorting").WithValue(false))
                 .WithElement(
                     new BooleanConfigurationElement(QUEUE_ELEMENT, "Queuing").WithValue(false)
             );

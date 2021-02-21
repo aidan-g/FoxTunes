@@ -234,7 +234,7 @@ namespace FoxTunes.ViewModel
 #endif
             this.Configuration.GetElement<BooleanConfigurationElement>(
                 PlaylistBehaviourConfiguration.SECTION,
-                PlaylistBehaviourConfiguration.SORT_ENABLED_ELEMENT
+                PlaylistSortingBehaviourConfiguration.SORT_ENABLED_ELEMENT
             ).ConnectValue(value => this.SortingEnabled = value);
         }
 

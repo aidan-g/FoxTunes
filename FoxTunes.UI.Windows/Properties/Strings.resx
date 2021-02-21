@@ -135,6 +135,9 @@
   <data name="PlaylistGroupingBehaviourConfiguration.Script" xml:space="preserve">
     <value>Grouping Script</value>
   </data>
+  <data name="PlaylistSortingBehaviourConfiguration.Enabled" xml:space="preserve">
+    <value>Sorting</value>
+  </data>
   <data name="ProfilesBehaviour.Delete" xml:space="preserve">
     <value>Delete</value>
   </data>

@@ -115,6 +115,15 @@ namespace FoxTunes {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sorting.
+        /// </summary>
+        public static string PlaylistSortingBehaviourConfiguration_Enabled {
+            get {
+                return ResourceManager.GetString("PlaylistSortingBehaviourConfiguration.Enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete.
         /// </summary>
         public static string ProfilesBehaviour_Delete {
