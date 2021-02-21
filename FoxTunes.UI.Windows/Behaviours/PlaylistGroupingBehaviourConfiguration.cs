@@ -16,11 +16,15 @@ namespace FoxTunes
 
         public static IEnumerable<ConfigurationSection> GetConfigurationSections()
         {
-            yield return new ConfigurationSection(PlaylistBehaviourConfiguration.SECTION, "Playlist")
+            yield return new ConfigurationSection(PlaylistBehaviourConfiguration.SECTION)
                 .WithElement(
-                    new BooleanConfigurationElement(GROUP_ENABLED_ELEMENT, "Grouping").WithValue(false))
+                    new BooleanConfigurationElement(GROUP_ENABLED_ELEMENT, Strings.PlaylistGroupingBehaviourConfiguration_Enabled)
+                        .WithValue(false))
                 .WithElement(
-                    new TextConfigurationElement(GROUP_SCRIPT_ELEMENT, "Group Script", path: "Advanced").WithValue(Resources.Grouping).WithFlags(ConfigurationElementFlags.MultiLine).DependsOn(PlaylistBehaviourConfiguration.SECTION, GROUP_ENABLED_ELEMENT)
+                    new TextConfigurationElement(GROUP_SCRIPT_ELEMENT, Strings.PlaylistGroupingBehaviourConfiguration_Script, path: Strings.General_Advanced)
+                        .WithValue(Resources.Grouping)
+                        .WithFlags(ConfigurationElementFlags.MultiLine)
+                        .DependsOn(PlaylistBehaviourConfiguration.SECTION, GROUP_ENABLED_ELEMENT)
             );
         }
     }

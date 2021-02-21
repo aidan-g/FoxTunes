@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="General.Advanced" xml:space="preserve">
+    <value>Advanced</value>
+  </data>
   <data name="General.Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
@@ -125,6 +128,12 @@
   </data>
   <data name="LibraryBase.Add" xml:space="preserve">
     <value>Add to collection by dropping files here.</value>
+  </data>
+  <data name="PlaylistGroupingBehaviourConfiguration.Enabled" xml:space="preserve">
+    <value>Grouping</value>
+  </data>
+  <data name="PlaylistGroupingBehaviourConfiguration.Script" xml:space="preserve">
+    <value>Grouping Script</value>
   </data>
   <data name="ProfilesBehaviour.Delete" xml:space="preserve">
     <value>Delete</value>
