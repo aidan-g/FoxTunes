@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace FoxTunes
 {
@@ -10,14 +11,22 @@ namespace FoxTunes
 
         public const string AUTO_LOOKUP = "BBBB3698-E26A-4D6C-9BBF-E845B0F9D150";
 
+        public const string AUTO_LOOKUP_PROVIDER = "BBCC07C6-5584-4E7E-9526-EB60F9F72E49";
+
         public const string EDITOR = "CCCCF394-0C2A-4BC3-ADA3-9E89F8C897D9";
 
         public static IEnumerable<ConfigurationSection> GetConfigurationSections()
         {
-            yield return new ConfigurationSection(SECTION, "Lyrics")
-                .WithElement(new BooleanConfigurationElement(AUTO_SCROLL, "Auto Scroll").WithValue(true).DependsOn(MetaDataBehaviourConfiguration.SECTION, MetaDataBehaviourConfiguration.ENABLE_ELEMENT))
-                .WithElement(new BooleanConfigurationElement(AUTO_LOOKUP, "Auto Lookup").WithValue(false).DependsOn(MetaDataBehaviourConfiguration.SECTION, MetaDataBehaviourConfiguration.ENABLE_ELEMENT))
-                .WithElement(new TextConfigurationElement(EDITOR, "Editor").WithValue("notepad.exe").DependsOn(MetaDataBehaviourConfiguration.SECTION, MetaDataBehaviourConfiguration.ENABLE_ELEMENT)
+            yield return new ConfigurationSection(SECTION, Strings.LyricsBehaviourConfiguration_Section)
+                .WithElement(new BooleanConfigurationElement(AUTO_SCROLL, Strings.LyricsBehaviourConfiguration_AutoScroll)
+                    .WithValue(true)
+                    .DependsOn(MetaDataBehaviourConfiguration.SECTION, MetaDataBehaviourConfiguration.ENABLE_ELEMENT))
+                .WithElement(new BooleanConfigurationElement(AUTO_LOOKUP, Strings.LyricsBehaviourConfiguration_AutoLookup)
+                    .WithValue(false).DependsOn(MetaDataBehaviourConfiguration.SECTION, MetaDataBehaviourConfiguration.ENABLE_ELEMENT))
+                .WithElement(new SelectionConfigurationElement(AUTO_LOOKUP_PROVIDER, Strings.LyricsBehaviourConfiguration_AutoLookupProvider)
+                    .DependsOn(MetaDataBehaviourConfiguration.SECTION, MetaDataBehaviourConfiguration.ENABLE_ELEMENT)
+                    .DependsOn(SECTION, AUTO_LOOKUP))
+                .WithElement(new TextConfigurationElement(EDITOR, Strings.LyricsBehaviourConfiguration_Editor).WithValue("notepad.exe").DependsOn(MetaDataBehaviourConfiguration.SECTION, MetaDataBehaviourConfiguration.ENABLE_ELEMENT)
             );
         }
     }

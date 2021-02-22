@@ -26,18 +26,8 @@ namespace FoxTunes
 
         public int Compare(PlaylistItem playlistItem1, PlaylistItem playlistItem2)
         {
-            var value1 = default(string);
-            var value2 = default(string);
-            {
-                var runner = new PlaylistItemScriptRunner(this.ScriptingContext, playlistItem1, this.Script);
-                runner.Prepare();
-                value1 = Convert.ToString(runner.Run());
-            }
-            {
-                var runner = new PlaylistItemScriptRunner(this.ScriptingContext, playlistItem2, this.Script);
-                runner.Prepare();
-                value2 = Convert.ToString(runner.Run());
-            }
+            var value1 = this.GetValue(playlistItem1);
+            var value2 = this.GetValue(playlistItem2);
             return this.Compare(value1, value2);
         }
 
@@ -50,6 +40,13 @@ namespace FoxTunes
                 return numeric1.CompareTo(numeric2);
             }
             return string.Compare(value1, value2, StringComparison.OrdinalIgnoreCase);
+        }
+
+        protected virtual string GetValue(PlaylistItem playlistItem)
+        {
+            var runner = new PlaylistItemScriptRunner(this.ScriptingContext, playlistItem, this.Script);
+            runner.Prepare();
+            return Convert.ToString(runner.Run());
         }
 
         public bool IsDisposed { get; private set; }

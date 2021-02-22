@@ -423,5 +423,76 @@ namespace FoxTunes
             }
             return sequence.Remove(key);
         }
+
+        public static string Remove(this string subject, Func<char, bool> predicate)
+        {
+            var characters = subject.Where(@char => !predicate(@char));
+            return new string(characters.ToArray());
+        }
+
+        public static int Distance(this string subject, string value, bool ignoreSpaces)
+        {
+            if (ignoreSpaces)
+            {
+                subject = subject.Remove(@char => char.IsWhiteSpace(@char));
+                value = value.Remove(@char => char.IsWhiteSpace(@char));
+            }
+
+            if (string.Equals(subject, value, StringComparison.OrdinalIgnoreCase))
+            {
+                return 0;
+            }
+
+            //https://en.wikipedia.org/wiki/Levenshtein_distance
+
+            var distance = new int[subject.Length + 1, value.Length + 1];
+            for (var a = 0; a <= subject.Length; a++)
+            {
+                distance[a, 0] = a;
+            }
+
+            for (var a = 0; a <= value.Length; a++)
+            {
+                distance[0, a] = a;
+            }
+
+            for (var a = 1; a <= subject.Length; a++)
+            {
+                for (var b = 1; b <= value.Length; b++)
+                {
+                    var cost = 0;
+                    if (char.ToLowerInvariant(value[b - 1]) != char.ToLowerInvariant(subject[a - 1]))
+                    {
+                        cost++;
+                    }
+                    distance[a, b] = Math.Min(
+                        Math.Min(
+                            distance[a - 1, b] + 1,
+                            distance[a, b - 1] + 1
+                        ),
+                        distance[a - 1, b - 1] + cost
+                    );
+                }
+            }
+
+            return distance[subject.Length, value.Length];
+        }
+
+        public static float Similarity(this string subject, string value, bool ignoreSpaces)
+        {
+            if (ignoreSpaces)
+            {
+                subject = subject.Remove(@char => char.IsWhiteSpace(@char));
+                value = value.Remove(@char => char.IsWhiteSpace(@char));
+            }
+
+            if (string.Equals(subject, value, StringComparison.OrdinalIgnoreCase))
+            {
+                return 1.0f;
+            }
+
+            var distance = subject.Distance(value, false);
+            return (1.0f - ((float)distance / (float)Math.Max(subject.Length, value.Length)));
+        }
     }
 }

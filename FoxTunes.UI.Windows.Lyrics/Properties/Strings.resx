@@ -117,43 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="General.Advanced" xml:space="preserve">
-    <value>Advanced</value>
+  <data name="ChartLyrics" xml:space="preserve">
+    <value>Chart Lyrics</value>
   </data>
-  <data name="General.Cancel" xml:space="preserve">
-    <value>Cancel</value>
+  <data name="ChartLyricsProviderConfiguration.BaseUrl" xml:space="preserve">
+    <value>Base Url</value>
   </data>
-  <data name="General.OK" xml:space="preserve">
-    <value>OK</value>
+  <data name="ChartLyricsProviderConfiguration.MinConfidence" xml:space="preserve">
+    <value>Minimum Confidence</value>
   </data>
-  <data name="LibraryBase.Add" xml:space="preserve">
-    <value>Add to collection by dropping files here.</value>
+  <data name="LyricsBehaviourConfiguration.AutoLookup" xml:space="preserve">
+    <value>Auto Lookup</value>
   </data>
-  <data name="PlaylistGroupingBehaviourConfiguration.Enabled" xml:space="preserve">
-    <value>Grouping</value>
+  <data name="LyricsBehaviourConfiguration.AutoLookupProvider" xml:space="preserve">
+    <value>Auto Lookup Provider</value>
   </data>
-  <data name="PlaylistGroupingBehaviourConfiguration.Script" xml:space="preserve">
-    <value>Grouping Script</value>
+  <data name="LyricsBehaviourConfiguration.AutoScroll" xml:space="preserve">
+    <value>Auto Scroll</value>
   </data>
-  <data name="PlaylistSortingBehaviourConfiguration.Enabled" xml:space="preserve">
-    <value>Sorting</value>
+  <data name="LyricsBehaviourConfiguration.Editor" xml:space="preserve">
+    <value>Editor</value>
   </data>
-  <data name="ProfilesBehaviour.Delete" xml:space="preserve">
-    <value>Delete</value>
-  </data>
-  <data name="ProfilesBehaviour.New" xml:space="preserve">
-    <value>New</value>
-  </data>
-  <data name="ProfilesBehaviour.New.Prompt" xml:space="preserve">
-    <value>Profile Name</value>
-  </data>
-  <data name="ProfilesBehaviour.Path" xml:space="preserve">
-    <value>Profiles</value>
-  </data>
-  <data name="ProfilesBehaviourConfiguration.Enabled" xml:space="preserve">
-    <value>Enabled</value>
-  </data>
-  <data name="ProfilesBehaviourConfiguration.Section" xml:space="preserve">
-    <value>Profiles</value>
+  <data name="LyricsBehaviourConfiguration.Section" xml:space="preserve">
+    <value>Lyrics</value>
   </data>
 </root>

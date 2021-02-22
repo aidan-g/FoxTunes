@@ -61,6 +61,15 @@ namespace FoxTunes {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Advanced.
+        /// </summary>
+        public static string General_Advanced {
+            get {
+                return ResourceManager.GetString("General.Advanced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string General_Cancel {
@@ -84,6 +93,33 @@ namespace FoxTunes {
         public static string LibraryBase_Add {
             get {
                 return ResourceManager.GetString("LibraryBase.Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Grouping.
+        /// </summary>
+        public static string PlaylistGroupingBehaviourConfiguration_Enabled {
+            get {
+                return ResourceManager.GetString("PlaylistGroupingBehaviourConfiguration.Enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Grouping Script.
+        /// </summary>
+        public static string PlaylistGroupingBehaviourConfiguration_Script {
+            get {
+                return ResourceManager.GetString("PlaylistGroupingBehaviourConfiguration.Script", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sorting.
+        /// </summary>
+        public static string PlaylistSortingBehaviourConfiguration_Enabled {
+            get {
+                return ResourceManager.GetString("PlaylistSortingBehaviourConfiguration.Enabled", resourceCulture);
             }
         }
         
