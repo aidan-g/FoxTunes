@@ -117,7 +117,43 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="General.Advanced" xml:space="preserve">
+    <value>Avancé</value>
+  </data>
+  <data name="General.Cancel" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="General.OK" xml:space="preserve">
+    <value>Valider</value>
+  </data>
   <data name="LibraryBase.Add" xml:space="preserve">
     <value>Ajoutez à la collection en déposant des fichiers ici.</value>
+  </data>
+  <data name="PlaylistGroupingBehaviourConfiguration.Enabled" xml:space="preserve">
+    <value>Regroupement</value>
+  </data>
+  <data name="PlaylistGroupingBehaviourConfiguration.Script" xml:space="preserve">
+    <value>Script de regroupement</value>
+  </data>
+  <data name="PlaylistSortingBehaviourConfiguration.Enabled" xml:space="preserve">
+    <value>Tri</value>
+  </data>
+  <data name="ProfilesBehaviour.Delete" xml:space="preserve">
+    <value>Supprimer</value>
+  </data>
+  <data name="ProfilesBehaviour.New" xml:space="preserve">
+    <value>Nouveau</value>
+  </data>
+  <data name="ProfilesBehaviour.New.Prompt" xml:space="preserve">
+    <value>Nom du profil</value>
+  </data>
+  <data name="ProfilesBehaviour.Path" xml:space="preserve">
+    <value>Profils</value>
+  </data>
+  <data name="ProfilesBehaviourConfiguration.Enabled" xml:space="preserve">
+    <value>Activé</value>
+  </data>
+  <data name="ProfilesBehaviourConfiguration.Section" xml:space="preserve">
+    <value>Profils</value>
   </data>
 </root>
