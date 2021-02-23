@@ -56,6 +56,8 @@ namespace FoxTunes
 
         protected virtual void OnThemeChanged(object sender, EventArgs e)
         {
+            //Ensure resources are loaded.
+            ThemeLoader.EnsureTheme();
             this.Apply();
         }
     }

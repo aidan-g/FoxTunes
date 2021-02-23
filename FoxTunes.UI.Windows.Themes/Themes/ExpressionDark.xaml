@@ -1760,7 +1760,6 @@
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
         <Setter Property="ScrollViewer.CanContentScroll" Value="true" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="AlternationCount" Value="2" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListView}">
@@ -1844,12 +1843,6 @@
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="ItemsControl.AlternationIndex" Value="0">
-                            <Setter TargetName="Background" Property="Fill" Value="{DynamicResource NormalBrush}"></Setter>
-                        </Trigger>
-                        <Trigger Property="ItemsControl.AlternationIndex" Value="1">
-                            <Setter TargetName="Background" Property="Fill" Value="Transparent"></Setter>
-                        </Trigger>
                         <Trigger Property="IsSelected" Value="true">
                             <Trigger.ExitActions>
                                 <BeginStoryboard Storyboard="{StaticResource SelectedOff}" x:Name="SelectedOff_BeginStoryboard"/>

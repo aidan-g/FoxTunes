@@ -19,7 +19,7 @@ namespace FoxTunes
             {
                 var source = ImageLoader.Load(
                     this.ThemeLoader.Theme.Id,
-                    () => this.ThemeLoader.Theme.ArtworkPlaceholder,
+                    this.ThemeLoader.Theme.GetArtworkPlaceholder,
                     this.PixelWidth,
                     this.PixelHeight,
                     true

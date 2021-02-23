@@ -22,10 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Page Include="**\*.xaml" SubType="Designer" Generator="MSBuild:Compile" />
     <Compile Update="**\*.xaml.cs" SubType="Code" DependentUpon="%(Filename)" />
     <UpToDateCheckInput Include="**\*.xaml" />
@@ -61,6 +57,19 @@
     <PackageReference Include="Expression.Blend.Sdk" Version="1.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+	  <EmbeddedResource Update="Properties\Strings.resx">
+		  <Generator>ResXFileCodeGenerator</Generator>
+		  <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+		  <CustomToolNamespace>FoxTunes</CustomToolNamespace>
+	  </EmbeddedResource>
+	  <Compile Update="Properties\Strings.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>Strings.resx</DependentUpon>
+	  </Compile>
+  </ItemGroup>
+	
  <Import Project="$(UserProfile)\.nuget\packages\Microsoft.Bcl.Build\1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="'$(TargetFramework)' == 'net40'" />
 
 </Project>

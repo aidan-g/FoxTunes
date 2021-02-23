@@ -1,49 +1,42 @@
 ﻿using FoxTunes.Interfaces;
 using System;
-using System.Threading.Tasks;
 
 namespace FoxTunes
 {
     [ComponentDependency(Slot = ComponentSlots.UserInterface)]
     public class ThemeLoader : StandardComponent
     {
-        private ITheme _Theme { get; set; }
+        private Lazy<ITheme> _Theme { get; set; }
 
         public ITheme Theme
         {
             get
             {
-                return this._Theme;
-            }
-            set
-            {
-                this.OnThemeChanging();
-                this._Theme = value;
-                this.OnThemeChanged();
+                if (this._Theme.Value == null)
+                {
+                    return null;
+                }
+                return this._Theme.Value;
             }
         }
 
-        protected virtual void OnThemeChanging()
+        protected virtual void SetTheme(Func<ITheme> factory)
         {
-            if (this.Theme != null)
+            if (this._Theme != null && this._Theme.IsValueCreated)
             {
-                this.Theme.Disable();
+                this._Theme.Value.Disable();
             }
-            if (this.ThemeChanging != null)
+            this._Theme = new Lazy<ITheme>(() =>
             {
-                this.ThemeChanging(this, EventArgs.Empty);
-            }
-            this.OnPropertyChanging("Theme");
+                var theme = factory();
+                theme.Enable();
+                return theme;
+            });
+            this.OnThemeChanged();
         }
-
-        public event EventHandler ThemeChanging;
 
         protected virtual void OnThemeChanged()
         {
-            if (this.Theme != null)
-            {
-                this.Theme.Enable();
-            }
             if (this.ThemeChanged != null)
             {
                 this.ThemeChanged(this, EventArgs.Empty);
@@ -61,8 +54,13 @@ namespace FoxTunes
             this.Configuration.GetElement<SelectionConfigurationElement>(
                 WindowsUserInterfaceConfiguration.SECTION,
                 WindowsUserInterfaceConfiguration.THEME_ELEMENT
-            ).ConnectValue(value => this.Theme = WindowsUserInterfaceConfiguration.GetTheme(value));
+            ).ConnectValue(value => this.SetTheme(() => WindowsUserInterfaceConfiguration.GetTheme(value)));
             base.InitializeComponent(core);
+        }
+
+        public void EnsureTheme()
+        {
+            var theme = this.Theme;
         }
     }
 }
