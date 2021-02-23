@@ -8,8 +8,6 @@ namespace FoxTunes
     [Component("BDAAF3E1-84CC-4D36-A7CB-278663E65844", ComponentSlots.MetaData)]
     public class FileNameMetaDataSourceFactory : MetaDataSourceFactory, IConfigurableComponent
     {
-        public ICore Core { get; private set; }
-
         public IEnumerable<IFileNameMetaDataExtractor> Extractors { get; private set; }
 
         public string _Patterns { get; private set; }
@@ -35,7 +33,6 @@ namespace FoxTunes
         public override void InitializeComponent(ICore core)
         {
             base.InitializeComponent(core);
-            this.Core = core;
             this.Configuration.GetElement<TextConfigurationElement>(
                 MetaDataBehaviourConfiguration.SECTION,
                 FileNameMetaDataSourceFactoryConfiguration.PATTERNS_ELEMENT
@@ -47,6 +44,20 @@ namespace FoxTunes
             get
             {
                 return base.Enabled && this.Extractors != null && this.Extractors.Any();
+            }
+        }
+
+        public override IEnumerable<KeyValuePair<string, MetaDataItemType>> Supported
+        {
+            get
+            {
+                yield return new KeyValuePair<string, MetaDataItemType>(CommonMetaData.Album, MetaDataItemType.Tag);
+                yield return new KeyValuePair<string, MetaDataItemType>(CommonMetaData.Artist, MetaDataItemType.Tag);
+                yield return new KeyValuePair<string, MetaDataItemType>(CommonMetaData.Disc, MetaDataItemType.Tag);
+                yield return new KeyValuePair<string, MetaDataItemType>(CommonMetaData.Genre, MetaDataItemType.Tag);
+                yield return new KeyValuePair<string, MetaDataItemType>(CommonMetaData.Title, MetaDataItemType.Tag);
+                yield return new KeyValuePair<string, MetaDataItemType>(CommonMetaData.Track, MetaDataItemType.Tag);
+                yield return new KeyValuePair<string, MetaDataItemType>(CommonMetaData.Year, MetaDataItemType.Tag);
             }
         }
 
