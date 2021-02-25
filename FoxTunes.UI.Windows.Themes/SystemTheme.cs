@@ -14,36 +14,20 @@ namespace FoxTunes
         public SystemTheme()
             : base(ID, "System", releaseType: ReleaseType.Minimal)
         {
-            this.ResourceDictionary = new Lazy<ResourceDictionary>(() => new ResourceDictionary()
+
+        }
+
+        public override ResourceDictionary GetResourceDictionary()
+        {
+            return new ResourceDictionary()
             {
                 Source = new Uri("/FoxTunes.UI.Windows.Themes;component/Themes/System.xaml", UriKind.Relative)
-            });
+            };
         }
 
-        public Lazy<ResourceDictionary> ResourceDictionary { get; private set; }
-
-        public override Stream ArtworkPlaceholder
+        public override Stream GetArtworkPlaceholder()
         {
-            get
-            {
-                return typeof(SystemTheme).Assembly.GetManifestResourceStream("FoxTunes.UI.Windows.Themes.Images.System_Artwork.png");
-            }
-        }
-
-        public override void Enable()
-        {
-            if (this.ResourceDictionary.Value != null)
-            {
-                Application.Current.Resources.MergedDictionaries.Add(this.ResourceDictionary.Value);
-            }
-        }
-
-        public override void Disable()
-        {
-            if (this.ResourceDictionary.Value != null)
-            {
-                Application.Current.Resources.MergedDictionaries.Remove(this.ResourceDictionary.Value);
-            }
+            return typeof(SystemTheme).Assembly.GetManifestResourceStream("FoxTunes.UI.Windows.Themes.Images.System_Artwork.png");
         }
     }
 }

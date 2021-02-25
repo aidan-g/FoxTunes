@@ -17,6 +17,8 @@ namespace FoxTunes
 
         public const string QUIT = "ZZZZ";
 
+        public ThemeLoader ThemeLoader { get; private set; }
+
         public ICore Core { get; private set; }
 
         public IConfiguration Configuration { get; private set; }
@@ -72,6 +74,7 @@ namespace FoxTunes
 
         public override void InitializeComponent(ICore core)
         {
+            this.ThemeLoader = ComponentRegistry.Instance.GetComponent<ThemeLoader>();
             this.Core = core;
             this.Configuration = core.Components.Configuration;
             this.Topmost = this.Configuration.GetElement<BooleanConfigurationElement>(
@@ -92,6 +95,10 @@ namespace FoxTunes
             );
             this.Enabled.ConnectValue(async value =>
             {
+                //TODO: This code is actually responsible for creating the main application window, 
+                //TODO: It should really be WindowsUserInterface.Show().
+                //Ensure resources are loaded.
+                ThemeLoader.EnsureTheme();
                 if (value)
                 {
                     await this.Enable().ConfigureAwait(false);
