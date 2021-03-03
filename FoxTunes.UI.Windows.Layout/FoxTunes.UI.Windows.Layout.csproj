@@ -22,10 +22,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Properties\" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<EmbeddedResource Update="Properties\Settings.settings">
 			<Generator>SettingsSingleFileGenerator</Generator>
 			<CustomToolNamespace>FoxTunes.Properties</CustomToolNamespace>
@@ -39,6 +35,19 @@
 		</Compile>
 	</ItemGroup>
 
+	<ItemGroup>
+		<EmbeddedResource Update="Properties\Strings.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Strings.Designer.cs</LastGenOutput>
+			<CustomToolNamespace>FoxTunes</CustomToolNamespace>
+		</EmbeddedResource>
+		<Compile Update="Properties\Strings.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Strings.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+	
 	<ItemGroup>
 		<EmbeddedResource Update="Properties\Resources.resx">
 			<Generator>ResXFileCodeGenerator</Generator>
@@ -76,14 +85,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="Expression.Blend.Sdk" Version="1.0.2" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Update="Properties\Settings.settings">
-			<Generator>SettingsSingleFileGenerator</Generator>
-			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
-			<CustomToolNamespace>FoxTunes.Properties</CustomToolNamespace>
-		</None>
 	</ItemGroup>
 
 	<Import Project="$(UserProfile)\.nuget\packages\Microsoft.Bcl.Build\1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="'$(TargetFramework)' == 'net40'" />

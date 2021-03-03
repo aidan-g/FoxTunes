@@ -19,14 +19,14 @@ namespace FoxTunes
 
         public static IEnumerable<ConfigurationSection> GetConfigurationSections()
         {
-            yield return new ConfigurationSection(SECTION, "Output")
-                .WithElement(new SelectionConfigurationElement(OUTPUT_ELEMENT, "Mode")
-                    .WithOptions(new[] { new SelectionConfigurationOption(OUTPUT_DS_OPTION, "Direct Sound").Default() })
+            yield return new ConfigurationSection(SECTION)
+                .WithElement(new SelectionConfigurationElement(OUTPUT_ELEMENT)
+                    .WithOptions(new[] { new SelectionConfigurationOption(OUTPUT_DS_OPTION, Strings.DirectSound).Default() })
                     .DependsOn(SECTION, OUTPUT_ELEMENT, OUTPUT_DS_OPTION))
-                .WithElement(new SelectionConfigurationElement(ELEMENT_DS_DEVICE, "Device", path: "Direct Sound")
+                .WithElement(new SelectionConfigurationElement(ELEMENT_DS_DEVICE, "Device", path: Strings.DirectSound)
                     .WithOptions(GetDSDevices())
                     .DependsOn(SECTION, OUTPUT_ELEMENT, OUTPUT_DS_OPTION))
-                .WithElement(new CommandConfigurationElement(ELEMENT_REFRESH, "Refresh Devices", path: "Direct Sound")
+                .WithElement(new CommandConfigurationElement(ELEMENT_REFRESH, "Refresh Devices", path: Strings.DirectSound)
                     .WithHandler(() =>
                     {
                         var element = StandardComponents.Instance.Configuration.GetElement<SelectionConfigurationElement>(

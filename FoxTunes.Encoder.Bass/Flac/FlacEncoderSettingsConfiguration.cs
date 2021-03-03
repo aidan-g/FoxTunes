@@ -30,7 +30,7 @@ namespace FoxTunes
 
         public static IEnumerable<ConfigurationSection> GetConfigurationSections(IBassEncoderSettings settings)
         {
-            yield return new ConfigurationSection(SECTION, "Converter")
+            yield return new ConfigurationSection(SECTION)
                 .WithElement(new SelectionConfigurationElement(DEPTH_ELEMENT, "Depth", path: settings.Name)
                     .WithOptions(GetDepthOptions())
                     .DependsOn(SECTION, ENABLED_ELEMENT))

@@ -61,6 +61,15 @@ namespace FoxTunes {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Advanced.
+        /// </summary>
+        internal static string General_Advanced {
+            get {
+                return ResourceManager.GetString("General.Advanced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enabled.
         /// </summary>
         internal static string InputManagerConfiguration_Enabled {
@@ -120,6 +129,186 @@ namespace FoxTunes {
         internal static string InputManagerConfiguration_Stop {
             get {
                 return ResourceManager.GetString("InputManagerConfiguration.Stop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Back Cover.
+        /// </summary>
+        internal static string MetaDataBehaviourConfiguration_BackCover {
+            get {
+                return ResourceManager.GetString("MetaDataBehaviourConfiguration.BackCover", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Embedded Images.
+        /// </summary>
+        internal static string MetaDataBehaviourConfiguration_EmbeddedImages {
+            get {
+                return ResourceManager.GetString("MetaDataBehaviourConfiguration.EmbeddedImages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enabled.
+        /// </summary>
+        internal static string MetaDataBehaviourConfiguration_Enabled {
+            get {
+                return ResourceManager.GetString("MetaDataBehaviourConfiguration.Enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Extended Attributes.
+        /// </summary>
+        internal static string MetaDataBehaviourConfiguration_Extended {
+            get {
+                return ResourceManager.GetString("MetaDataBehaviourConfiguration.Extended", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Front Cover.
+        /// </summary>
+        internal static string MetaDataBehaviourConfiguration_FrontCover {
+            get {
+                return ResourceManager.GetString("MetaDataBehaviourConfiguration.FrontCover", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy Images.
+        /// </summary>
+        internal static string MetaDataBehaviourConfiguration_ImageCopy {
+            get {
+                return ResourceManager.GetString("MetaDataBehaviourConfiguration.ImageCopy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Max Image Size (MB).
+        /// </summary>
+        internal static string MetaDataBehaviourConfiguration_ImageSize {
+            get {
+                return ResourceManager.GetString("MetaDataBehaviourConfiguration.ImageSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File Images.
+        /// </summary>
+        internal static string MetaDataBehaviourConfiguration_LooseImages {
+            get {
+                return ResourceManager.GetString("MetaDataBehaviourConfiguration.LooseImages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lyrics.
+        /// </summary>
+        internal static string MetaDataBehaviourConfiguration_Lyrics {
+            get {
+                return ResourceManager.GetString("MetaDataBehaviourConfiguration.Lyrics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MusicBrainz Attributes.
+        /// </summary>
+        internal static string MetaDataBehaviourConfiguration_MusicBrainz {
+            get {
+                return ResourceManager.GetString("MetaDataBehaviourConfiguration.MusicBrainz", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ratings/Play Counts.
+        /// </summary>
+        internal static string MetaDataBehaviourConfiguration_Popularimeter {
+            get {
+                return ResourceManager.GetString("MetaDataBehaviourConfiguration.Popularimeter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Images Preference.
+        /// </summary>
+        internal static string MetaDataBehaviourConfiguration_Preference {
+            get {
+                return ResourceManager.GetString("MetaDataBehaviourConfiguration.Preference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Replay Gain.
+        /// </summary>
+        internal static string MetaDataBehaviourConfiguration_ReplayGain {
+            get {
+                return ResourceManager.GetString("MetaDataBehaviourConfiguration.ReplayGain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Meta Data.
+        /// </summary>
+        internal static string MetaDataBehaviourConfiguration_Section {
+            get {
+                return ResourceManager.GetString("MetaDataBehaviourConfiguration.Section", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Background Threads.
+        /// </summary>
+        internal static string MetaDataBehaviourConfiguration_Threads {
+            get {
+                return ResourceManager.GetString("MetaDataBehaviourConfiguration.Threads", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Write Behaviour.
+        /// </summary>
+        internal static string MetaDataBehaviourConfiguration_Write {
+            get {
+                return ResourceManager.GetString("MetaDataBehaviourConfiguration.Write", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Background Synchronizer.
+        /// </summary>
+        internal static string MetaDataBehaviourConfiguration_WriteBackground {
+            get {
+                return ResourceManager.GetString("MetaDataBehaviourConfiguration.WriteBackground", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        internal static string MetaDataBehaviourConfiguration_WriteNone {
+            get {
+                return ResourceManager.GetString("MetaDataBehaviourConfiguration.WriteNone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tags.
+        /// </summary>
+        internal static string MetaDataBehaviourConfiguration_WriteTags {
+            get {
+                return ResourceManager.GetString("MetaDataBehaviourConfiguration.WriteTags", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tags &amp; Statistics.
+        /// </summary>
+        internal static string MetaDataBehaviourConfiguration_WriteTagsAndStatistics {
+            get {
+                return ResourceManager.GetString("MetaDataBehaviourConfiguration.WriteTagsAndStatistics", resourceCulture);
             }
         }
     }

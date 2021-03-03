@@ -14,7 +14,6 @@
 
   <ItemGroup>
     <Folder Include="Encoders\" />
-    <Folder Include="Properties\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,6 +35,19 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" Condition="'$(TargetFramework)' == 'net40'" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <EmbeddedResource Update="Properties\Strings.resx">
+		  <Generator>ResXFileCodeGenerator</Generator>
+		  <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+		  <CustomToolNamespace>FoxTunes</CustomToolNamespace>
+	  </EmbeddedResource>
+	  <Compile Update="Properties\Strings.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>Strings.resx</DependentUpon>
+	  </Compile>
   </ItemGroup>
 
   <ItemGroup>

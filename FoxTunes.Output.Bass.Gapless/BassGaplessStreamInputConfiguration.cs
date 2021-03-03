@@ -8,9 +8,9 @@ namespace FoxTunes
 
         public static IEnumerable<ConfigurationSection> GetConfigurationSections()
         {
-            yield return new ConfigurationSection(BassOutputConfiguration.SECTION, "Output")
-                .WithElement(new SelectionConfigurationElement(BassOutputConfiguration.INPUT_ELEMENT, "Input")
-                    .WithOptions(new[] { new SelectionConfigurationOption(INPUT_GAPLESS_OPTION, "Gapless").Default() })
+            yield return new ConfigurationSection(BassOutputConfiguration.SECTION)
+                .WithElement(new SelectionConfigurationElement(BassOutputConfiguration.INPUT_ELEMENT)
+                    .WithOptions(new[] { new SelectionConfigurationOption(INPUT_GAPLESS_OPTION, Strings.BassGaplessStreamInput_Name).Default() })
             );
         }
     }

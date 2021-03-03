@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="General.Advanced" xml:space="preserve">
+    <value>Advanced</value>
+  </data>
   <data name="InputManagerConfiguration.Enabled" xml:space="preserve">
     <value>Enabled</value>
   </data>
@@ -137,5 +140,65 @@
   </data>
   <data name="InputManagerConfiguration.Stop" xml:space="preserve">
     <value>Stop</value>
+  </data>
+  <data name="MetaDataBehaviourConfiguration.BackCover" xml:space="preserve">
+    <value>Back Cover</value>
+  </data>
+  <data name="MetaDataBehaviourConfiguration.EmbeddedImages" xml:space="preserve">
+    <value>Embedded Images</value>
+  </data>
+  <data name="MetaDataBehaviourConfiguration.Enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="MetaDataBehaviourConfiguration.Extended" xml:space="preserve">
+    <value>Extended Attributes</value>
+  </data>
+  <data name="MetaDataBehaviourConfiguration.FrontCover" xml:space="preserve">
+    <value>Front Cover</value>
+  </data>
+  <data name="MetaDataBehaviourConfiguration.ImageCopy" xml:space="preserve">
+    <value>Copy Images</value>
+  </data>
+  <data name="MetaDataBehaviourConfiguration.ImageSize" xml:space="preserve">
+    <value>Max Image Size (MB)</value>
+  </data>
+  <data name="MetaDataBehaviourConfiguration.LooseImages" xml:space="preserve">
+    <value>File Images</value>
+  </data>
+  <data name="MetaDataBehaviourConfiguration.Lyrics" xml:space="preserve">
+    <value>Lyrics</value>
+  </data>
+  <data name="MetaDataBehaviourConfiguration.MusicBrainz" xml:space="preserve">
+    <value>MusicBrainz Attributes</value>
+  </data>
+  <data name="MetaDataBehaviourConfiguration.Popularimeter" xml:space="preserve">
+    <value>Ratings/Play Counts</value>
+  </data>
+  <data name="MetaDataBehaviourConfiguration.Preference" xml:space="preserve">
+    <value>Images Preference</value>
+  </data>
+  <data name="MetaDataBehaviourConfiguration.ReplayGain" xml:space="preserve">
+    <value>Replay Gain</value>
+  </data>
+  <data name="MetaDataBehaviourConfiguration.Section" xml:space="preserve">
+    <value>Meta Data</value>
+  </data>
+  <data name="MetaDataBehaviourConfiguration.Threads" xml:space="preserve">
+    <value>Background Threads</value>
+  </data>
+  <data name="MetaDataBehaviourConfiguration.Write" xml:space="preserve">
+    <value>Write Behaviour</value>
+  </data>
+  <data name="MetaDataBehaviourConfiguration.WriteBackground" xml:space="preserve">
+    <value>Background Synchronizer</value>
+  </data>
+  <data name="MetaDataBehaviourConfiguration.WriteNone" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="MetaDataBehaviourConfiguration.WriteTags" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="MetaDataBehaviourConfiguration.WriteTagsAndStatistics" xml:space="preserve">
+    <value>Tags &amp; Statistics</value>
   </data>
 </root>

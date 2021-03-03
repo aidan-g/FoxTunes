@@ -34,7 +34,7 @@ namespace FoxTunes
 
         public static IEnumerable<ConfigurationSection> GetConfigurationSections(IBassEncoderSettings settings)
         {
-            yield return new ConfigurationSection(SECTION, "Converter")
+            yield return new ConfigurationSection(SECTION)
                 .WithElement(new SelectionConfigurationElement(BITRATE_ELEMENT, "Bitrate", path: settings.Name)
                     .WithOptions(GetBitrateOptions())
                     .DependsOn(SECTION, ENABLED_ELEMENT)

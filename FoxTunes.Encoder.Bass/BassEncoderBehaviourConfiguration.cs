@@ -1,5 +1,4 @@
-﻿using FoxTunes.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -27,26 +26,26 @@ namespace FoxTunes
 
         public static IEnumerable<ConfigurationSection> GetConfigurationSections()
         {
-            yield return new ConfigurationSection(SECTION, "Converter")
+            yield return new ConfigurationSection(SECTION, Strings.General_Converter)
                 .WithElement(
-                    new BooleanConfigurationElement(ENABLED_ELEMENT, "Enabled")
+                    new BooleanConfigurationElement(ENABLED_ELEMENT, Strings.BassEncoderBehaviourConfiguration_Enabled)
                         .WithValue(false))
                 .WithElement(
-                    new SelectionConfigurationElement(DESTINATION_ELEMENT, "Destination")
+                    new SelectionConfigurationElement(DESTINATION_ELEMENT, Strings.BassEncoderBehaviourConfiguration_Destination)
                         .WithOptions(GetDestinationOptions())
                         .DependsOn(SECTION, ENABLED_ELEMENT))
                 .WithElement(
-                    new TextConfigurationElement(DESTINATION_LOCATION_ELEMENT, "Location")
-                        .WithValue(Path.Combine(Publication.StoragePath, "Converter"))
+                    new TextConfigurationElement(DESTINATION_LOCATION_ELEMENT, Strings.BassEncoderBehaviourConfiguration_Location)
+                        .WithValue(Path.Combine(Publication.StoragePath, Strings.General_Converter))
                         .WithFlags(ConfigurationElementFlags.FolderName)
                         .DependsOn(SECTION, ENABLED_ELEMENT)
                         .DependsOn(SECTION, DESTINATION_ELEMENT, DESTINATION_SPECIFIC_OPTION))
                 .WithElement(
-                    new BooleanConfigurationElement(COPY_TAGS, "Copy Tags")
+                    new BooleanConfigurationElement(COPY_TAGS, Strings.BassEncoderBehaviourConfiguration_CopyTags)
                     .WithValue(true)
                     .DependsOn(SECTION, ENABLED_ELEMENT))
                 .WithElement(
-                    new IntegerConfigurationElement(THREADS_ELEMENT, "Background Threads")
+                    new IntegerConfigurationElement(THREADS_ELEMENT, Strings.BassEncoderBehaviourConfiguration_Threads)
                     .WithValue(Environment.ProcessorCount)
                     .WithValidationRule(new IntegerValidationRule(1, 32))
                     .DependsOn(SECTION, ENABLED_ELEMENT)
@@ -55,9 +54,9 @@ namespace FoxTunes
 
         private static IEnumerable<SelectionConfigurationOption> GetDestinationOptions()
         {
-            yield return new SelectionConfigurationOption(DESTINATION_BROWSE_OPTION, "Browse Folder");
-            yield return new SelectionConfigurationOption(DESTINATION_SOURCE_OPTION, "Source Folder");
-            yield return new SelectionConfigurationOption(DESTINATION_SPECIFIC_OPTION, "Specific Folder");
+            yield return new SelectionConfigurationOption(DESTINATION_BROWSE_OPTION, Strings.BassEncoderBehaviourConfiguration_BrowseFolder);
+            yield return new SelectionConfigurationOption(DESTINATION_SOURCE_OPTION, Strings.BassEncoderBehaviourConfiguration_SourceFolder);
+            yield return new SelectionConfigurationOption(DESTINATION_SPECIFIC_OPTION, Strings.BassEncoderBehaviourConfiguration_SpecificFolder);
         }
 
         public static BassEncoderOutputDestination GetDestination(SelectionConfigurationOption option)

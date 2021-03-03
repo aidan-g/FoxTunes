@@ -11,9 +11,9 @@ namespace FoxTunes
 
         public static IEnumerable<ConfigurationSection> GetConfigurationSections()
         {
-            yield return new ConfigurationSection(WindowsUserInterfaceConfiguration.SECTION, "Appearance")
+            yield return new ConfigurationSection(WindowsUserInterfaceConfiguration.SECTION)
                 .WithElement(
-                    new SelectionConfigurationElement(WindowsUserInterfaceConfiguration.LAYOUT_ELEMENT, "Layout").WithOptions(GetLayoutOptions()))
+                    new SelectionConfigurationElement(WindowsUserInterfaceConfiguration.LAYOUT_ELEMENT).WithOptions(GetLayoutOptions()))
                 .WithElement(
                     new TextConfigurationElement(MAIN, "Main Layout", path: "Advanced\\Layouts").WithValue(Resources.Main)
             );
@@ -26,7 +26,7 @@ namespace FoxTunes
         private static IEnumerable<SelectionConfigurationOption> GetLayoutOptions()
         {
             var releaseType = StandardComponents.Instance.Configuration.ReleaseType;
-            var option = new SelectionConfigurationOption(ID, "Customizable");
+            var option = new SelectionConfigurationOption(ID, Strings.UIComponentLayoutProvider_Name);
             if (releaseType == ReleaseType.Default)
             {
                 option.Default();

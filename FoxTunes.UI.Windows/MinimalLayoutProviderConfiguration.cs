@@ -9,16 +9,16 @@ namespace FoxTunes
 
         public static IEnumerable<ConfigurationSection> GetConfigurationSections()
         {
-            yield return new ConfigurationSection(WindowsUserInterfaceConfiguration.SECTION, "Appearance")
+            yield return new ConfigurationSection(WindowsUserInterfaceConfiguration.SECTION)
                 .WithElement(
-                    new SelectionConfigurationElement(WindowsUserInterfaceConfiguration.LAYOUT_ELEMENT, "Layout").WithOptions(GetLayoutOptions())
+                    new SelectionConfigurationElement(WindowsUserInterfaceConfiguration.LAYOUT_ELEMENT).WithOptions(GetLayoutOptions())
             );
         }
 
         private static IEnumerable<SelectionConfigurationOption> GetLayoutOptions()
         {
             var releaseType = StandardComponents.Instance.Configuration.ReleaseType;
-            var option = new SelectionConfigurationOption(ID, "Minimal");
+            var option = new SelectionConfigurationOption(ID, Strings.MinimalLayoutProvider_Name);
             if (releaseType == ReleaseType.Minimal)
             {
                 option.Default();

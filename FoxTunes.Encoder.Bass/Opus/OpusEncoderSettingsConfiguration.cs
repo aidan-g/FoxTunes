@@ -18,7 +18,7 @@ namespace FoxTunes
 
         public static IEnumerable<ConfigurationSection> GetConfigurationSections(IBassEncoderSettings settings)
         {
-            yield return new ConfigurationSection(SECTION, "Converter")
+            yield return new ConfigurationSection(SECTION)
                 .WithElement(new IntegerConfigurationElement(BITRATE_ELEMENT, "Bitrate", path: settings.Name)
                     .WithValue(DEFAULT_BITRATE)
                     .WithValidationRule(new IntegerValidationRule(MIN_BITRATE, MAX_BITRATE))

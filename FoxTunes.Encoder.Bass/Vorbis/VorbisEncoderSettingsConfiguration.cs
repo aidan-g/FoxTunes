@@ -18,7 +18,7 @@ namespace FoxTunes
 
         public static IEnumerable<ConfigurationSection> GetConfigurationSections(IBassEncoderSettings settings)
         {
-            yield return new ConfigurationSection(SECTION, "Converter")
+            yield return new ConfigurationSection(SECTION)
                 .WithElement(new IntegerConfigurationElement(QUALITY_ELEMENT, "Quality", path: settings.Name)
                     .WithValue(DEFAULT_QUALITY)
                     .WithValidationRule(new IntegerValidationRule(MIN_QUALITY, MAX_QUALITY))

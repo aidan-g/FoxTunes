@@ -8,15 +8,15 @@ namespace FoxTunes
 
         public static IEnumerable<ConfigurationSection> GetConfigurationSections()
         {
-            yield return new ConfigurationSection(WindowsUserInterfaceConfiguration.SECTION, "Appearance")
+            yield return new ConfigurationSection(WindowsUserInterfaceConfiguration.SECTION)
                 .WithElement(
-                    new SelectionConfigurationElement(WindowsUserInterfaceConfiguration.LAYOUT_ELEMENT, "Layout").WithOptions(GetLayoutOptions())
+                    new SelectionConfigurationElement(WindowsUserInterfaceConfiguration.LAYOUT_ELEMENT).WithOptions(GetLayoutOptions())
             );
         }
 
         private static IEnumerable<SelectionConfigurationOption> GetLayoutOptions()
         {
-            yield return new SelectionConfigurationOption(ID, "Default");
+            yield return new SelectionConfigurationOption(ID, Strings.DefaultLayoutProvider_Name);
         }
     }
 }
