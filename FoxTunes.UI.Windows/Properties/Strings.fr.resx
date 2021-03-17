@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DefaultLayoutProvider.Name" xml:space="preserve">
+    <value>Défaut</value>
+  </data>
+  <data name="EqualizerWindow.Title" xml:space="preserve">
+    <value>Égaliseur</value>
+  </data>
   <data name="General.Advanced" xml:space="preserve">
     <value>Avancé</value>
   </data>
@@ -126,8 +132,14 @@
   <data name="General.OK" xml:space="preserve">
     <value>Valider</value>
   </data>
+  <data name="General.Search" xml:space="preserve">
+    <value>Chercher</value>
+  </data>
   <data name="LibraryBase.Add" xml:space="preserve">
     <value>Ajoutez à la collection en déposant des fichiers ici.</value>
+  </data>
+  <data name="MinimalLayoutProvider.Name" xml:space="preserve">
+    <value>Minimal</value>
   </data>
   <data name="PlaylistGroupingBehaviourConfiguration.Enabled" xml:space="preserve">
     <value>Regroupement</value>
@@ -155,5 +167,47 @@
   </data>
   <data name="ProfilesBehaviourConfiguration.Section" xml:space="preserve">
     <value>Profils</value>
+  </data>
+  <data name="SettingsDialog.EmptyPage" xml:space="preserve">
+    <value>Veuillez sélectionner une sous-page.</value>
+  </data>
+  <data name="SettingsDialog.GroupHeader" xml:space="preserve">
+    <value>Composants</value>
+  </data>
+  <data name="SettingsDialog.ResetAll" xml:space="preserve">
+    <value>Effacer tout</value>
+  </data>
+  <data name="SettingsDialog.ResetPage" xml:space="preserve">
+    <value>Réinitialiser la page</value>
+  </data>
+  <data name="SettingsDialog.Save" xml:space="preserve">
+    <value>Sauvegarder</value>
+  </data>
+  <data name="SettingsWindow.Title" xml:space="preserve">
+    <value>Réglages</value>
+  </data>
+  <data name="WindowsUserInterfaceConfiguration.Cursors" xml:space="preserve">
+    <value>Afficher les ornements du curseur</value>
+  </data>
+  <data name="WindowsUserInterfaceConfiguration.Glass" xml:space="preserve">
+    <value>Transparence</value>
+  </data>
+  <data name="WindowsUserInterfaceConfiguration.Layout" xml:space="preserve">
+    <value>Disposition</value>
+  </data>
+  <data name="WindowsUserInterfaceConfiguration.MarqueeInterval" xml:space="preserve">
+    <value>Intervalle de défilement</value>
+  </data>
+  <data name="WindowsUserInterfaceConfiguration.MarqueeStep" xml:space="preserve">
+    <value>Vitesse du défilement</value>
+  </data>
+  <data name="WindowsUserInterfaceConfiguration.Scaling" xml:space="preserve">
+    <value>Facteur d'échelle</value>
+  </data>
+  <data name="WindowsUserInterfaceConfiguration.Section" xml:space="preserve">
+    <value>Apparence</value>
+  </data>
+  <data name="WindowsUserInterfaceConfiguration.Theme" xml:space="preserve">
+    <value>Thème</value>
   </data>
 </root>
