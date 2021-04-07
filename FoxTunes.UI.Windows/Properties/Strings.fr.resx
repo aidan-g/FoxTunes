@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DefaultLayoutProvider.Description" xml:space="preserve">
+    <value />
+  </data>
   <data name="DefaultLayoutProvider.Name" xml:space="preserve">
     <value>Défaut</value>
   </data>
@@ -135,8 +138,35 @@
   <data name="General.Search" xml:space="preserve">
     <value>Chercher</value>
   </data>
+  <data name="KeyBindingsBehaviourConfiguration.Next" xml:space="preserve">
+    <value>Suivant</value>
+  </data>
+  <data name="KeyBindingsBehaviourConfiguration.Play" xml:space="preserve">
+    <value>Lecture</value>
+  </data>
+  <data name="KeyBindingsBehaviourConfiguration.Previous" xml:space="preserve">
+    <value>Précédent</value>
+  </data>
+  <data name="KeyBindingsBehaviourConfiguration.Search" xml:space="preserve">
+    <value>Rechercher</value>
+  </data>
+  <data name="KeyBindingsBehaviourConfiguration.Section" xml:space="preserve">
+    <value>Raccourcis clavier</value>
+  </data>
+  <data name="KeyBindingsBehaviourConfiguration.Settings" xml:space="preserve">
+    <value>Paramètres</value>
+  </data>
+  <data name="KeyBindingsBehaviourConfiguration.Stop" xml:space="preserve">
+    <value>Arrêter</value>
+  </data>
+  <data name="KeyBindingsBehaviourConfiguration.ToggleMiniPlayer" xml:space="preserve">
+    <value>Basculer vers le Mini Lecteur</value>
+  </data>
   <data name="LibraryBase.Add" xml:space="preserve">
     <value>Ajoutez à la collection en déposant des fichiers ici.</value>
+  </data>
+  <data name="MinimalLayoutProvider.Description" xml:space="preserve">
+    <value />
   </data>
   <data name="MinimalLayoutProvider.Name" xml:space="preserve">
     <value>Minimal</value>
