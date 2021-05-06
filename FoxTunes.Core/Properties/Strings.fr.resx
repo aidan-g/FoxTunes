@@ -144,6 +144,9 @@
   <data name="MetaDataBehaviourConfiguration.BackCover" xml:space="preserve">
     <value>Couverture de derrière</value>
   </data>
+  <data name="MetaDataBehaviourConfiguration.DetectCompilations" xml:space="preserve">
+    <value>Détecter les compilations</value>
+  </data>
   <data name="MetaDataBehaviourConfiguration.EmbeddedImages" xml:space="preserve">
     <value>Images intégrées</value>
   </data>
@@ -200,6 +203,9 @@
   </data>
   <data name="MetaDataBehaviourConfiguration.WriteTagsAndStatistics" xml:space="preserve">
     <value>Tags et statistiques</value>
+  </data>
+  <data name="MetaDataRefreshBehaviour.Confirm" xml:space="preserve">
+    <value>Les paramètres des métadonnées ont été modifiés, réanalyser la bibliothèque ?</value>
   </data>
   <data name="PlaybackBehaviourConfiguration.Section" xml:space="preserve">
     <value>Playback</value>

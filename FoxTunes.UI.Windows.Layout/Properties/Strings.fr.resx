@@ -123,4 +123,19 @@
   <data name="UIComponentLayoutProvider.Name" xml:space="preserve">
     <value>Personnalisable</value>
   </data>
+  <data name="UIComponentLayoutProviderConfiguration.MainLayout" xml:space="preserve">
+    <value>Disposition principale</value>
+  </data>
+  <data name="UIComponentLayoutProviderConfiguration.Path" xml:space="preserve">
+    <value>Avancé\Disposition</value>
+  </data>
+  <data name="UIComponentLayoutProviderConfiguration.Preset" xml:space="preserve">
+    <value>Préréglage</value>
+  </data>
+  <data name="UIComponentLayoutProviderPresets.Main.1" xml:space="preserve">
+    <value>Défaut</value>
+  </data>
+  <data name="UIComponentLayoutProviderPresets.Main.2" xml:space="preserve">
+    <value>Défaut (Avec WaveBar)</value>
+  </data>
 </root>
