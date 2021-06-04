@@ -130,7 +130,7 @@
     <value>Suivant</value>
   </data>
   <data name="InputManagerConfiguration.Path.GlobalHotkeys" xml:space="preserve">
-    <value>Touches de raccourci globales</value>
+    <value>Raccourcis globaux</value>
   </data>
   <data name="InputManagerConfiguration.Play" xml:space="preserve">
     <value>Lecture</value>
@@ -211,16 +211,16 @@
     <value>Les paramètres des métadonnées ont été modifiés, réanalyser la bibliothèque ?</value>
   </data>
   <data name="NotifyIconConfiguration.Close" xml:space="preserve">
-    <value>Fermer vers la barre de notifications</value>
+    <value>Fermer vers la barre système</value>
   </data>
   <data name="NotifyIconConfiguration.Enabled" xml:space="preserve">
     <value>Activé</value>
   </data>
   <data name="NotifyIconConfiguration.Minimize" xml:space="preserve">
-    <value>Minimiser vers la barre de notifications</value>
+    <value>Minimiser vers la barre système</value>
   </data>
   <data name="NotifyIconConfiguration.Section" xml:space="preserve">
-    <value>Icône dans la barre de notifications</value>
+    <value>Icône dans la barre système</value>
   </data>
   <data name="PlaybackBehaviourConfiguration.Section" xml:space="preserve">
     <value>Playback</value>
@@ -256,6 +256,6 @@
     <value>Intervalle</value>
   </data>
   <data name="SearchBehaviourConfiguration.Section" xml:space="preserve">
-    <value>Chercher</value>
+    <value>Rechercher</value>
   </data>
 </root>

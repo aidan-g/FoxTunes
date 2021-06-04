@@ -118,6 +118,6 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="FilterParserConfiguration.Names" xml:space="preserve">
-    <value>Noms des tags</value>
+    <value>Dans les tags</value>
   </data>
 </root>

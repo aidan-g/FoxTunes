@@ -136,7 +136,7 @@
     <value>Valider</value>
   </data>
   <data name="General.Search" xml:space="preserve">
-    <value>Chercher</value>
+    <value>Rechercher</value>
   </data>
   <data name="KeyBindingsBehaviourConfiguration.Next" xml:space="preserve">
     <value>Suivant</value>
@@ -160,10 +160,10 @@
     <value>Arrêter</value>
   </data>
   <data name="KeyBindingsBehaviourConfiguration.ToggleMiniPlayer" xml:space="preserve">
-    <value>Basculer vers le Mini Lecteur</value>
+    <value>Basculer vers le mini lecteur</value>
   </data>
   <data name="LibraryBase.Add" xml:space="preserve">
-    <value>Ajoutez à la collection en déposant des fichiers ici</value>
+    <value>Ajouter des fichiers à la collection en les déposant ici</value>
   </data>
   <data name="MinimalLayoutProvider.Description" xml:space="preserve">
     <value />
@@ -199,7 +199,7 @@
     <value>Profils</value>
   </data>
   <data name="SettingsDialog.EmptyPage" xml:space="preserve">
-    <value>Veuillez sélectionner une sous-page</value>
+    <value>Veuillez sélectionner une sous rubrique</value>
   </data>
   <data name="SettingsDialog.GroupHeader" xml:space="preserve">
     <value>Composants</value>
@@ -211,10 +211,10 @@
     <value>Réinitialiser</value>
   </data>
   <data name="SettingsDialog.Save" xml:space="preserve">
-    <value>Sauvegarder</value>
+    <value>Valider</value>
   </data>
   <data name="SettingsWindow.Title" xml:space="preserve">
-    <value>Réglages</value>
+    <value>Paramètres</value>
   </data>
   <data name="WindowsUserInterfaceConfiguration.Cursors" xml:space="preserve">
     <value>Afficher les ornements du curseur</value>

@@ -130,7 +130,7 @@
     <value>Recherche automatique</value>
   </data>
   <data name="LyricsBehaviourConfiguration.AutoLookupProvider" xml:space="preserve">
-    <value>Fournisseur de recherche automatique</value>
+    <value>Fournisseur de recherche</value>
   </data>
   <data name="LyricsBehaviourConfiguration.AutoScroll" xml:space="preserve">
     <value>Défilement automatique</value>
