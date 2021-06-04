@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="EnqueueNextItemBehaviourConfiguration.Count" xml:space="preserve">
+    <value>Taille de la file d'attente</value>
+  </data>
   <data name="General.Advanced" xml:space="preserve">
     <value>Avancé</value>
   </data>
@@ -207,11 +210,47 @@
   <data name="MetaDataRefreshBehaviour.Confirm" xml:space="preserve">
     <value>Les paramètres des métadonnées ont été modifiés, réanalyser la bibliothèque ?</value>
   </data>
+  <data name="NotifyIconConfiguration.Close" xml:space="preserve">
+    <value>Fermer vers la barre de notifications</value>
+  </data>
+  <data name="NotifyIconConfiguration.Enabled" xml:space="preserve">
+    <value>Activé</value>
+  </data>
+  <data name="NotifyIconConfiguration.Minimize" xml:space="preserve">
+    <value>Minimiser vers la barre de notifications</value>
+  </data>
+  <data name="NotifyIconConfiguration.Section" xml:space="preserve">
+    <value>Icône dans la barre de notifications</value>
+  </data>
   <data name="PlaybackBehaviourConfiguration.Section" xml:space="preserve">
     <value>Playback</value>
   </data>
+  <data name="PlaylistBehaviourConfiguration.Order" xml:space="preserve">
+    <value>Ordre</value>
+  </data>
+  <data name="PlaylistBehaviourConfiguration.Order.Default" xml:space="preserve">
+    <value>Défaut</value>
+  </data>
+  <data name="PlaylistBehaviourConfiguration.Order.ShuffleAlbums" xml:space="preserve">
+    <value>Lecture aléatoire (Albums)</value>
+  </data>
+  <data name="PlaylistBehaviourConfiguration.Order.ShuffleArtists" xml:space="preserve">
+    <value>Lecture aléatoire (Artistes)</value>
+  </data>
+  <data name="PlaylistBehaviourConfiguration.Order.ShuffleTracks" xml:space="preserve">
+    <value>Lecture aléatoire (Pistes)</value>
+  </data>
+  <data name="PlaylistBehaviourConfiguration.PreSort" xml:space="preserve">
+    <value>Pré-tri</value>
+  </data>
+  <data name="PlaylistBehaviourConfiguration.Queue" xml:space="preserve">
+    <value>File d'attente</value>
+  </data>
+  <data name="PlaylistBehaviourConfiguration.Section" xml:space="preserve">
+    <value>Liste de lecture</value>
+  </data>
   <data name="SearchBehaviourConfiguration.Commit" xml:space="preserve">
-    <value>Commit Behaviour</value>
+    <value>Comportement</value>
   </data>
   <data name="SearchBehaviourConfiguration.Interval" xml:space="preserve">
     <value>Intervalle</value>

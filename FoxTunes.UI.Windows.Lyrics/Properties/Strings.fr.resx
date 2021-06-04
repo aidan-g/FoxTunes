@@ -135,9 +135,6 @@
   <data name="LyricsBehaviourConfiguration.AutoScroll" xml:space="preserve">
     <value>Défilement automatique</value>
   </data>
-  <data name="LyricsBehaviourConfiguration.Editor" xml:space="preserve">
-    <value>Éditeur</value>
-  </data>
   <data name="LyricsBehaviourConfiguration.Section" xml:space="preserve">
     <value>Paroles de chanson</value>
   </data>

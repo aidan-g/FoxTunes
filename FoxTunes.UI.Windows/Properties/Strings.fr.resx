@@ -163,7 +163,7 @@
     <value>Basculer vers le Mini Lecteur</value>
   </data>
   <data name="LibraryBase.Add" xml:space="preserve">
-    <value>Ajoutez à la collection en déposant des fichiers ici.</value>
+    <value>Ajoutez à la collection en déposant des fichiers ici</value>
   </data>
   <data name="MinimalLayoutProvider.Description" xml:space="preserve">
     <value />
@@ -199,7 +199,7 @@
     <value>Profils</value>
   </data>
   <data name="SettingsDialog.EmptyPage" xml:space="preserve">
-    <value>Veuillez sélectionner une sous-page.</value>
+    <value>Veuillez sélectionner une sous-page</value>
   </data>
   <data name="SettingsDialog.GroupHeader" xml:space="preserve">
     <value>Composants</value>
@@ -208,7 +208,7 @@
     <value>Effacer tout</value>
   </data>
   <data name="SettingsDialog.ResetPage" xml:space="preserve">
-    <value>Réinitialiser la page</value>
+    <value>Réinitialiser</value>
   </data>
   <data name="SettingsDialog.Save" xml:space="preserve">
     <value>Sauvegarder</value>
